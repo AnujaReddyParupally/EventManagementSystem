@@ -11,23 +11,33 @@ import Spinner from './components/Spinner/Spinner';
 import { useState  } from 'react';
 import SessionContextProvider, { SessionConsumer } from './components/SessionCookie/SessionCookie';
 import EventDetails from './components/Events/EventDetails';
+import Logout from './components/Logout/Logout';
 
 function App() {
   const [user, setUser] = useState({})
  
+  
   return (
     <SessionContextProvider>
     {
       ReactDOM.createPortal( <Spinner show={false}/>,document.getElementById('spinner-root'))
     }
-    
+    {!user && 
+      <SessionConsumer>
+        {context =>{
+          setUser(context.getUser())
+        }}
+      </SessionConsumer>
+    }
         <div className="App">
         <Header />
+
         <Routes>
-          <Route path='/login' element={<Form/>}/>
+          <Route path='/admin' element={<Admin/>}/> 
+          <Route path='/login' element={<Form/>}/> 
           <Route path='/events/details'  element={<EventDetails/>}/>
+          <Route path='/logout' element={<Logout/>}/>
           <Route path='/events' element={<Home/>} />
-          <Route path='/admin' element={<Admin/>}/>          
           <Route path='*' element={<Navigate replace to="/events"/>}/>
         </Routes>
       </div>

@@ -1,5 +1,6 @@
 const { Auth } = require("two-step-auth");
-const OTP = require('../models/OTP')
+const OTP = require('../models/OTP');
+const User = require("../models/user");
 
 const RESPONSE_MSGS = {
   ERROR_500: {CODE: 0, MSG: "Internal Server Error"},
@@ -20,29 +21,36 @@ const getotp = async (req, res) => {
                                       => send expiry date back to client
             if no, user is not authentic => send error message to client
     */
-    //TODO: Assuming user is authentic
+    const existingUser = await User.findOne({email:email})
+    if(existingUser){
+      //USER IS AUTHENTIC
+         console.log('user exists')
+      //two-step-auth will generate OTP and sends OTP to the user email
+      const response = await Auth(email, "Event Management System");
+      if(response.success){
+        const existingEmail = await OTP.findOne({email:email})
+        let expireAfterMin = 10
+        let now = new Date();
+        let expireat = new Date(now.getTime() + expireAfterMin*60000);
 
-    //two-step-auth will generate OTP and sends OTP to the user email
-    const response = await Auth(email, "Event Management System");
-    if(response.success){
-      const existingEmail = await OTP.findOne({email:email})
-      let expireAfterMin = 10
-      let now = new Date();
-      let expireat = new Date(now.getTime() + expireAfterMin*60000);
-
-      if(!existingEmail){
-        const otpObj = {email: email, otpvalue: response.OTP, expireat: expireat}
-        const result= new OTP({...otpObj})
-        await result.save()
+        if(!existingEmail){
+          const otpObj = {email: email, otpvalue: response.OTP, expireat: expireat}
+          const result= new OTP({...otpObj})
+          await result.save()
+        }
+        else{
+          await OTP.updateOne({_id:existingEmail._id},{otpvalue: response.OTP, expireat: expireat})
+        }
+        res.status(200).json({email, expireat})
       }
       else{
-        await OTP.updateOne({_id:existingEmail._id},{otpvalue: response.OTP, expireat: expireat})
+        res.status(200).json({message: RESPONSE_MSGS.OTP_FAILED})
       }
-      res.status(200).json({email, expireat})
     }
     else{
-      res.status(200).json({error: error.message, message: RESPONSE_MSGS.OTP_FAILED})
-    }
+      console.log('user not found')
+      res.status(404).json({message: RESPONSE_MSGS.INVALID_USER})
+    }    
   } catch (error) {
     res.status(500).json({error: error.message, message: RESPONSE_MSGS.ERROR_500})
   }

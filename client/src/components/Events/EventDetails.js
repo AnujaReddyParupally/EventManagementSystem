@@ -1,6 +1,8 @@
 import React, {Component} from "react";
 import { BsFillCalendarEventFill,BsFillAlarmFill } from "react-icons/bs";
+import { Navigate } from "react-router-dom";
 import EventBooking from "../BookTickets/EventBooking";
+import { SessionConsumer, SessionContext } from "../SessionCookie/SessionCookie";
 const DUMMY_EVENT=  {   
         id:1, 
         title: 'sunt aut facere',
@@ -17,23 +19,26 @@ const DUMMY_EVENT=  {
         gaprice:40,
 
     }
+
 class EventDetails extends Component{
-    constructor(){
-        super()
+    constructor(props){
+        super(props)
         this.state={
         };
     }
+    
+    static contextType = SessionContext
     componentDidMount(){
         //API - get event based on id
         this.setState({...DUMMY_EVENT})
     }
-    onSlotSelect(){
-
-    }
+    
     render(){
         let {id,title, city, image, description, tags, slots, maxTickets, vipprice, gaprice} = this.state
         return (
-             <div className="event-details">
+            <>
+            {!this.context.getUser() && (<Navigate to="/events" replace={true}/>)}
+            <div className="event-details">
                 <h3>Event details</h3>
                 {id ?
                 <div className="body">
@@ -93,13 +98,14 @@ class EventDetails extends Component{
                             }
                         </div>
                         <div className="booking-form">
-                               <EventBooking slots={slots} maxTickets={maxTickets} vipprice={vipprice} gaprice={gaprice}/>
+                            <EventBooking slots={slots} maxTickets={maxTickets} vipprice={vipprice} gaprice={gaprice}/>
                         </div>
                     </div>
                 </div>
                 :''
-                }
-            </div>
+             }
+         </div>
+         </>
         )
     }
 }

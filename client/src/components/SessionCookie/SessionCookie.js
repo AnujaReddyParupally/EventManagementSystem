@@ -11,7 +11,9 @@ class SessionContextProvider extends Component{
         this.setUserSessionCookie=this.setUserSessionCookie.bind(this)
         this.getUserSessionCookie=this.getUserSessionCookie.bind(this)
     }
-
+    removeSessionCookie(){
+        Cookies.remove("session")
+    }
     setUserSessionCookie(session, token){
         //Remove previous session and create new session that expires in 1 day
         Cookies.remove("session")
@@ -23,7 +25,7 @@ class SessionContextProvider extends Component{
     getUserSessionCookie(){
         const sessionCookie = Cookies.get("session");
         if (sessionCookie === undefined) {
-          return '';
+          return null;
         } else {
           return JSON.parse(atob(sessionCookie));
         }
@@ -31,7 +33,7 @@ class SessionContextProvider extends Component{
 
     render(){
         return (
-            <SessionProvider value={{...this.state, setUser: this.setUserSessionCookie, getUser: this.getUserSessionCookie}}>
+            <SessionProvider value={{...this.state, logout:this.removeSessionCookie, setUser: this.setUserSessionCookie, getUser: this.getUserSessionCookie}}>
                 {this.props.children}
             </SessionProvider>
         )

@@ -5,7 +5,7 @@ import SignUp from './SignUp'
 import Notification from '../Notifications/Notification'
 import ForgotPwd from './ForgotPwd'
 import axios from 'axios'
-import {  SessionConsumer, SessionContext } from '../SessionCookie/SessionCookie'
+import {   SessionContext } from '../SessionCookie/SessionCookie'
 
 const ERRORS={
     EMAIL: "Invalid Email ID."
@@ -16,7 +16,8 @@ const ERRORS={
     ,OTP_EXPIRED: "OTP Expired"
     ,USER_VERIFY_FAILED: "User veriication failed!"
     ,OTP_REQUIRED: "OTP is required!"
-    
+    ,USER_ALREADY_EXISTS: "User already exists!"
+    ,USER_REGISTRATION_FAILED: "User registration failed!"
 }
 const NOTIFICATIONS={
     SIGNUP_SUCCESS: "Successfully Registered!"
@@ -238,7 +239,7 @@ class Form extends Component{
     }
     onFormSubmit(event){
         event.preventDefault();
-        var {email, password}= this.state
+        var {firstname, lastname, email, password }= this.state
         var errorMessages=[]
         var notifications=[]
         if(!email.isValid)  errorMessages.push(ERRORS.EMAIL)
@@ -249,7 +250,7 @@ class Form extends Component{
             if(errorMessages.length === 0){
                 //API-validate user info
                 //Success: Navigate to home page
-                //Assuming success:
+                //TODO: Assuming success:
                 let loggedinuser = {id:'245678ghjk',firstname:'Anuja Reddy', lastname:'Parupally', email:'subp875@gmail.com', role: 0 }
                 this.setState({...this.state, user: loggedinuser})
                 let {setUser} = this.context
@@ -257,8 +258,6 @@ class Form extends Component{
                 setUser(loggedinuser, token)
                
                 //Failure: Display 'Authentication failed!' notification
-                
-
             }
             else{
                 this.setState({...this.state,errorMessages})
@@ -274,12 +273,44 @@ class Form extends Component{
                 //         Make login tab active for the user to login
                 //Failure: Oops! Something went wrong. Please try again. 
 
-                //TODO: Assuming success
-                notifications.push(NOTIFICATIONS.SIGNUP_SUCCESS)
-                this.setState({...this.state,notifications, isLogin: true, errorMessages:[]})
+                var data = JSON.stringify({
+                    fname: firstname,
+                    lname: lastname,
+                    email: email.value,
+                    password: password.value,
+                  });
+                axios.post("/api/v1/auth/signup", data, {
+                    headers: {
+                    "Content-Type": "application/json",
+                    },
+                })
+                .then((res) => {
+                    if (res.status === 200) {
+                        //Success:
+                        notifications.push(NOTIFICATIONS.SIGNUP_SUCCESS);
+                        this.setState({ ...this.state, notifications ,errorMessages:[], isLogin: true });
+                    } else if (res.status === 409) {
+                        //Failure: User already exists
+                        errorMessages.push(ERRORS.USER_ALREADY_EXISTS);
+                        this.setState({...this.state, errorMessages, notifications:[]})
+                    } else {
+                        //Failure
+                        // errorMessages.push(ERRORS.USER_REGISTRATION_FAILED);
+                        errorMessages.push(ERRORS.GENERIC_FAILED);
+                        this.setState({...this.state,errorMessages, notifications:[] });
+                    }
+                })
+                .catch((err) => {
+                    //Error
+                    console.log(err);
+                    errorMessages.push(ERRORS.GENERIC_FAILED);
+                    this.setState({...this.state, errorMessages, notifications:[]
+                    });
+                    //   }
+                });
             }
             else{
-                this.setState({...this.state,errorMessages, notifications:[]})
+                this.setState({...this.state, errorMessages, notifications:[]})
             }
         }
     }

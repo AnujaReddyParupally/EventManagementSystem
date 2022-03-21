@@ -27,6 +27,7 @@ body {
 .navbar-user {
   font: 16px;
   float: right;
+  margin-left: 12px;
 }
 .navbar-user a {
   text-decoration: none;
@@ -560,6 +561,22 @@ textarea {
 .confirm-payment .otp {
   width: 100px;
   margin: auto;
+}
+.logout {
+  text-align: center;
+  display: flex;
+  align-self: center;
+}
+.logout svg {
+  vertical-align: middle;
+  width: 30px;
+  height: 30px;
+  align-self: center;
+  margin: 10px;
+}
+.logout a {
+  text-decoration: none;
+  color: white;
 }
 /* 
 display: flex;
