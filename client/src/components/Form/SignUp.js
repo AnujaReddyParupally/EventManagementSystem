@@ -28,7 +28,7 @@ class SignUp extends Component{
                     <input type="password" placeholder="Enter password" name="psw" required 
                            maxLength={12} 
                            minLength={6}
-                           onChange={this.props.onPwdChange}/>
+                           onBlur={this.props.onPwdChange}/>
 
                     <label htmlFor="confirmpsw"><b>Confirm password</b></label>
                     <input type="password" placeholder="Re-enter password" name="confirmpsw" required 

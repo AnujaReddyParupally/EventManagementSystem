@@ -11,8 +11,8 @@ const Event = (props) =>{
                 <p className="event-loc">{city}</p>
                 <h2 >{title}</h2>
                 <div className="event-tag">
-                    {tags.map(i=>{
-                    return  <p>{i}</p>
+                    {tags.map((i,index)=>{
+                    return  <p key={index}>{i}</p>
                     })}
                 </div>
                 <a href="#">View details &gt;</a>

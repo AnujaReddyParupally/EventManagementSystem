@@ -16,8 +16,6 @@ class Admin extends Component{
                  <AddEvent/>
                 </div>
             </div>
-            
-           
         </>
         )
     }

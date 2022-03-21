@@ -18,7 +18,7 @@ class Login extends Component{
 
                     <label htmlFor="psw"><b>Password</b></label>
                     <input type="password" placeholder="Enter password" name="psw" required
-                           onChange={this.props.onPwdChange}/>
+                           onBlur={this.props.onPwdChange}/>
 
                     <button type="submit" className='btn-login'>Login</button>
                     <p className='forgot-pwd' onClick={()=>this.onForgotPwdClick(true)}>Forgot password?</p>

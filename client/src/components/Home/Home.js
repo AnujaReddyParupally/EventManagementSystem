@@ -95,14 +95,14 @@ class Home extends Component{
                 <p>Filter by City</p>
                 <select className='filters-select'>
                     <option value="0">Select city</option>
-                    {CITIES.map(city=>{
-                        return  <option value={city.id}>{city.name}</option>
+                    {CITIES.map((city,index)=>{
+                        return  <option key={index} value={city.id}>{city.name}</option>
                     })}
                 </select>
                 </div>  
                  <Search onSearch={this.onSearchChange}/>
             </div>
-            <h3>All events</h3>
+            <h3 style={{marginLeft: "20px"}}>All events</h3>
             {this.state.events.length ? <Events events={this.state.events}/> : ''}
         </div>)
     }
