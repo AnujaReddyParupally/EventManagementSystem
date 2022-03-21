@@ -1,6 +1,8 @@
 import React, {Component} from "react";
-import { BsFillCalendarEventFill,BsFillAlarmFill } from "react-icons/bs";
+import { BsFillCalendarEventFill,BsFillAlarmFill, BsPencilFill } from "react-icons/bs";
+import { RiDeleteBin6Fill } from "react-icons/ri";
 import { Navigate } from "react-router-dom";
+
 import EventBooking from "../BookTickets/EventBooking";
 import { SessionConsumer, SessionContext } from "../SessionCookie/SessionCookie";
 const DUMMY_EVENT=  {   
@@ -57,6 +59,12 @@ class EventDetails extends Component{
                                 }
                             </div>
                             <div style={{marginTop: "10px"}}>{description}</div>
+                            {this.context.getUser().role != 0
+                             ? <div className="admin-event-options">
+                                <span><BsPencilFill/></span>
+                                <span><RiDeleteBin6Fill/></span>
+                               </div>
+                             : ''}
                         </div>
                     </div>
                     <div style={{display: "flex",alignItems: "flex-end", flexDirection: "column"}}>

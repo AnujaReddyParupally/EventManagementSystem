@@ -100,16 +100,16 @@ class Form extends Component{
             //test for password length & matching pattern only in case of registration
             if(pwd.length >= 6 && pwd.length <=12){
                 if (!pattern.test(pwd)) {
-                    console.log('Failed pattern')
+                    // console.log('Failed pattern')
                     this.setState({...this.state,password:{value:"",isValid:false,}})
                 }
                 else{
-                    console.log('Success')
+                    // console.log('Success')
                     this.setState({...this.state,password:{value:pwd,isValid:true,}})
                 }
             }
             else{
-                console.log('Failed length')
+                // console.log('Failed length')
                 this.setState({...this.state,password:{value:"",isValid:false,}})
             }
         }
@@ -162,7 +162,7 @@ class Form extends Component{
                 */
                 //Assuming success:
                 axios.get(`/api/otp/${email.value}`).then(res=>{
-                    console.log(res)
+                    // console.log(res)
                     if(res.status===200){
                         notifications.push(NOTIFICATIONS.OTP_SENT)
                         this.setState({...this.state, notifications, errorMessages:[], otp:{...otp, display: true, expiresat: res.data.expireat}})
@@ -223,7 +223,6 @@ class Form extends Component{
                 }
            }).catch(err=>{
                 //Error
-                console.log({err})
                 if(err.response.status === 404)
                   errorMessages.push(ERRORS.USER_NOT_FOUND)
                 else
@@ -256,7 +255,7 @@ class Form extends Component{
                 //API-validate user info
                 //Success: Navigate to home page
                 //TODO: Assuming success:
-                let loggedinuser = {id:'245678ghjk',firstname:'Anuja Reddy', lastname:'Parupally', email:'subp875@gmail.com', role: 0 }
+                let loggedinuser = {id:'245678ghjk',firstname:'Anuja Reddy', lastname:'Parupally', email:'subp875@gmail.com', role: 1 }
                 this.setState({...this.state, user: loggedinuser})
                 let {setUser} = this.context
                 let token = ''
@@ -307,7 +306,6 @@ class Form extends Component{
                 })
                 .catch((err) => {
                     //Error
-                    console.log(err);
                     errorMessages.push(ERRORS.GENERIC_FAILED);
                     this.setState({...this.state, errorMessages, notifications:[]
                     });

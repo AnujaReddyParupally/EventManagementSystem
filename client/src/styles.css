@@ -11,28 +11,42 @@ body {
 .navbar {
   font-style: normal;
   padding: 16px 16px;
-  overflow: hidden;
+  /* overflow: hidden; */
   background-color: black;
   color: white;
   line-height: 24px;
   box-shadow: inset 0px -1px 0px #e9e9e9;
-  left: 0;
-  top: 0;
+  display: flex;
+  justify-content: space-between;
+  /* left: 0;
+  top: 0; */
 }
 .navbar-brand {
-  font: 16px;
+  font: 400 18px "Open Sans", sans-serif;
   font-weight: 600;
   float: left;
+  padding-right: 8px;
+  border-right: 1px solid #ccc;
 }
 .navbar-user {
   font: 16px;
   float: right;
   margin-left: 12px;
 }
+.navbar a {
+  text-decoration: none;
+  color: white;
+  cursor: pointer;
+}
 .navbar-user a {
   text-decoration: none;
   color: white;
   cursor: pointer;
+}
+
+.navbar-menu {
+  margin: 0px 8px;
+  line-height: 25px;
 }
 input[type="text"],
 input[type="password"],
@@ -268,7 +282,6 @@ textarea {
   border-radius: 8px;
 }
 .event:hover {
-  cursor: pointer;
   box-shadow: -9px -8px 10px rgb(0 0 0 / 20%);
 }
 .event-img {
@@ -307,6 +320,19 @@ textarea {
   font-weight: normal;
   line-height: 1.2em;
   margin: 6px 0;
+}
+.admin-event-options {
+  padding-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+.admin-event-options span {
+  margin-left: 10px;
+}
+.admin-event-options svg {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
 }
 .event-tag {
   display: flex;
