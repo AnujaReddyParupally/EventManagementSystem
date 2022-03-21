@@ -6,7 +6,6 @@ class ForgotPwd extends Component
         super()
     }
     render(){
-      console.log(this.props)
         const {displayOtp, isUserVerified} = this.props
         return(
             <form onSubmit={this.props.onForgotPwdSubmit}>

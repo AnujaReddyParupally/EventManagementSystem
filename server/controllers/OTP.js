@@ -21,7 +21,7 @@ const getotp = async (req, res) => {
                                       => send expiry date back to client
             if no, user is not authentic => send error message to client
     */
-    const existingUser = await User.findOne({email:email})
+    const existingUser = await User.findOne({email:email.toUpperCase()})
     if(existingUser){
       //USER IS AUTHENTIC
          console.log('user exists')
@@ -41,7 +41,7 @@ const getotp = async (req, res) => {
         else{
           await OTP.updateOne({_id:existingEmail._id},{otpvalue: response.OTP, expireat: expireat})
         }
-        res.status(200).json({email, expireat})
+        res.status(200).json({expireat})
       }
       else{
         res.status(200).json({message: RESPONSE_MSGS.OTP_FAILED})

@@ -1,4 +1,5 @@
 const { validationResult } = require("express-validator");
+const hash = require("../utils/hash");
 
 const User = require("../models/user");
 const errors = require("../config/errors.json");
@@ -61,5 +62,34 @@ const login = async(req,res,next) => {
     }
 }
 
+const updatePassword = async (req,res,next) => {
+  try{
+    const err= validationResult(req)
+    if(!err.isEmpty()){
+      throw {
+        data: err.array()
+      }
+    }
+    else{
+      const {email, password} = req.body
+      const existinguser = await User.findOne({email: email.toUpperCase()})
+      if(!existinguser){
+        //INVALID EMAIL ID
+        res.status(404).json({...errors[404] })
+      }
+      else{
+        //USER EXISTS AND UPDATE NEW PASSWORD
+        const hashedpwd = hash.encrypt(password);
+        await User.updateOne({_id: existinguser._id}, {password: hashedpwd})
+        res.status(200).send(true)
+      }
+    }
+  }
+  catch(err){
+    next(err)
+  }
+}
+
 exports.signup = signup;
 exports.login = login;
+exports.updatePassword = updatePassword

@@ -10,9 +10,11 @@ class SessionContextProvider extends Component{
         }
         this.setUserSessionCookie=this.setUserSessionCookie.bind(this)
         this.getUserSessionCookie=this.getUserSessionCookie.bind(this)
+        this.removeSessionCookie=this.removeSessionCookie.bind(this)
     }
     removeSessionCookie(){
         Cookies.remove("session")
+        this.setState({...this.state, user: {}})
     }
     setUserSessionCookie(session, token){
         //Remove previous session and create new session that expires in 1 day

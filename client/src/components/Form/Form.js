@@ -18,6 +18,8 @@ const ERRORS={
     ,OTP_REQUIRED: "OTP is required!"
     ,USER_ALREADY_EXISTS: "User already exists!"
     ,USER_REGISTRATION_FAILED: "User registration failed!"
+    ,USER_NOT_FOUND: "User not found!"
+    
 }
 const NOTIFICATIONS={
     SIGNUP_SUCCESS: "Successfully Registered!"
@@ -76,11 +78,11 @@ class Form extends Component{
         let email=event.target.value
         let isValidEmail = this.validateEmail(email)
         if (!isValidEmail) {
-            console.log('Failed')
+            // console.log('Failed')
             this.setState({...this.state,email:{value:"",isValid:false,},errorMessages:[]})
         }
         else{
-            console.log('Success')
+            // console.log('Success')
             this.setState({...this.state,email:{value:email,isValid:true,},errorMessages:[]})
         }
     }
@@ -221,8 +223,11 @@ class Form extends Component{
                 }
            }).catch(err=>{
                 //Error
-                console.log(err)
-                errorMessages.push(ERRORS.GENERIC_FAILED)
+                console.log({err})
+                if(err.response.status === 404)
+                  errorMessages.push(ERRORS.USER_NOT_FOUND)
+                else
+                  errorMessages.push(ERRORS.GENERIC_FAILED)
                 this.setState({...this.state, errorMessages, notifications:[], isUserVerified:false})
            })
         }
@@ -342,16 +347,33 @@ class Form extends Component{
              *               display 'Password updated successfully!'
              *      FAILURE/ERROR: display "Oops! Something went wrong. Please try again."
              */
-            try{
                 //TODO: call API and update password
                 //Assuming Success - switch to login tab
-                notifications.push(NOTIFICATIONS.PWD_RESET_SUCCESS)
-                this.setState({...this.state, notifications, isLogin: true, isForgotPwd: false, errorMessages:[]})
-            }
-            catch{
-                errorMessages.push(ERRORS.GENERIC_FAILED)
-                this.setState({...this.state,errorMessages, notifications:[]})
-            }
+                var data = JSON.stringify({
+                    "email": email.value,
+                    "password": password.value
+                  });
+                axios.post('/api/v1/auth/updatecreds',data, {
+                    headers: {
+                     'Content-Type': 'application/json'
+                    }
+                }).then(res=>{
+                    if(res.status === 200 && res.data){
+                        notifications.push(NOTIFICATIONS.PWD_RESET_SUCCESS)
+                        this.setState({...this.state, notifications, isLogin: true, isUserVerified:false, isForgotPwd: false, errorMessages:[]})
+                    }
+                    else{
+                        errorMessages.push(ERRORS.GENERIC_FAILED)
+                        this.setState({...this.state,errorMessages, notifications:[]})
+                    }
+                }).catch(err=>{
+                    if(err.response.status === 404)
+                       errorMessages.push(ERRORS.USER_NOT_FOUND)
+                    else
+                       errorMessages.push(ERRORS.GENERIC_FAILED)
+                    this.setState({...this.state,errorMessages, notifications:[]})
+                })
+                
         }
         else{
             this.setState({...this.state,errorMessages})
