@@ -23,7 +23,7 @@ const signup = async (req, res, next) => {
       //   data: `User with email : ${req.body.email} already exists`,
       // };
       res.status(409).json({
-        ...errors[409],
+         ...errors[409],
         data: `User with email : ${req.body.email} already exists`,
       });
     } else {
@@ -52,8 +52,9 @@ const login = async(req,res,next) => {
     } else {
       const user = await User.findByCredentials(req.body.email, req.body.password);
       if (!user){
-          res.status(400).json({
-            data: `{user}`,
+          res.status(409).json({
+            ...errors[409],
+            data: `User email or password invalid`
           });
         } else {
           res.status(200).json({user});

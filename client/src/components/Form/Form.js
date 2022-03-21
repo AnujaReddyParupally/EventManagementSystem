@@ -18,11 +18,13 @@ const ERRORS = {
   OTP_REQUIRED: "OTP is required!",
   USER_ALREADY_EXISTS: "User already exists!",
   USER_REGISTRATION_FAILED: "User registration failed!",
+  USER_LOGIN_FAILED: "Invalid Username or Password!"
 };
 const NOTIFICATIONS = {
   SIGNUP_SUCCESS: "Successfully Registered!",
   OTP_SENT: "OTP sent to the registered email!",
   PWD_RESET_SUCCESS: "Password reset successful!",
+  LOGIN_SUCCESS : "Login is successful"
 };
 class Form extends Component {
   constructor() {
@@ -295,12 +297,44 @@ class Form extends Component {
       if (errorMessages.length === 0) {
         //API-validate user info
         //Success: Navigate to home page
-        //Assuming success:
-        this.setState({ ...this.state, user: { name: "Anuja" } });
-        //Failure: Display 'Authentication failed!' notification
-      } else {
-        this.setState({ ...this.state, errorMessages });
-      }
+        //Assuming success
+        var login_data = JSON.stringify({
+          email : email.value,
+          password : password.value
+        });
+        axios
+        .post("/api/v1/auth/login", login_data, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+        .then((res) => {
+          if (res.status === 200) {
+            //Success:
+            console.log(res.data);
+            this.setState({ ...this.state, errorMessages:[], user: res.data.user});
+            console.log(this.state);
+          }
+        })
+        .catch((err) => {
+          //Error
+          console.log(err.response.status);
+          if (err.response.status === 409) {
+            //Failure
+            errorMessages.push(ERRORS.USER_LOGIN_FAILED);
+            this.setState({...this.state,errorMessages});
+          } else {
+            errorMessages.push(ERRORS.GENERIC_FAILED);
+            this.setState({
+              ...this.state,
+              errorMessages,
+            });
+          }
+        });
+        } else {
+          this.setState({ ...this.state, errorMessages });
+        }
+ 
     } else {
       //REGISTER
       if (!password.isConfirm) errorMessages.push(ERRORS.CONFIRM_PASSWORD);
@@ -316,7 +350,7 @@ class Form extends Component {
           fname: firstname,
           lname: lastname,
           email: email.value,
-          password: password.value,
+          password: password.value
         });
         axios
           .post("/api/v1/auth/signup", data, {
