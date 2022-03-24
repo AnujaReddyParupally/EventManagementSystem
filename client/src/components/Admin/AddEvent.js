@@ -1,5 +1,7 @@
 import React, { cloneElement, Component } from "react";
 import Notification from "../Notifications/Notification";
+import axios from "axios";
+
 const CITIES=[
     {id: 1, name: 'Hyderabad'},
     {id: 2, name: 'Bangalore'},
@@ -15,10 +17,12 @@ const ERRORS={
     ,INVALID_VIP_PRICE: "Price for VIP slots is required!"
     ,INVALID_MAX_TICKETS: "Maximum bookings cannot be 0!"
     ,INVALID_IMAGEURL: "Image URL is required!"
+    ,EVENT_ADDITION_FAILED: "Event Addition failed!"
 }
 
 const NOTIFICATIONS={
     EVENT_SAVE_SUCCESS:"Event saved successfully!"
+    ,EVENT_ALREADY_EXISTS: "Event already exists!"
 }
 const SLOT_PROPS={DATE:'DATE',START:'STARTTIME',END:'ENDTIME',VIP:'VIP',GA:'GA'}
 
@@ -121,12 +125,12 @@ class AddEvent extends Component{
 
         //Validate slots
         let filteredslots= slots.filter(slot=>{
-                return !(slot.date 
-                         && slot.starttime 
-                         && slot.endtime 
-                         && (new Date ('1/1/1999 ' + slot.starttime) < new Date ('1/1/1999 ' + slot.endtime)) 
-                         && slot.gatickets)
-            })
+            return !(slot.date 
+                && slot.starttime 
+                && slot.endtime 
+                && (new Date (`${slot.date} ${slot.starttime}`).getTime() < new Date (`${slot.date} ${slot.endtime}`).getTime()) 
+                && slot.gatickets)
+        })
         if(filteredslots.length) errorMessages.push(ERRORS.INVALID_SLOT)
         
         //VIP Price cannot be zero when atleast one Slot has 1 or more  VIP tickets 
@@ -145,14 +149,51 @@ class AddEvent extends Component{
              * FAILURE: API - if event name already exists, return 409 => display 'Event already exists'
              * ERROR: if error, return 500 => display 'Opps! something went wrong.....'
             */
-
-            //Assuming SUCCESS:
-            notifications.push(NOTIFICATIONS.EVENT_SAVE_SUCCESS)
-            let emptyState = this.getEmptyState()
-            this.setState({...emptyState, notifications})
-        }
-        else{
-            this.setState({...this.state, errorMessages})
+             console.log("Event Creation");
+             var data = JSON.stringify({
+                 eventname: this.state.eventname, 
+                 city: this.state.city, 
+                 description: this.state.description, 
+                 tags: this.state.tags, 
+                 VIPprice: this.state.vipprice, 
+                 GAprice: this.state.gaprice, 
+                 MaxTickets: this.state.maxTickets,
+                 ImageURL: this.state.imageURL,
+                 slots: this.state.slots,
+             });
+             console.log("Event Creation Data",data);
+            axios
+              .post("/api/v1/admin/addevent", data, {
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              })
+              .then((res) => {
+                if (res.status === 200) {
+                  //Success:
+                    notifications.push(NOTIFICATIONS.EVENT_SAVE_SUCCESS)
+                    let emptyState = this.getEmptyState()
+                    this.setState({...emptyState, notifications})
+                } 
+              })
+              .catch((err) =>{
+                if (err.response.status === 409) {
+                    //Failure
+                    errorMessages.push(NOTIFICATIONS.EVENT_ALREADY_EXISTS);
+                    this.setState({
+                      ...this.state,
+                      errorMessages,
+                    });
+                  } else {
+                    //Failure
+                    errorMessages.push(ERRORS.EVENT_ADDITION_FAILED);
+                    this.setState({
+                      ...this.state,
+                      errorMessages,
+                    });
+                  }
+              })
+            
         }
         console.log(this.state)
     }
@@ -193,8 +234,8 @@ class AddEvent extends Component{
             case SLOT_PROPS.GA:
                 currentSlot.gatickets= value
                 break;
-            this.setState({...this.state, slots:{...slots, currentSlot}})
         }
+        this.setState({...this.state, slots:[{/*...slots,*/ ...currentSlot}]})
     }
     render(){
         let {eventname, city, description, imageURL, maxTickets, slots, vipprice, gaprice, errorMessages, notifications} = this.state

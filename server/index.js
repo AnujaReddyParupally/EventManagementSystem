@@ -11,6 +11,8 @@ const {
 } = require("./middleware/http-error-handlers");
 const otproutes = require("./routes/OTP");
 const authRoute = require("./routes/auth");
+const otproutes = require("./routes/OTP");
+const eventroutes = require("./routes/eventRoute");
 const userRoute = require("./routes/user");
 
 const app = express();
@@ -22,6 +24,7 @@ app.use(cors());
 
 app.use("/api", otproutes);
 app.use("/api/v1/auth", authRoute);
+app.use("/api/v1/admin", eventroutes);
 app.use("/api/v1/user", userRoute);
 
 app.get("/", function (req, res) {
