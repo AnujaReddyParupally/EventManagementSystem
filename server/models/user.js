@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema(
       required: true,
       minlength: 6,
       maxlength: 12,
-    }
+    },
   },
   { timestamps: true }
 );
@@ -48,15 +48,5 @@ userSchema.pre("save", function (next) {
   next();
 });
 
-userSchema.statics.findByCredentials = async (email, password) => {
-  const user = await User.findOne({
-      email: email.toUpperCase()
-    });
-  if (!user || !hash.validPassword(password,user.password)){
-      return 'Unable to login';
-  }
-  return user;
-}
-
-var User = mongoose.model('User', userSchema);
+var User = mongoose.model("User", userSchema);
 module.exports = User;
