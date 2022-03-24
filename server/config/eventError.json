@@ -1,0 +1,22 @@
+{
+    "500": {
+      "statusCode": 500,
+      "message": "Internal Server Error"
+    },
+  
+    "404": {
+      "statusCode": 404,
+      "message": "Not Found"
+    },
+  
+    "400": {
+      "statusCode": 400,
+      "message": "Event registration failed!"
+    },
+  
+    "409": {
+      "statusCode": 409,
+      "message": "Event already exists!"
+    }
+  }
+  
