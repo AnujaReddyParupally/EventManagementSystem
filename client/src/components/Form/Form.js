@@ -6,6 +6,7 @@ import Notification from '../Notifications/Notification'
 import ForgotPwd from './ForgotPwd'
 import axios from 'axios'
 import {   SessionContext } from '../SessionCookie/SessionCookie'
+import Spinner from '../Spinner/Spinner'
 
 const ERRORS={
     EMAIL: "Invalid Email ID."
@@ -30,6 +31,7 @@ class Form extends Component{
     constructor(){
         super()
         this.state={
+            isLoading:false,
             isLogin: true,
             isForgotPwd:false,
             isUserVerified: false,
@@ -148,6 +150,7 @@ class Form extends Component{
             //FORGOT PASSWORD
             var {email, otp}=this.state
             var errorMessages=[], notifications=[]
+            this.setState({...this.state, isLoading: true})
             if(!email.isValid)  errorMessages.push(ERRORS.EMAIL)
             if(errorMessages.length === 0){
                 /*
@@ -165,32 +168,32 @@ class Form extends Component{
                     // console.log(res)
                     if(res.status===200){
                         notifications.push(NOTIFICATIONS.OTP_SENT)
-                        this.setState({...this.state, notifications, errorMessages:[], otp:{...otp, display: true, expiresat: res.data.expireat}})
+                        this.setState({...this.state, isLoading: false, notifications, errorMessages:[], otp:{...otp, display: true, expiresat: res.data.expireat}})
                     }
                     else{
                         errorMessages.push(ERRORS.EMAIL)
-                        this.setState({...this.state, errorMessages, notifications:[], otp:{...this.state.otp, display: false}})
+                        this.setState({...this.state, isLoading: false, errorMessages, notifications:[], otp:{...this.state.otp, display: false}})
                     }
                 }).catch(err=>{
                     errorMessages.push(ERRORS.GENERIC_FAILED)
-                    this.setState({...this.state,errorMessages, notifications:[]})
+                    this.setState({...this.state,errorMessages, notifications:[], isLoading: false})
                 })
                 
             }
             else{
-                this.setState({...this.state,errorMessages, notifications:[]})
+                this.setState({...this.state,errorMessages, notifications:[], isLoading: false})
             }
     }
     onVerifyOTPSubmit(){
         let {otp,email} = this.state
         let now = new Date()
         var errorMessages=[]
-        
+        this.setState({...this.state, isLoading: true})
         if(otp.value.trim().length === 0)
         {
             //OTP is required
             errorMessages.push(ERRORS.OTP_REQUIRED)
-            this.setState({...this.state, errorMessages, notifications:[], isUserVerified:false})
+            this.setState({...this.state, errorMessages, notifications:[], isUserVerified:false, isLoading: false})
         }
         //check if OTP is expired
         else if(now < new Date(otp.expiresat))
@@ -214,12 +217,12 @@ class Form extends Component{
             }).then(res=>{
                 if(res.status===200 && res.data){
                     //Success with data true or false to indicate user verification
-                    this.setState({...this.state, isUserVerified: true, notifications:[], errorMessages: []})
+                    this.setState({...this.state, isUserVerified: true, notifications:[], errorMessages: [], isLoading: false})
                 }
                 else{
                     //Failure
                     errorMessages.push(ERRORS.USER_VERIFY_FAILED)
-                    this.setState({...this.state, errorMessages, notifications:[], isUserVerified:false})
+                    this.setState({...this.state, errorMessages, notifications:[], isUserVerified:false, isLoading: false})
                 }
            }).catch(err=>{
                 //Error
@@ -227,7 +230,7 @@ class Form extends Component{
                   errorMessages.push(ERRORS.USER_NOT_FOUND)
                 else
                   errorMessages.push(ERRORS.GENERIC_FAILED)
-                this.setState({...this.state, errorMessages, notifications:[], isUserVerified:false})
+                this.setState({...this.state, errorMessages, notifications:[], isUserVerified:false, isLoading: false})
            })
         }
         else{
@@ -235,7 +238,7 @@ class Form extends Component{
                 OTP Expired - display error notification
             */
            errorMessages.push(ERRORS.OTP_EXPIRED)
-           this.setState({...this.state, errorMessages, notifications:[]})
+           this.setState({...this.state, errorMessages, notifications:[], isLoading: false})
         }
     }
     onOTPChange(event){
@@ -246,6 +249,7 @@ class Form extends Component{
         var {firstname, lastname, email, password }= this.state
         var errorMessages=[]
         var notifications=[]
+        this.setState({...this.state, isLoading: true})
         if(!email.isValid)  errorMessages.push(ERRORS.EMAIL)
         if(!password.isValid) errorMessages.push(ERRORS.PASSWORD)
         if(this.state.isLogin)
@@ -256,7 +260,7 @@ class Form extends Component{
                 //Success: Navigate to home page
                 //TODO: Assuming success:
                 let loggedinuser = {id:'245678ghjk',firstname:'Anuja Reddy', lastname:'Parupally', email:'subp875@gmail.com', role: 1 }
-                this.setState({...this.state, user: loggedinuser})
+                this.setState({...this.state, user: loggedinuser, isLoading: false})
                 let {setUser} = this.context
                 let token = ''
                 setUser(loggedinuser, token)
@@ -264,7 +268,7 @@ class Form extends Component{
                 //Failure: Display 'Authentication failed!' notification
             }
             else{
-                this.setState({...this.state,errorMessages})
+                this.setState({...this.state,errorMessages, isLoading: false})
             }
         }
         else{
@@ -292,28 +296,27 @@ class Form extends Component{
                     if (res.status === 200) {
                         //Success:
                         notifications.push(NOTIFICATIONS.SIGNUP_SUCCESS);
-                        this.setState({ ...this.state, notifications ,errorMessages:[], isLogin: true });
+                        this.setState({ ...this.state, notifications ,errorMessages:[], isLogin: true, isLoading: false });
                     } else if (res.status === 409) {
                         //Failure: User already exists
                         errorMessages.push(ERRORS.USER_ALREADY_EXISTS);
-                        this.setState({...this.state, errorMessages, notifications:[]})
+                        this.setState({...this.state, errorMessages, notifications:[], isLoading: false})
                     } else {
                         //Failure
                         // errorMessages.push(ERRORS.USER_REGISTRATION_FAILED);
                         errorMessages.push(ERRORS.GENERIC_FAILED);
-                        this.setState({...this.state,errorMessages, notifications:[] });
+                        this.setState({...this.state,errorMessages, notifications:[], isLoading: false });
                     }
                 })
                 .catch((err) => {
                     //Error
                     errorMessages.push(ERRORS.GENERIC_FAILED);
-                    this.setState({...this.state, errorMessages, notifications:[]
-                    });
+                    this.setState({...this.state, errorMessages, notifications:[], isLoading: false });
                     //   }
                 });
             }
             else{
-                this.setState({...this.state, errorMessages, notifications:[]})
+                this.setState({...this.state, errorMessages, notifications:[], isLoading: false})
             }
         }
     }
@@ -335,6 +338,7 @@ class Form extends Component{
         event.preventDefault()
         var {email,password} = this.state
         var errorMessages=[], notifications=[]
+        this.setState({...this.state, isLoading: true})
         if(!password.isValid) errorMessages.push(ERRORS.PASSWORD)
         if(!password.isConfirm) errorMessages.push(ERRORS.CONFIRM_PASSWORD)
         if(errorMessages.length === 0){
@@ -358,23 +362,23 @@ class Form extends Component{
                 }).then(res=>{
                     if(res.status === 200 && res.data){
                         notifications.push(NOTIFICATIONS.PWD_RESET_SUCCESS)
-                        this.setState({...this.state, notifications, isLogin: true, isUserVerified:false, isForgotPwd: false, errorMessages:[]})
+                        this.setState({...this.state, notifications, isLogin: true, isUserVerified:false, isForgotPwd: false, errorMessages:[], isLoading: false})
                     }
                     else{
                         errorMessages.push(ERRORS.GENERIC_FAILED)
-                        this.setState({...this.state,errorMessages, notifications:[]})
+                        this.setState({...this.state,errorMessages, notifications:[], isLoading: false})
                     }
                 }).catch(err=>{
                     if(err.response.status === 404)
                        errorMessages.push(ERRORS.USER_NOT_FOUND)
                     else
                        errorMessages.push(ERRORS.GENERIC_FAILED)
-                    this.setState({...this.state,errorMessages, notifications:[]})
+                    this.setState({...this.state,errorMessages, notifications:[], isLoading: false})
                 })
                 
         }
         else{
-            this.setState({...this.state,errorMessages})
+            this.setState({...this.state,errorMessages, isLoading: false})
         }
 
     }
@@ -405,11 +409,11 @@ class Form extends Component{
 
     render(){
         
-        var {errorMessages, notifications, user, isLogin, isForgotPwd, otp, isUserVerified} = this.state
+        var {isLoading, errorMessages, notifications, user, isLogin, isForgotPwd, otp, isUserVerified} = this.state
         return (
             <div>
                 {user && (<Navigate to="/events" replace={true}/>)}
-                 
+                 <Spinner show={isLoading}/>
                 {errorMessages.length ? this.displayNotification(true) :""}
                 {notifications.length ? this.displayNotification(false) :""}   
                

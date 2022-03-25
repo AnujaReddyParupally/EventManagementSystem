@@ -12,6 +12,7 @@ import { useState  } from 'react';
 import SessionContextProvider, { SessionConsumer } from './components/SessionCookie/SessionCookie';
 import EventDetails from './components/Events/EventDetails';
 import Logout from './components/Logout/Logout';
+import Orders from './components/Orders/Orders';
 
 function App() {
   const [user, setUser] = useState({})
@@ -19,9 +20,6 @@ function App() {
   
   return (
     <SessionContextProvider>
-    {
-      ReactDOM.createPortal( <Spinner show={false}/>,document.getElementById('spinner-root'))
-    }
     {!user && 
       <SessionConsumer>
         {context =>{
@@ -35,6 +33,7 @@ function App() {
         <Routes>
           <Route path='/admin' element={<Admin/>}/> 
           <Route path='/login' element={<Form/>}/> 
+          <Route path='/orders' element={<Orders/>}/> 
           <Route path='/events/details'  element={<EventDetails/>}/>
           <Route path='/logout' element={<Logout/>}/>
           <Route path='/events' element={<Home/>} />

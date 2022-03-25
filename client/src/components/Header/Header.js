@@ -16,7 +16,7 @@ const Header = () =>{
                             <div style={{display:"flex"}}>
                                 <div className='navbar-brand'><Link to="/events">Event Management System</Link></div>
                                 <div className='navbar-menu'><Link to='/events'>All events</Link></div>
-                                {userctx ? <div className='navbar-menu'><Link to='/events'>My Orders</Link></div> : ''}
+                                {userctx ? <div className='navbar-menu'><Link to='/orders'>My orders</Link></div> : ''}
                                 {userctx && userctx.role ? <div className='navbar-menu'><Link to='/admin'>Admin</Link></div> : ''}
                             </div>
                             {
