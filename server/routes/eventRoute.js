@@ -3,6 +3,10 @@ const { check } = require("express-validator");
 
 const  eventctrl = require("../controllers/admin");
 
+
+router.get('/', eventctrl.fetchEvents);
+router.get('/:id', eventctrl.fetchEvent);
+
 router.post(
     '/addevent',
     [
