@@ -1,14 +1,17 @@
 import React from "react";
+import ReactDOM from 'react-dom'
 
 const Spinner = (props) => {
     return (
         <>
         {props.show 
-            ? <div className='spinner'>
+            ? ReactDOM.createPortal( 
+                <div className='spinner'>
                     <div className="spinner-img">
-                    <img src='assets/images/loader.gif' height={50}></img>
+                        <img src='assets/images/loader.gif' height={50}></img>
                     </div>
-             </div>
+                </div>
+             ,document.getElementById('spinner-root'))
             : ''
         }
         </>

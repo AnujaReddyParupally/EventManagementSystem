@@ -6,20 +6,26 @@ import { SessionConsumer } from '../SessionCookie/SessionCookie'
 const Header = () =>{
     return (
         <nav className='navbar'>
-            <div className='navbar-brand'>Event Management System</div>
+            
             <SessionConsumer>
                 {
                     context => {
                         let userctx= context.getUser()
                         return (
                             <>
+                            <div style={{display:"flex"}}>
+                                <div className='navbar-brand'><Link to="/events">Event Management System</Link></div>
+                                <div className='navbar-menu'><Link to='/events'>All events</Link></div>
+                                {userctx ? <div className='navbar-menu'><Link to='/orders'>My orders</Link></div> : ''}
+                                {userctx && userctx.role ? <div className='navbar-menu'><Link to='/admin'>Admin</Link></div> : ''}
+                            </div>
                             {
                                 userctx
                                 ? <div>
-                                    <div className='navbar-user'><Link to='/logout'><BiPowerOff/></Link></div>
-                                    <div className='navbar-user'>{userctx.firstname }</div>
+                                        <div className='navbar-user'><Link to='/logout'><BiPowerOff/></Link></div>
+                                        <div className='navbar-user'>{userctx.firstname }</div>
                                   </div>
-                                : <div className='navbar-user'><Link to='/login'>Login</Link></div>
+                                : <div className='navbar-user' title='Login'><Link to='/login'>Login</Link></div>
                             }
                             </>
                         )

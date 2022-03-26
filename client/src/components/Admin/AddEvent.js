@@ -1,7 +1,8 @@
-import React, { cloneElement, Component } from "react";
+import React, { Component } from "react";
 import Notification from "../Notifications/Notification";
 import axios from "axios";
 
+import Spinner from "../Spinner/Spinner";
 const CITIES=[
     {id: 1, name: 'Hyderabad'},
     {id: 2, name: 'Bangalore'},
@@ -42,7 +43,9 @@ class AddEvent extends Component{
             gaprice:0,
             maxTickets:0,
             errorMessages:[],
-            notifications:[]
+            notifications:[],
+            cities:[],
+            isLoading: true
         }
         this.tagref= React.createRef()
         this.onSlotAdd = this.onSlotAdd.bind(this)
@@ -115,6 +118,7 @@ class AddEvent extends Component{
     }
     onFormSubmit(event){
         event.preventDefault();
+        this.setState({...this.state, isLoading: true})
         let errorMessages=[], notifications=[]
         let {eventname, description, city, imageURL, slots, vipprice, gaprice, maxTickets} = this.state
 
@@ -234,20 +238,27 @@ class AddEvent extends Component{
             case SLOT_PROPS.GA:
                 currentSlot.gatickets= value
                 break;
+            default: break;
         }
         this.setState({...this.state, slots:[{/*...slots,*/ ...currentSlot}]})
     }
+
+    componentDidMount(){
+        let cities = CITIES.sort((a,b)=> a.name> b.name ? 1 : -1)
+        this.setState((prevState)=> ({...prevState, cities, isLoading: !prevState.isLoading}))   
+    }
+    
     render(){
-        let {eventname, city, description, imageURL, maxTickets, slots, vipprice, gaprice, errorMessages, notifications} = this.state
-        //TODO: display only if user is authenticated
+        let {isLoading, cities, eventname, city, description, imageURL, maxTickets, slots, vipprice, gaprice, errorMessages, notifications} = this.state
+       console.log(slots)
         return(
             <div>
                 {errorMessages.length ? this.displayNotification(true) :""}
                 {notifications.length ? this.displayNotification(false) :""}   
-            
+                <Spinner show={isLoading}/>
                 <div className="addevent">
                     <div>
-                        <img src="assets/images/addevent.jpg"></img>
+                        <img src="assets/images/addevent.jpg" alt=""></img>
                     </div>
                     <form onSubmit={this.onFormSubmit}>
                         <div className="col-75">
@@ -267,7 +278,7 @@ class AddEvent extends Component{
                                     defaultValue={city}
                                     onChange={event => this.setState({...this.state, city: event.target.value})}>
                                 <option value="">Select city</option>
-                                {CITIES.map((city,index)=>{
+                                {cities.map((city,index)=>{
                                     return  <option key={index} value={city.name}>{city.name}</option>
                                 })}
                             </select>
@@ -352,10 +363,14 @@ class AddEvent extends Component{
                                             onBlur={(event)=>this.onSlotChange(event, index,SLOT_PROPS.GA)}required></input></td>
                                     <td>
                                     {index === this.state.slots.length - 1
-                                    ? <span className="add" onClick={this.onSlotAdd}>&#43;</span>
-                                    : <span className="add" onClick={()=>this.onSlotDelete(index)}>&#8722;  </span>
+                                    ? <span className="add" id="add" onClick={this.onSlotAdd}>&#43;</span>
+                                    : ''
                                     }
-                                    </td>
+                                    {this.state.slots.length === 1 
+                                      ? '' 
+                                      : <span className="add" id="minus" onClick={()=>this.onSlotDelete(index)}>&#8722;</span>
+                                    }
+                                </td>
                                     
                                 </tr>
                                 })}
