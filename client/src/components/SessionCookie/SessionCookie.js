@@ -16,11 +16,28 @@ class SessionContextProvider extends Component{
         Cookies.remove("session")
         this.setState({...this.state, user: {}})
     }
-    setUserSessionCookie(session, token){
+    setTokenCookie(token){
+        //TOKEN NEEDS TO BE REFRESHED AFTER EXPIRY - CALL TOKEN API - FUTURE ENHANCEMENT
+        Cookies.remove("auth")
+        Cookies.set("auth",btoa(token),{expires:0.5})
+        this.setState({...this.state, token})
+        console.log(token)
+    }
+
+    getTokenCookie(){
+        const tokenCookie = Cookies.get("auth");
+        if (tokenCookie === undefined) {
+          return null;
+        } else {
+          return tokenCookie
+        }
+    }
+
+    setUserSessionCookie(session){
         //Remove previous session and create new session that expires in 1 day
         Cookies.remove("session")
-        this.setState({...this.state, user: session})
         Cookies.set("session",btoa(JSON.stringify(session)),{expires:1})
+        this.setState({...this.state, user: session})
         console.log(session)
     }
 
@@ -34,8 +51,15 @@ class SessionContextProvider extends Component{
     }
 
     render(){
+        let operations = {
+            logout:this.removeSessionCookie, 
+            setUser: this.setUserSessionCookie, 
+            getUser: this.getUserSessionCookie, 
+            setToken: this.setTokenCookie,
+            getToken: this.getTokenCookie
+        }
         return (
-            <SessionProvider value={{...this.state, logout:this.removeSessionCookie, setUser: this.setUserSessionCookie, getUser: this.getUserSessionCookie}}>
+            <SessionProvider value={{...this.state, ...operations}}>
                 {this.props.children}
             </SessionProvider>
         )

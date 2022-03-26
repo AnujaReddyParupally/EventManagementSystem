@@ -49,8 +49,9 @@ const login = async(req,res,next) => {
     } else {
       const user = await User.findByCredentials(req.body.email, req.body.password);
       if (!user){
-          res.status(400).json({
-            data: `{user}`,
+          res.status(409).json({
+            ...errors[409],
+            data: `Authentication failed!`
           });
         } else {
           res.status(200).json({user});
