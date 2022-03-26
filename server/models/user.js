@@ -53,7 +53,7 @@ userSchema.statics.findByCredentials = async (email, password) => {
       email: email.toUpperCase()
     });
   if (!user || !hash.validPassword(password,user.password)){
-      return 'Unable to login';
+      return null;
   }
   return user;
 }

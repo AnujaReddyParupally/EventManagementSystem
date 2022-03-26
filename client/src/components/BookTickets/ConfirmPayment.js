@@ -161,7 +161,7 @@ const ConfirmPayment = (props) => {
                 <img src="../assets/images/success.png"/>
                 <p>Payment Successful!</p>
                 <p>Tickets will be sent to your registered email ID.</p>
-                <button type="button" className="btn-book-cancel" onClick={props.onCancelPayment}>Continue Booking</button>
+                <button type="button" className="btn-book-ticket" onClick={props.onCancelPayment}>Continue Booking</button>
               </>
               : <>
                     <p>OTP has been shared to your registered email ID.</p>

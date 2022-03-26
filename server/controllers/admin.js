@@ -1,6 +1,7 @@
 const { validationResult } = require("express-validator");
 
 const Event = require("../models/events");
+
 const errors = require("../config/eventError.json");
 
 exports.fetchEvents = async (req, res) => {
@@ -22,6 +23,7 @@ exports.fetchEvent = async (req, res, next) => {
       next(err);
   }
 }
+
 
 const addevent = async (req, res, next) => {
 
@@ -138,4 +140,5 @@ const deleteevent = async (req, res, next) => {
 
 exports.addevent = addevent;
 exports.updateevent = updateevent;
+
 exports.deleteevent = deleteevent;
