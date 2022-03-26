@@ -41,13 +41,13 @@ router.post(
 );
 
 router.put(
-  '/updateevent' ,[
-    check("eventname", "Event name is required").notEmpty()],
-    eventctrl.updateevent);
+  '/editevent' ,[
+    check("eventID", "Event ID is required").notEmpty()],
+    eventctrl.editevent);
 
 router.delete(
   '/deleteevent' ,[
-    check("eventname", "Event name is required").notEmpty()],
+    check("eventID", "Event ID is required").notEmpty()],
     eventctrl.deleteevent);
 
 module.exports = router;

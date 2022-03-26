@@ -48,8 +48,9 @@ const addevent = async (req, res, next) => {
   }
 };
 
-const updateevent = async (req, res, next) => {
-  let UpEvent = new Event({
+const editevent = async (req, res, next) => {
+  let EditEvent = new Event({
+      eventID: req.body.eventID,
       eventname: req.body.eventname, 
       city: req.body.city, 
       description: req.body.description, 
@@ -58,7 +59,7 @@ const updateevent = async (req, res, next) => {
       GAprice: req.body.GAprice, 
       MaxTickets: req.body.MaxTickets,
       ImageURL: req.body.ImageURL,
-      slots: req.body.json_data,
+      slots: req.body.slots,
     });
 
   try {
@@ -70,9 +71,9 @@ const updateevent = async (req, res, next) => {
         data: err.array(),
       };
     }
-    const {id} = req.body.eventname.value;
+    const id = req.body.eventID;
       try {
-          await Event.findByIdAndUpdate(id, UpEvent)
+          await Event.findByIdAndUpdate(id, EditEvent)
           res.json({
               message: "Event was updated successfully"
           })
@@ -98,11 +99,11 @@ const deleteevent = async (req, res, next) => {
         data: err.array(),
       };
     }
-    const {id} = req.body.eventname.value;
+    const id = req.body.eventID;
     try {
         const data = await Event.findByIdAndDelete(id)
         res.json({
-            message: `${data.eventname} - Event was deleted successfully!`
+            message: `${data.eventID} - Event was deleted successfully!`
         })
     } catch (error) {
         res.status(500).json({
@@ -118,5 +119,5 @@ const deleteevent = async (req, res, next) => {
 
 
 exports.addevent = addevent;
-exports.updateevent = updateevent;
+exports.editevent = editevent;
 exports.deleteevent = deleteevent;

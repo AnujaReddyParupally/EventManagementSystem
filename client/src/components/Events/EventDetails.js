@@ -3,9 +3,21 @@ import { BsPencilFill } from "react-icons/bs";
 import { BiAlarm, BiCalendar } from "react-icons/bi";
 import { RiDeleteBin6Fill } from "react-icons/ri";
 import { Navigate } from "react-router-dom";
-
+import axios from "axios";
 import EventBooking from "../BookTickets/EventBooking";
 import {  SessionContext } from "../SessionCookie/SessionCookie";
+
+const ERRORS ={
+    EVENT_CONFLICTS: "Request conflict with the current state of the target resource.",
+    EVENT_DELETION_FAILED: "Event Deletion Failed!",
+    EVENT_EDIT_FAILED: "Event Updation Failed!",
+}   
+
+const NOTIFICATIONS = {
+    EVENT_DELETE_SUCCESS: "Event Successfully deleted!",
+    EVENT_EDIT_SUCCESS: "Event Successfully edited!",
+}
+
 const DUMMY_EVENT=  {   
         id:1, 
         title: 'sunt aut facere',
@@ -27,6 +39,20 @@ class EventDetails extends Component{
     constructor(props){
         super(props)
         this.state={
+            eventID:'',
+            eventname:'',
+            city:'',
+            description:'',
+            tags:[],
+            imageURL:'',
+            slots:[
+                {date: '', starttime:'', endtime:'', viptickets:0, gatickets:0}
+            ],
+            vipprice:0,
+            gaprice:0,
+            maxTickets:0,
+            errorMessages:[],
+            notifications:[]
         };
         this.onEventDelete = this.onEventDelete.bind(this)
         this.onEventEdit = this.onEventEdit.bind(this)
@@ -39,12 +65,83 @@ class EventDetails extends Component{
     }
     onEventDelete(eventid){
         console.log('delete',eventid)
+        var {errorMessages, notifications} = this.state
+
+        //API- Delete event 
+        //Success: Display notification 'Event Successfully Deleted!'
+        //Failure: Oops! Something went wrong. Please try again.
+
+        var data = JSON.stringify({
+            eventID: eventid, 
+        });
+        console.log('Event Deletion Data', data);
+        axios
+            .put('/api/v1/admin/deleteevent', data, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then((res) => {
+                if (res.status === 200) {
+                    //Success:
+                    notifications.push(NOTIFICATIONS.EVENT_DELETE_SUCCESS)
+                    this.setState({notifications})
+                } 
+            })
+            .catch((err) =>{
+                if (err.response.status === 409) {
+                    //Failure
+                    errorMessages.push(NOTIFICATIONS.EVENT_CONFLICTS);
+                    this.setState({errorMessages});
+                } else {
+                    //Failure
+                    errorMessages.push(ERRORS.EVENT_DELETION_FAILED);
+                    this.setState({errorMessages});
+                }
+            })
     }
+
     onEventEdit(eventid){
-        console.log('edit',eventid)
+        console.log('edit',eventid);
+        var {errorMessages, notifications} = this.state
+        //API- edit event 
+        //Success: Display notification 'Event Successfully Edited!'
+        //Failure: Oops! Something went wrong. Please try again.
+
+        //TODO: Assuming success
+        var data = JSON.stringify({
+            eventID: eventid, 
+        });
+        console.log('Event Edit Data', data);
+        axios
+            .put('/api/v1/admin/editevent', data, {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then((res) => {
+                if (res.status === 200) {
+                    //Success:
+                    notifications.push(NOTIFICATIONS.EVENT_EDIT_SUCCESS)
+                    this.setState({notifications})
+                } 
+            })
+            .catch((err) =>{
+                if (err.response.status === 409) {
+                    //Failure
+                    errorMessages.push(NOTIFICATIONS.EVENT_CONFLICTS);
+                    this.setState({errorMessages});
+                } else {
+                    //Failure
+                    errorMessages.push(ERRORS.EVENT_EDIT_FAILED);
+                    this.setState({errorMessages});
+                }
+            })
+            
     }
+
     render(){
-        let {id,title, city, image, description, tags, slots, maxTickets, vipprice, gaprice} = this.state
+        let {id, title, city, image, description, tags, slots, maxTickets, vipprice, gaprice} = this.state
         return (
             <>
             {!this.context.getUser() && (<Navigate to="/login" replace={true}/>)}

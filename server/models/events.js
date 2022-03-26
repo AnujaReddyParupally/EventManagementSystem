@@ -2,10 +2,14 @@ const mongoose = require("mongoose");
 
 const EventSchema = mongoose.Schema(
     {
+    eventID: {
+        type: Number,
+        required: true,
+        unique: true,
+    },
     eventname: {
         type: String,
         required: true,
-        unique: true,
     },
     city:{
         type: Array,
