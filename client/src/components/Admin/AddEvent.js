@@ -1,8 +1,8 @@
 import React, { Component } from "react";
+import axios from 'axios'
 import Notification from "../Notifications/Notification";
-import axios from "axios";
-
 import Spinner from "../Spinner/Spinner";
+
 const CITIES=[
     {id: 1, name: 'Hyderabad'},
     {id: 2, name: 'Bangalore'},
@@ -18,7 +18,8 @@ const ERRORS={
     ,INVALID_VIP_PRICE: "Price for VIP slots is required!"
     ,INVALID_MAX_TICKETS: "Maximum bookings cannot be 0!"
     ,INVALID_IMAGEURL: "Image URL is required!"
-    ,EVENT_ADDITION_FAILED: "Event Addition failed!"
+    ,EVENT_ADDITION_FAILED: "Oops! Something went wrong while creating event."
+
 }
 
 const NOTIFICATIONS={
@@ -129,19 +130,24 @@ class AddEvent extends Component{
 
         //Validate slots
         let filteredslots= slots.filter(slot=>{
-            return !(slot.date 
-                && slot.starttime 
-                && slot.endtime 
-                && (new Date (`${slot.date} ${slot.starttime}`).getTime() < new Date (`${slot.date} ${slot.endtime}`).getTime()) 
-                && slot.gatickets)
-        })
+                return !(slot.date 
+                         && slot.starttime 
+                         && slot.endtime 
+                         && (new Date ('1/1/1999 ' + slot.starttime) < new Date ('1/1/1999 ' + slot.endtime)) 
+                         && (slot.gatickets || slot.viptickets))
+            })
+
         if(filteredslots.length) errorMessages.push(ERRORS.INVALID_SLOT)
-        
+       
         //VIP Price cannot be zero when atleast one Slot has 1 or more  VIP tickets 
+        //GA Price cannot be zero when atleast one Slot has 1 or more  GA tickets 
         let filteredVIPslots = slots.filter(slot=>{
             return slot.viptickets !== 0
         })
-        if((filteredVIPslots.length && vipprice <= 0) || gaprice <= 0) errorMessages.push(ERRORS.INVALID_PRICE)
+        let filteredGAslots = slots.filter(slot=>{
+            return slot.gatickets !== 0
+        })
+        if((filteredVIPslots.length && vipprice <= 0) || (filteredGAslots.length && gaprice <= 0)) errorMessages.push(ERRORS.INVALID_PRICE)
         
         // if(gaprice <= 0) errorMessages.push(ERRORS.INVALID_PRICE)
         if(maxTickets <= 0) errorMessages.push(ERRORS.INVALID_MAX_TICKETS)
@@ -153,19 +159,18 @@ class AddEvent extends Component{
              * FAILURE: API - if event name already exists, return 409 => display 'Event already exists'
              * ERROR: if error, return 500 => display 'Opps! something went wrong.....'
             */
-             console.log("Event Creation");
              var data = JSON.stringify({
-                 eventname: this.state.eventname, 
-                 city: this.state.city, 
-                 description: this.state.description, 
-                 tags: this.state.tags, 
-                 VIPprice: this.state.vipprice, 
-                 GAprice: this.state.gaprice, 
-                 MaxTickets: this.state.maxTickets,
-                 ImageURL: this.state.imageURL,
-                 slots: this.state.slots,
-             });
-             console.log("Event Creation Data",data);
+                eventname: this.state.eventname, 
+                city: this.state.city.name, 
+                description: this.state.description, 
+                tags: this.state.tags, 
+                VIPprice: this.state.vipprice, 
+                GAprice: this.state.gaprice, 
+                MaxTickets: this.state.maxTickets,
+                ImageURL: this.state.imageURL,
+                slots: this.state.slots,
+            });
+            console.log("Event Creation",data);
             axios
               .post("/api/v1/admin/addevent", data, {
                 headers: {
@@ -177,7 +182,7 @@ class AddEvent extends Component{
                   //Success:
                     notifications.push(NOTIFICATIONS.EVENT_SAVE_SUCCESS)
                     let emptyState = this.getEmptyState()
-                    this.setState({...emptyState, notifications})
+       this.setState({...emptyState, notifications, isLoading: false})
                 } 
               })
               .catch((err) =>{
@@ -187,6 +192,9 @@ class AddEvent extends Component{
                     this.setState({
                       ...this.state,
                       errorMessages,
+
+                      isLoading: false
+
                     });
                   } else {
                     //Failure
@@ -194,12 +202,13 @@ class AddEvent extends Component{
                     this.setState({
                       ...this.state,
                       errorMessages,
+
+                      isLoading: false
                     });
                   }
               })
             
         }
-        console.log(this.state)
     }
     getEmptyState(){
         return {

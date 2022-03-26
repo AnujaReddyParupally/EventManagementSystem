@@ -3,10 +3,6 @@ const { check } = require("express-validator");
 
 const  eventctrl = require("../controllers/admin");
 
-
-router.get('/', eventctrl.fetchEvents);
-router.get('/:id', eventctrl.fetchEvent);
-
 router.post(
     '/addevent',
     [
@@ -45,13 +41,13 @@ router.post(
 );
 
 router.put(
-  '/editevent' ,[
-    check("eventID", "Event ID is required").notEmpty()],
-    eventctrl.editevent);
+  '/updateevent' ,[
+    check("eventname", "Event name is required").notEmpty()],
+    eventctrl.updateevent);
 
 router.delete(
   '/deleteevent' ,[
-    check("eventID", "Event ID is required").notEmpty()],
+    check("eventname", "Event name is required").notEmpty()],
     eventctrl.deleteevent);
 
 module.exports = router;

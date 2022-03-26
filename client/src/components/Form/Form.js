@@ -258,19 +258,53 @@ class Form extends Component{
             if(errorMessages.length === 0){
                 //API-validate user info
                 //Success: Navigate to home page
-                //TODO: Assuming success:
-                let loggedinuser = {id:'245678ghjk',firstname:'Anuja Reddy', lastname:'Parupally', email:'subp875@gmail.com', role: 1 }
-                this.setState({...this.state, user: loggedinuser, isLoading: false})
-                let {setUser} = this.context
-                let token = ''
-                setUser(loggedinuser, token)
-               
+                
+                var login_data = JSON.stringify({
+                    email : email.value,
+                    password : password.value
+                  });
+                  axios.post("/api/v1/auth/login", login_data, {
+                    headers: {
+                      "Content-Type": "application/json",
+                    },
+                  })
+                  .then((res) => {
+                    if (res.status === 200) {
+                      //Success:
+                      console.log(res.data);
+                      this.setState({ ...this.state, errorMessages:[], user: res.data.user, isLoading: false});
+                      let {setUser} = this.context
+                      setUser(res.data.user)
+                    }
+                  })
+                  .catch((err) => {
+                    //Error
+                    console.log(err.response.status);
+                    if (err.response.status === 409) {
+                      //Failure
+                      errorMessages.push(ERRORS.LOGIN_FAILED);
+                      this.setState({...this.state,errorMessages, isLoading: false});
+                    } else {
+                      errorMessages.push(ERRORS.GENERIC_FAILED);
+                      this.setState({...this.state, errorMessages, isLoading: false});
+                    }
+                  });
+                } 
+                else {
+                    this.setState({ ...this.state, errorMessages, isLoading: false});
+                }
+
+
+                //-----------------------------
+                // let loggedinuser = {id:'245678ghjk',firstname:'Anuja Reddy', lastname:'Parupally', email:'subp875@gmail.com', role: 1 }
+                // this.setState({...this.state, user: loggedinuser, isLoading: false})
+                // let {setUser} = this.context
+                // setUser(loggedinuser)
+                //-----------------------------
                 //Failure: Display 'Authentication failed!' notification
             }
-            else{
-                this.setState({...this.state,errorMessages, isLoading: false})
-            }
-        }
+            
+        
         else{
             //REGISTER
             if(!password.isConfirm) errorMessages.push(ERRORS.CONFIRM_PASSWORD)
@@ -403,7 +437,7 @@ class Form extends Component{
         //If the user already logged in (user name or id  is available) - redirect to home
         //Stay in login page if the user is not authenticated (user name is not available)
         let user = this.context.getUser()
-        if(user && user.id)
+        if(user && user._id)
         this.setState({...this.state, user})
     }
 
@@ -412,50 +446,53 @@ class Form extends Component{
         var {isLoading, errorMessages, notifications, user, isLogin, isForgotPwd, otp, isUserVerified} = this.state
         return (
             <div>
-                {user && (<Navigate to="/events" replace={true}/>)}
-                 <Spinner show={isLoading}/>
-                {errorMessages.length ? this.displayNotification(true) :""}
-                {notifications.length ? this.displayNotification(false) :""}   
-               
-                <div className="form">
-                   <div className='form-header'>
-                   {isForgotPwd 
-                    ?  <label className='tab-active acc-recovery'>ACCOUNT RECOVERY</label>
-                    : ( 
-                        <>
-                            <label className={isLogin ? 'tab-active':''} 
-                                onClick={()=>this.onTabClick(true)}>LOGIN</label>
-                            <label className={!isLogin ? 'tab-active':''}
-                                onClick={()=>this.onTabClick(false)} >REGISTER</label>
-                        </>
-                    )}
-                    </div>
-                    <div className='form-body'> 
+                <Spinner show={isLoading}/>
+                {user ? (<Navigate to="/events" replace={true}/>) :
+                 <>
+                    {errorMessages.length ? this.displayNotification(true) :""}
+                    {notifications.length ? this.displayNotification(false) :""}   
+                
+                    <div className="form">
+                    <div className='form-header'>
                     {isForgotPwd 
-                     ? <ForgotPwd onForgotPwdSubmit={this.onForgotPwdSubmit}
-                                  onEmailChange={this.onEmailChange} 
-                                  onOTPChange={this.onOTPChange}
-                                  onPwdChange={this.onPwdChange}
-                                  onConfirmPwd={this.onConfirmPwd}
-                                  onSendOTPSubmit={this.onSendOTPSubmit}
-                                  onVerifyOTPSubmit={this.onVerifyOTPSubmit}
-                                  displayOtp = {otp.display}
-                                  isUserVerified = {isUserVerified}/> 
-                     : (isLogin
-                            ?<Login onEmailChange={this.onEmailChange}
-                                    onPwdChange={this.onPwdChange}
-                                    onFormSubmit = {this.onFormSubmit}
-                                    onForgotPwdClick={this.onForgotPwdClick}/>
-                            :<SignUp onEmailChange={this.onEmailChange}
-                                     onPwdChange={this.onPwdChange}
-                                     onFNChange={this.onFNChange}
-                                     onLNChange={this.onLNChange}
-                                     onConfirmPwd={this.onConfirmPwd}
-                                     onFormSubmit = {this.onFormSubmit}/>)
-                     }
+                        ?  <label className='tab-active acc-recovery'>ACCOUNT RECOVERY</label>
+                        : ( 
+                            <>
+                                <label className={isLogin ? 'tab-active':''} 
+                                    onClick={()=>this.onTabClick(true)}>LOGIN</label>
+                                <label className={!isLogin ? 'tab-active':''}
+                                    onClick={()=>this.onTabClick(false)} >REGISTER</label>
+                            </>
+                        )}
+                        </div>
+                        <div className='form-body'> 
+                            {isForgotPwd 
+                            ? <ForgotPwd onForgotPwdSubmit={this.onForgotPwdSubmit}
+                                        onEmailChange={this.onEmailChange} 
+                                        onOTPChange={this.onOTPChange}
+                                        onPwdChange={this.onPwdChange}
+                                        onConfirmPwd={this.onConfirmPwd}
+                                        onSendOTPSubmit={this.onSendOTPSubmit}
+                                        onVerifyOTPSubmit={this.onVerifyOTPSubmit}
+                                        displayOtp = {otp.display}
+                                        isUserVerified = {isUserVerified}/> 
+                            : (isLogin
+                                    ?<Login onEmailChange={this.onEmailChange}
+                                            onPwdChange={this.onPwdChange}
+                                            onFormSubmit = {this.onFormSubmit}
+                                            onForgotPwdClick={this.onForgotPwdClick}/>
+                                    :<SignUp onEmailChange={this.onEmailChange}
+                                            onPwdChange={this.onPwdChange}
+                                            onFNChange={this.onFNChange}
+                                            onLNChange={this.onLNChange}
+                                            onConfirmPwd={this.onConfirmPwd}
+                                            onFormSubmit = {this.onFormSubmit}/>)
+                            }
+                        </div>
                     </div>
+                </>
+                }
             </div>
-        </div>
         )
     }
 }

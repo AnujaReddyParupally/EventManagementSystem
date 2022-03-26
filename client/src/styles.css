@@ -559,6 +559,15 @@ textarea {
   /* float: right; */
   width: 100%;
 }
+.btn-cancel-ticket {
+  background-color: rgb(165, 46, 16);
+  color: white;
+  padding: 8px 20px;
+  margin: 8px 0;
+  border: none;
+  /* float: right; */
+  width: 100%;
+}
 .payment-summary td {
   padding: 4px 10px;
 }
@@ -608,16 +617,19 @@ textarea {
   color: white;
 }
 
-.orders-history {
+.orders-history,
+.upcoming-events {
   margin: 8px;
 }
 
-.orders-history table {
+.orders-history table,
+.upcoming-events table {
   padding: 16px;
   box-shadow: 0px 0px 10px 2px rgb(0 0 0 / 20%);
 }
 
-.orders-history table thead tr th {
+.orders-history table thead tr th,
+.upcoming-events table thead tr th {
   font-size: 12px;
   padding-bottom: 8px;
   width: 200px;
@@ -625,7 +637,8 @@ textarea {
   border-bottom: 1px solid #ccc;
 }
 
-.orders-history table tbody tr td {
+.orders-history table tbody tr td,
+.upcoming-events table tbody tr td {
   width: 200px;
   text-align: left;
   padding: 10px 0;

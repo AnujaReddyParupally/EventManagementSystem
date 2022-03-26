@@ -7,7 +7,7 @@ class UpcomingEvents extends Component{
     }
     render(){
         let {events, onCancelOrder} = this.props
-        return (<div className='orders-history'>
+        return (<div className='upcoming-events'>
         <table>
             <thead>
                 <tr>
@@ -36,7 +36,7 @@ class UpcomingEvents extends Component{
                             <td>{event.viptickets}</td>
                             <td>{event.gaptickets}</td>
                             <td>{event.totalprice}</td>
-                            <td><button type="button" className="btn-book-ticket" onClick={()=>onCancelOrder(event.id)}>Cancel order</button></td>
+                            <td><button type="button" className="btn-cancel-ticket" onClick={()=>onCancelOrder(event.id)}>Cancel order</button></td>
                         </tr>
                     )
                 })}
