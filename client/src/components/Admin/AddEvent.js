@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import axios from 'axios'
 import Notification from "../Notifications/Notification";
 import Spinner from "../Spinner/Spinner";
 const CITIES=[
@@ -16,10 +17,12 @@ const ERRORS={
     ,INVALID_VIP_PRICE: "Price for VIP slots is required!"
     ,INVALID_MAX_TICKETS: "Maximum bookings cannot be 0!"
     ,INVALID_IMAGEURL: "Image URL is required!"
+    ,EVENT_ADDITION_FAILED: "Oops! Something went wrong while creating event."
 }
 
 const NOTIFICATIONS={
     EVENT_SAVE_SUCCESS:"Event saved successfully!"
+    ,EVENT_ALREADY_EXISTS: "Event already exists!"
 }
 const SLOT_PROPS={DATE:'DATE',START:'STARTTIME',END:'ENDTIME',VIP:'VIP',GA:'GA'}
 
@@ -129,15 +132,19 @@ class AddEvent extends Component{
                          && slot.starttime 
                          && slot.endtime 
                          && (new Date ('1/1/1999 ' + slot.starttime) < new Date ('1/1/1999 ' + slot.endtime)) 
-                         && slot.gatickets)
+                         && (slot.gatickets || slot.viptickets))
             })
         if(filteredslots.length) errorMessages.push(ERRORS.INVALID_SLOT)
-        
+       
         //VIP Price cannot be zero when atleast one Slot has 1 or more  VIP tickets 
+        //GA Price cannot be zero when atleast one Slot has 1 or more  GA tickets 
         let filteredVIPslots = slots.filter(slot=>{
             return slot.viptickets !== 0
         })
-        if((filteredVIPslots.length && vipprice <= 0) || gaprice <= 0) errorMessages.push(ERRORS.INVALID_PRICE)
+        let filteredGAslots = slots.filter(slot=>{
+            return slot.gatickets !== 0
+        })
+        if((filteredVIPslots.length && vipprice <= 0) || (filteredGAslots.length && gaprice <= 0)) errorMessages.push(ERRORS.INVALID_PRICE)
         
         // if(gaprice <= 0) errorMessages.push(ERRORS.INVALID_PRICE)
         if(maxTickets <= 0) errorMessages.push(ERRORS.INVALID_MAX_TICKETS)
@@ -150,15 +157,54 @@ class AddEvent extends Component{
              * ERROR: if error, return 500 => display 'Opps! something went wrong.....'
             */
 
-            //Assuming SUCCESS:
-            notifications.push(NOTIFICATIONS.EVENT_SAVE_SUCCESS)
-            let emptyState = this.getEmptyState()
-            this.setState({...emptyState, notifications, isLoading: false})
+             var data = JSON.stringify({
+                eventname: this.state.eventname, 
+                city: this.state.city.name, 
+                description: this.state.description, 
+                tags: this.state.tags, 
+                VIPprice: this.state.vipprice, 
+                GAprice: this.state.gaprice, 
+                MaxTickets: this.state.maxTickets,
+                ImageURL: this.state.imageURL,
+                slots: this.state.slots,
+            });
+            axios
+              .post("/api/v1/admin/addevent", data, {
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              })
+              .then((res) => {
+                if (res.status === 200) {
+                  //Success:
+                    notifications.push(NOTIFICATIONS.EVENT_SAVE_SUCCESS)
+                    let emptyState = this.getEmptyState()
+                    this.setState({...emptyState, notifications, isLoading: false})
+                } 
+              })
+              .catch((err) =>{
+                if (err.response.status === 409) {
+                    //Failure
+                    errorMessages.push(NOTIFICATIONS.EVENT_ALREADY_EXISTS);
+                    this.setState({
+                      ...this.state,
+                      errorMessages,
+                      isLoading: false
+                    });
+                  } else {
+                    //Failure
+                    errorMessages.push(ERRORS.EVENT_ADDITION_FAILED);
+                    this.setState({
+                      ...this.state,
+                      errorMessages,
+                      isLoading: false
+                    });
+                  }
+              })
         }
         else{
-            this.setState({...this.state, errorMessages})
+            this.setState({...this.state, errorMessages, isLoading: false})
         }
-        console.log(this.state)
     }
     getEmptyState(){
         return {
@@ -199,7 +245,6 @@ class AddEvent extends Component{
                 break;
             default: break;
         }
-
     }
     componentDidMount(){
         let cities = CITIES.sort((a,b)=> a.name> b.name ? 1 : -1)

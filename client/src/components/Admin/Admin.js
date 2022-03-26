@@ -5,15 +5,21 @@ import {  SessionContext } from "../SessionCookie/SessionCookie";
 class Admin extends Component{
     static contextType = SessionContext
     render(){
+        let user = this.context.getUser()
         return(
         <>
-            {!this.context.getUser() && (<Navigate to="/login" replace={true}/>)}
-            <div className="admin">
-                <h3>Add Event</h3>
-                <div className="admin-body">
-                 <AddEvent/>
-                </div>
-            </div>
+            {!user 
+             ? (<Navigate to="/login" replace={true}/>)
+             : !user.role 
+               ? (<Navigate to="/events" replace={true}/>)
+               : <div className="admin">
+                    <h3>Add Event</h3>
+                    <div className="admin-body">
+                        <AddEvent/>
+                    </div>
+                 </div>
+            }
+            
         </>
         )
     }

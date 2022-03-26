@@ -12,6 +12,7 @@ const {
   } = require("./middleware/http-error-handlers");
 const authRoute = require("./routes/auth");
 const otproutes =  require('./routes/OTP')
+const eventroutes = require("./routes/event");
 
 const app = express()
 app.use(logRequests);
@@ -23,6 +24,7 @@ app.use(cors())
 
 app.use('/api',otproutes)
 app.use("/api/v1/auth", authRoute);
+app.use('/api/v1/admin', eventroutes);
 
 app.get('/', function (req, res) {
     console.log('route / is accessed.');
