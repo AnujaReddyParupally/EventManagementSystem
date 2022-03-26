@@ -25,9 +25,9 @@ app.use(bodyParser.urlencoded({extended:true}))
 app.use(cors())
 
 
-app.use('/api',otproutes)
-app.use("/api/v1/auth", authRoute);
-app.use('/api/v1/admin', eventroutes);
+app.use('/api', otproutes)
+app.use('/api/v1/auth', authRoute);
+app.use('/api/v1/events', eventroutes);
 
 app.use('/api/v1/order',orderRoutes);
 

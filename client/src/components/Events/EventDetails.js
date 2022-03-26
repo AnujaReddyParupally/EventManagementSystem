@@ -64,19 +64,15 @@ class EventDetails extends Component{
         this.setState({...DUMMY_EVENT})
     }
     onEventDelete(eventid){
-        console.log('delete',eventid)
         var {errorMessages, notifications} = this.state
 
         //API- Delete event 
         //Success: Display notification 'Event Successfully Deleted!'
         //Failure: Oops! Something went wrong. Please try again.
 
-        var data = JSON.stringify({
-            eventID: eventid, 
-        });
-        console.log('Event Deletion Data', data);
+        console.log('Event Deletion Data', eventid);
         axios
-            .put('/api/v1/admin/deleteevent', data, {
+            .delete('/api/v1/events/admin/delete' + eventid, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -102,7 +98,6 @@ class EventDetails extends Component{
     }
 
     onEventEdit(eventid){
-        console.log('edit',eventid);
         var {errorMessages, notifications} = this.state
         //API- edit event 
         //Success: Display notification 'Event Successfully Edited!'
@@ -110,11 +105,19 @@ class EventDetails extends Component{
 
         //TODO: Assuming success
         var data = JSON.stringify({
-            eventID: eventid, 
+            eventname: this.state.eventname, 
+            city: this.state.city.name, 
+            description: this.state.description, 
+            tags: this.state.tags, 
+            VIPprice: this.state.vipprice, 
+            GAprice: this.state.gaprice, 
+            MaxTickets: this.state.maxTickets,
+            ImageURL: this.state.imageURL,
+            slots: this.state.slots,
         });
         console.log('Event Edit Data', data);
         axios
-            .put('/api/v1/admin/editevent', data, {
+            .put('/api/v1/events/admin/edit/' + eventid, data, {
                 headers: {
                     'Content-Type': 'application/json',
                 },

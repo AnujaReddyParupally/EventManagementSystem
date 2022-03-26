@@ -386,10 +386,10 @@ class Form extends Component{
                 //TODO: call API and update password
                 //Assuming Success - switch to login tab
                 var data = JSON.stringify({
-                    "email": email.value,
-                    "password": password.value
+                    'email': email.value,
+                    'password': password.value
                   });
-                axios.post('/api/v1/auth/updatecreds',data, {
+                axios.post('/api/v1/auth/updatecreds', data, {
                     headers: {
                      'Content-Type': 'application/json'
                     }

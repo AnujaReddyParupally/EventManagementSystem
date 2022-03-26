@@ -1,8 +1,8 @@
-const { validationResult } = require("express-validator");
-const hash = require("../utils/hash");
+const { validationResult } = require('express-validator');
+const hash = require('../utils/hash');
 
-const User = require("../models/user");
-const errors = require("../config/errors.json");
+const User = require('../models/user');
+const errors = require('../config/errors.json');
 
 const signup = async (req, res, next) => {
 

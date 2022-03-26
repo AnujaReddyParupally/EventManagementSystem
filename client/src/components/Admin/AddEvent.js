@@ -170,11 +170,11 @@ class AddEvent extends Component{
                 ImageURL: this.state.imageURL,
                 slots: this.state.slots,
             });
-            console.log("Event Creation",data);
+            console.log('Event Creation', data);
             axios
-              .post("/api/v1/admin/addevent", data, {
+              .post('/api/v1/events/admin/add', data, {
                 headers: {
-                  "Content-Type": "application/json",
+                  'Content-Type': 'application/json',
                 },
               })
               .then((res) => {
@@ -182,7 +182,7 @@ class AddEvent extends Component{
                   //Success:
                     notifications.push(NOTIFICATIONS.EVENT_SAVE_SUCCESS)
                     let emptyState = this.getEmptyState()
-       this.setState({...emptyState, notifications, isLoading: false})
+                    this.setState({...emptyState, notifications, isLoading: false})
                 } 
               })
               .catch((err) =>{
