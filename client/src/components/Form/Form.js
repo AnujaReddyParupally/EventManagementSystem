@@ -311,9 +311,7 @@ class Form extends Component {
         .then((res) => {
           if (res.status === 200) {
             //Success:
-            console.log(res.data);
             this.setState({ ...this.state, errorMessages:[], user: res.data.user});
-            console.log(this.state);
           }
         })
         .catch((err) => {

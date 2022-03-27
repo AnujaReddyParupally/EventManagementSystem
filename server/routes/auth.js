@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const { check } = require("express-validator");
-
+const auth = require('../middleware/auth')
 const userCtrl = require("../controllers/user");
 
 router.post("/signup",
@@ -54,6 +54,11 @@ router.post('/updatecreds'
                       .isLength({max: 12})
               ]
             , userCtrl.updatePassword)
+
+
+router.get('/user/info', auth, async(req,res) =>{
+  res.send(req.user)
+})
 
 
 module.exports = router;

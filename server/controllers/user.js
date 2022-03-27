@@ -1,6 +1,5 @@
 const { validationResult } = require("express-validator");
 const hash = require("../utils/hash");
-
 const User = require("../models/user");
 const errors = require("../config/errors.json");
 
@@ -32,6 +31,16 @@ const signup = async (req, res, next) => {
         password: req.body.password,
       });
       user = await user.save();
+      const maxAge = 3*60*60;
+      const token = await user.generateAuthToken();
+      res.cookie("jwt",token, {
+        httpOnly : true,
+        maxAge : maxAge*1000,
+      });
+      res.cookie("user",user,{
+        httpOnly: true,
+        maxAge : maxAge * 1000,
+      })
       res.status(200).json({ user });
     }
   } catch (err) {
@@ -54,7 +63,17 @@ const login = async(req,res,next) => {
             data: `User email or password invalid`
           });
         } else {
-          res.status(200).json({user});
+          const maxAge = 3*60*60;
+          const token = await user.generateAuthToken();
+          res.cookie("jwt",token,{
+            httpOnly: true,
+            maxAge : maxAge * 1000,
+          })
+          res.cookie("user",user,{
+            httpOnly: true,
+            maxAge : maxAge * 1000,
+          })
+          res.status(200).json({user, token: token});
         }
     }
     

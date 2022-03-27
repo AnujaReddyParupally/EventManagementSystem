@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 const hash = require("../utils/hash");
+const jwt = require('jsonwebtoken');
+const jwtsecret = '8531b17998123b1e068999df6c385ed95ec45a88157fdf4a582249c8bd254023c158c9';
 
 const userSchema = new mongoose.Schema(
   {
@@ -26,10 +28,18 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       minlength: 6,
-      maxlength: 12,
-    }
+      maxlength: 100,
+    },
+    tokens : [{
+      token:{
+        type:String,
+        required: true
+      }
+    }]
   },
-  { timestamps: true }
+  { 
+    timestamps: true 
+  } 
 );
 
 userSchema.methods.toJSON = function () {
@@ -56,6 +66,19 @@ userSchema.statics.findByCredentials = async (email, password) => {
       return null;
   }
   return user;
+}
+
+userSchema.methods.generateAuthToken = async function(){
+  const user = this;
+  const maxAge = 3*60*60;
+  const token = jwt.sign({
+    _id: user._id.toString(), email: user.email, role: user.role}, 
+    jwtsecret,{
+    expiresIn: maxAge,
+    });
+  user.tokens = user.tokens.concat({ token })
+  await user.save()
+  return token;
 }
 
 var User = mongoose.model('User', userSchema);

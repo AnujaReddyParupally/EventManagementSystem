@@ -11,13 +11,14 @@ const Header = () =>{
                 {
                     context => {
                         let userctx= context.getUser()
+                        console.log(userctx);
                         return (
                             <>
                             {
                                 userctx
                                 ? <div>
                                     <div className='navbar-user'><Link to='/logout'><BiPowerOff/></Link></div>
-                                    <div className='navbar-user'>{userctx.firstname }</div>
+                                    <div className='navbar-user'>{userctx.user.fname}</div>
                                   </div>
                                 : <div className='navbar-user'><Link to='/login'>Login</Link></div>
                             }
