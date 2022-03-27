@@ -24,6 +24,11 @@ body {
   font-weight: 600;
   float: left;
 }
+.navbar-brand a {
+  text-decoration: none;
+  color: white;
+  cursor: pointer;
+}
 .navbar-user {
   font: 16px;
   float: right;

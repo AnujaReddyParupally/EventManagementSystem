@@ -11,7 +11,6 @@ const {
 } = require("./middleware/http-error-handlers");
 const otproutes = require("./routes/OTP");
 const authRoute = require("./routes/auth");
-const otproutes = require("./routes/OTP");
 const eventroutes = require("./routes/eventRoute");
 const userRoute = require("./routes/user");
 

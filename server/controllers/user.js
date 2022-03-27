@@ -126,14 +126,17 @@ exports.updateUser = async (req, res, next) => {
         data: err.array(),
       };
     }
-    const user = await User.findOneAndUpdate(
+    const ChangeUser = await User.findOneAndUpdate(
       { email: req.body.email.toUpperCase() },
       { fname: req.body.fname, lname: req.body.lname }
     );
-    if (!user) {
+    if (!ChangeUser) {
       res.status(404).json({ ...errors[404] });
     } else {
-      res.status(200).send(true);
+      const user = await User.findOne({
+        email: req.body.email.toUpperCase(),
+      });
+      res.status(200).send(user);
     }
   } catch (err) {
     next(err);
