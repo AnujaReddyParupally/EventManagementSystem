@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const { check } = require("express-validator");
-
 const userCtrl = require("../controllers/user");
+const auth = require('../middleware/auth')
 
 router.post("/signup",
   [
@@ -56,4 +56,7 @@ router.post('/updatecreds'
             , userCtrl.updatePassword)
 
 
+router.get('/user/info', auth, async(req,res) =>{
+  res.send(req.user)
+})
 module.exports = router;

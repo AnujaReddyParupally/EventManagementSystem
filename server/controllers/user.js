@@ -54,7 +54,19 @@ const login = async(req,res,next) => {
             data: `Authentication failed!`
           });
         } else {
-          res.status(200).json({user});
+          const maxAge = 3*60*60;
+          const token = await user.generateAuthToken();
+
+          // res.cookie("jwt",token,{
+          //   httpOnly: true,
+          //   maxAge : maxAge * 1000,
+          // })
+          // res.cookie("user",user,{
+          //   httpOnly: true,
+          //   maxAge : maxAge * 1000,
+          // })
+          console.log(user)
+          res.status(200).json({user, token:{value: token, expiresAt: maxAge}});
         }
     }
     

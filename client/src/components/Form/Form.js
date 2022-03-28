@@ -273,8 +273,9 @@ class Form extends Component{
                       //Success:
                       console.log(res.data);
                       this.setState({ ...this.state, errorMessages:[], user: res.data.user, isLoading: false});
-                      let {setUser} = this.context
+                      let {setUser, setToken} = this.context
                       setUser(res.data.user)
+                      setToken(res.data.token)
                     }
                   })
                   .catch((err) => {

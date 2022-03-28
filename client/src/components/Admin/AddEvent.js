@@ -253,7 +253,6 @@ class AddEvent extends Component{
     }
     render(){
         let {isLoading, cities, eventname, city, description, imageURL, maxTickets, slots, vipprice, gaprice, errorMessages, notifications} = this.state
-       console.log(slots)
         return(
             <div>
                 {errorMessages.length ? this.displayNotification(true) :""}
