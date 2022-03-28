@@ -2,6 +2,7 @@ const router = require("express").Router();
 const { check } = require("express-validator");
 const auth = require('../middleware/auth')
 const userCtrl = require("../controllers/user");
+const auth = require('../middleware/auth')
 
 router.post("/signup",
   [
@@ -59,6 +60,9 @@ router.post('/updatecreds'
 router.get('/user/info', auth, async(req,res) =>{
   res.send(req.user)
 })
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> origin/ARP
 module.exports = router;

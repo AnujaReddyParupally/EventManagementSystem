@@ -290,6 +290,7 @@ class Form extends Component {
     var { firstname, lastname, email, password } = this.state;
     var errorMessages = [];
     var notifications = [];
+    this.setState({...this.state, isLoading: true})
     if (!email.isValid) errorMessages.push(ERRORS.EMAIL);
     if (!password.isValid) errorMessages.push(ERRORS.PASSWORD);
     if (this.state.isLogin) {
@@ -311,7 +312,11 @@ class Form extends Component {
         .then((res) => {
           if (res.status === 200) {
             //Success:
-            this.setState({ ...this.state, errorMessages:[], user: res.data.user});
+            console.log(res.data);
+                      this.setState({ ...this.state, errorMessages:[], user: res.data.user, isLoading: false});
+                      let {setUser, setToken} = this.context
+                      setUser(res.data.user)
+                      setToken(res.data.token)
           }
         })
         .catch((err) => {
@@ -320,17 +325,14 @@ class Form extends Component {
           if (err.response.status === 409) {
             //Failure
             errorMessages.push(ERRORS.USER_LOGIN_FAILED);
-            this.setState({...this.state,errorMessages});
+            this.setState({...this.state,errorMessages, isLoading: false});
           } else {
             errorMessages.push(ERRORS.GENERIC_FAILED);
-            this.setState({
-              ...this.state,
-              errorMessages,
-            });
+            this.setState({...this.state, errorMessages, isLoading: false});
           }
         });
         } else {
-          this.setState({ ...this.state, errorMessages });
+          this.setState({ ...this.state, errorMessages, isLoading: false});
         }
  
     } else {

@@ -83,6 +83,7 @@ class Home extends Component{
         //get api data and assign it to events in state
         let cities= CITIES.sort((a,b)=>a.name > b.name ? 1 : -1)
         this.setState({...this.state, events: DUMMY_EVENTS, cities})
+        console.log('all events')
     }
     
     onSearchChange(event){
