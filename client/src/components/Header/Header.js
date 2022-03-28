@@ -10,7 +10,7 @@ const Header = () =>{
                 {
                     context => {
                         let userctx= context.getUser()
-                        console.log(userctx)
+                        console.log(userctx);
                         return (
                             <>
                             <div style={{display:"flex"}}>
@@ -22,8 +22,8 @@ const Header = () =>{
                             {
                                 userctx
                                 ? <div>
-                                        <div className='navbar-user'><Link to='/logout'><BiPowerOff/></Link></div>
-                                        <div className='navbar-user'>{userctx.fname} {userctx.lname}</div>
+                                    <div className='navbar-user'><Link to='/logout'><BiPowerOff/></Link></div>
+                                    <div className='navbar-user'>{userctx.user.fname}</div>
                                   </div>
                                 : <div className='navbar-user' title='Login'><Link to='/login'>Login</Link></div>
                             }

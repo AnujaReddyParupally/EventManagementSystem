@@ -31,11 +31,6 @@ app.use('/api/v1/events', eventroutes);
 
 app.use('/api/v1/order',orderRoutes);
 
-app.get('/', function (req, res) {
-    console.log('route / is accessed.');
-    res.send('Hi');
-  });
-
 app.use(notFoundErrorHandler);
 app.use(genericErrorHandler);
 
