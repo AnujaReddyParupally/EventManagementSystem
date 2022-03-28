@@ -11,11 +11,11 @@ const OrderSchema = mongoose.Schema({
             required: true, 
             ref: 'Event'
         }],
-        viptickets : {
+        vipticks : {
             type: Number,
             required: false,
         },
-        gaTickets: {
+        gaticks: {
             type: Number,
             required: false,
         },
