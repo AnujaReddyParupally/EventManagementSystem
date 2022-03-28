@@ -1,6 +1,7 @@
-import React, { cloneElement, Component } from "react";
+import React, { Component } from "react";
+import axios from 'axios'
 import Notification from "../Notifications/Notification";
-import axios from "axios";
+import Spinner from "../Spinner/Spinner";
 
 const CITIES=[
     {id: 1, name: 'Hyderabad'},
@@ -17,7 +18,8 @@ const ERRORS={
     ,INVALID_VIP_PRICE: "Price for VIP slots is required!"
     ,INVALID_MAX_TICKETS: "Maximum bookings cannot be 0!"
     ,INVALID_IMAGEURL: "Image URL is required!"
-    ,EVENT_ADDITION_FAILED: "Event Addition failed!"
+    ,EVENT_ADDITION_FAILED: "Oops! Something went wrong while creating event."
+
 }
 
 const NOTIFICATIONS={
@@ -42,7 +44,9 @@ class AddEvent extends Component{
             gaprice:0,
             maxTickets:0,
             errorMessages:[],
-            notifications:[]
+            notifications:[],
+            cities:[],
+            isLoading: true
         }
         this.tagref= React.createRef()
         this.onSlotAdd = this.onSlotAdd.bind(this)
@@ -115,6 +119,7 @@ class AddEvent extends Component{
     }
     onFormSubmit(event){
         event.preventDefault();
+        this.setState({...this.state, isLoading: true})
         let errorMessages=[], notifications=[]
         let {eventname, description, city, imageURL, slots, vipprice, gaprice, maxTickets} = this.state
 
@@ -125,19 +130,24 @@ class AddEvent extends Component{
 
         //Validate slots
         let filteredslots= slots.filter(slot=>{
-            return !(slot.date 
-                && slot.starttime 
-                && slot.endtime 
-                && (new Date (`${slot.date} ${slot.starttime}`).getTime() < new Date (`${slot.date} ${slot.endtime}`).getTime()) 
-                && slot.gatickets)
-        })
+                return !(slot.date 
+                         && slot.starttime 
+                         && slot.endtime 
+                         && (new Date ('1/1/1999 ' + slot.starttime) < new Date ('1/1/1999 ' + slot.endtime)) 
+                         && (slot.gatickets || slot.viptickets))
+            })
+
         if(filteredslots.length) errorMessages.push(ERRORS.INVALID_SLOT)
-        
+       
         //VIP Price cannot be zero when atleast one Slot has 1 or more  VIP tickets 
+        //GA Price cannot be zero when atleast one Slot has 1 or more  GA tickets 
         let filteredVIPslots = slots.filter(slot=>{
             return slot.viptickets !== 0
         })
-        if((filteredVIPslots.length && vipprice <= 0) || gaprice <= 0) errorMessages.push(ERRORS.INVALID_PRICE)
+        let filteredGAslots = slots.filter(slot=>{
+            return slot.gatickets !== 0
+        })
+        if((filteredVIPslots.length && vipprice <= 0) || (filteredGAslots.length && gaprice <= 0)) errorMessages.push(ERRORS.INVALID_PRICE)
         
         // if(gaprice <= 0) errorMessages.push(ERRORS.INVALID_PRICE)
         if(maxTickets <= 0) errorMessages.push(ERRORS.INVALID_MAX_TICKETS)
@@ -149,19 +159,19 @@ class AddEvent extends Component{
              * FAILURE: API - if event name already exists, return 409 => display 'Event already exists'
              * ERROR: if error, return 500 => display 'Opps! something went wrong.....'
             */
-             console.log("Event Creation");
+
+
              var data = JSON.stringify({
-                 eventname: this.state.eventname, 
-                 city: this.state.city, 
-                 description: this.state.description, 
-                 tags: this.state.tags, 
-                 VIPprice: this.state.vipprice, 
-                 GAprice: this.state.gaprice, 
-                 MaxTickets: this.state.maxTickets,
-                 ImageURL: this.state.imageURL,
-                 slots: this.state.slots,
-             });
-             console.log("Event Creation Data",data);
+                eventname: this.state.eventname, 
+                city: this.state.city.name, 
+                description: this.state.description, 
+                tags: this.state.tags, 
+                VIPprice: this.state.vipprice, 
+                GAprice: this.state.gaprice, 
+                MaxTickets: this.state.maxTickets,
+                ImageURL: this.state.imageURL,
+                slots: this.state.slots,
+            });
             axios
               .post("/api/v1/admin/addevent", data, {
                 headers: {
@@ -173,7 +183,7 @@ class AddEvent extends Component{
                   //Success:
                     notifications.push(NOTIFICATIONS.EVENT_SAVE_SUCCESS)
                     let emptyState = this.getEmptyState()
-                    this.setState({...emptyState, notifications})
+       this.setState({...emptyState, notifications, isLoading: false})
                 } 
               })
               .catch((err) =>{
@@ -183,6 +193,9 @@ class AddEvent extends Component{
                     this.setState({
                       ...this.state,
                       errorMessages,
+
+                      isLoading: false
+
                     });
                   } else {
                     //Failure
@@ -190,12 +203,15 @@ class AddEvent extends Component{
                     this.setState({
                       ...this.state,
                       errorMessages,
+
+                      isLoading: false
                     });
                   }
               })
-            
         }
-        console.log(this.state)
+        else{
+            this.setState({...this.state, errorMessages, isLoading: false})
+        }
     }
     getEmptyState(){
         return {
@@ -234,20 +250,27 @@ class AddEvent extends Component{
             case SLOT_PROPS.GA:
                 currentSlot.gatickets= value
                 break;
+            default: break;
+
         }
         this.setState({...this.state, slots:[{/*...slots,*/ ...currentSlot}]})
     }
+    componentDidMount(){
+        let cities = CITIES.sort((a,b)=> a.name> b.name ? 1 : -1)
+        this.setState((prevState)=> ({...prevState, cities, isLoading: !prevState.isLoading}))
+        
+    }
     render(){
-        let {eventname, city, description, imageURL, maxTickets, slots, vipprice, gaprice, errorMessages, notifications} = this.state
-        //TODO: display only if user is authenticated
+        let {isLoading, cities, eventname, city, description, imageURL, maxTickets, slots, vipprice, gaprice, errorMessages, notifications} = this.state
+       console.log(slots)
         return(
             <div>
                 {errorMessages.length ? this.displayNotification(true) :""}
                 {notifications.length ? this.displayNotification(false) :""}   
-            
+                <Spinner show={isLoading}/>
                 <div className="addevent">
                     <div>
-                        <img src="assets/images/addevent.jpg"></img>
+                        <img src="assets/images/addevent.jpg" alt=""></img>
                     </div>
                     <form onSubmit={this.onFormSubmit}>
                         <div className="col-75">
@@ -267,7 +290,7 @@ class AddEvent extends Component{
                                     defaultValue={city}
                                     onChange={event => this.setState({...this.state, city: event.target.value})}>
                                 <option value="">Select city</option>
-                                {CITIES.map((city,index)=>{
+                                {cities.map((city,index)=>{
                                     return  <option key={index} value={city.name}>{city.name}</option>
                                 })}
                             </select>
@@ -352,10 +375,14 @@ class AddEvent extends Component{
                                             onBlur={(event)=>this.onSlotChange(event, index,SLOT_PROPS.GA)}required></input></td>
                                     <td>
                                     {index === this.state.slots.length - 1
-                                    ? <span className="add" onClick={this.onSlotAdd}>&#43;</span>
-                                    : <span className="add" onClick={()=>this.onSlotDelete(index)}>&#8722;  </span>
+                                    ? <span className="add" id="add" onClick={this.onSlotAdd}>&#43;</span>
+                                    : ''
                                     }
-                                    </td>
+                                    {this.state.slots.length === 1 
+                                      ? '' 
+                                      : <span className="add" id="minus" onClick={()=>this.onSlotDelete(index)}>&#8722;</span>
+                                    }
+                                </td>
                                     
                                 </tr>
                                 })}

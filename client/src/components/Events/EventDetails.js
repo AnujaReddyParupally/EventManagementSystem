@@ -1,8 +1,11 @@
 import React, {Component} from "react";
-import { BsFillCalendarEventFill,BsFillAlarmFill } from "react-icons/bs";
+import { BsPencilFill } from "react-icons/bs";
+import { BiAlarm, BiCalendar } from "react-icons/bi";
+import { RiDeleteBin6Fill } from "react-icons/ri";
 import { Navigate } from "react-router-dom";
+
 import EventBooking from "../BookTickets/EventBooking";
-import { SessionConsumer, SessionContext } from "../SessionCookie/SessionCookie";
+import {  SessionContext } from "../SessionCookie/SessionCookie";
 const DUMMY_EVENT=  {   
         id:1, 
         title: 'sunt aut facere',
@@ -25,6 +28,8 @@ class EventDetails extends Component{
         super(props)
         this.state={
         };
+        this.onEventDelete = this.onEventDelete.bind(this)
+        this.onEventEdit = this.onEventEdit.bind(this)
     }
     
     static contextType = SessionContext
@@ -32,12 +37,17 @@ class EventDetails extends Component{
         //API - get event based on id
         this.setState({...DUMMY_EVENT})
     }
-    
+    onEventDelete(eventid){
+        console.log('delete',eventid)
+    }
+    onEventEdit(eventid){
+        console.log('edit',eventid)
+    }
     render(){
         let {id,title, city, image, description, tags, slots, maxTickets, vipprice, gaprice} = this.state
         return (
             <>
-            {!this.context.getUser() && (<Navigate to="/events" replace={true}/>)}
+            {!this.context.getUser() && (<Navigate to="/login" replace={true}/>)}
             <div className="event-details">
                 <h3>Event details</h3>
                 {id ?
@@ -57,6 +67,12 @@ class EventDetails extends Component{
                                 }
                             </div>
                             <div style={{marginTop: "10px"}}>{description}</div>
+                            {this.context.getUser().role !== 0
+                             ? <div className="admin-event-options">
+                                <span onClick={()=>this.onEventEdit(id)}><BsPencilFill/></span>
+                                <span onClick={()=>this.onEventDelete(id)}><RiDeleteBin6Fill/></span>
+                               </div>
+                             : ''}
                         </div>
                     </div>
                     <div style={{display: "flex",alignItems: "flex-end", flexDirection: "column"}}>
@@ -78,11 +94,11 @@ class EventDetails extends Component{
                                 slots.map((slot,index)=>{
                                     return <div className="slots" key={index}>
                                         <div>
-                                            <h2><BsFillCalendarEventFill/></h2>
+                                            <h2><BiCalendar/></h2>
                                             <span>{new Date(slot.date).toDateString()}</span>
                                         </div>
                                         <div>
-                                            <h2><BsFillAlarmFill/></h2>
+                                            <h2><BiAlarm/></h2>
                                             <span>{slot.starttime} - {slot.endtime}</span>
                                         </div>
                                         <div>

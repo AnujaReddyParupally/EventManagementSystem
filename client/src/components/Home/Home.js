@@ -73,14 +73,16 @@ class Home extends Component{
         this.state={
             selectedCity:'',
             events:[],
-            searchterm:''
+            searchterm:'',
+            cities: []
         }
         this.onSearchChange= this.onSearchChange.bind(this)
     }
 
     componentDidMount(){
         //get api data and assign it to events in state
-        this.setState({...this.state, events: DUMMY_EVENTS})
+        let cities= CITIES.sort((a,b)=>a.name > b.name ? 1 : -1)
+        this.setState({...this.state, events: DUMMY_EVENTS, cities})
     }
     
     onSearchChange(event){
@@ -95,8 +97,8 @@ class Home extends Component{
                 <p>Filter by City</p>
                 <select className='filters-select'>
                     <option value="0">Select city</option>
-                    {CITIES.map((city,index)=>{
-                        return  <option key={index} value={city.id}>{city.name}</option>
+                    {this.state.cities.map((city)=>{
+                        return  <option key={city.id} value={city.id}>{city.name}</option>
                     })}
                 </select>
                 </div>  
