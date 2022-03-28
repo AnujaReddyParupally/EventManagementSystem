@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import axios from 'axios'
 import Notification from "../Notifications/Notification";
 import Spinner from "../Spinner/Spinner";
+
 const CITIES=[
     {id: 1, name: 'Hyderabad'},
     {id: 2, name: 'Bangalore'},
@@ -18,6 +19,7 @@ const ERRORS={
     ,INVALID_MAX_TICKETS: "Maximum bookings cannot be 0!"
     ,INVALID_IMAGEURL: "Image URL is required!"
     ,EVENT_ADDITION_FAILED: "Oops! Something went wrong while creating event."
+
 }
 
 const NOTIFICATIONS={
@@ -134,6 +136,7 @@ class AddEvent extends Component{
                          && (new Date ('1/1/1999 ' + slot.starttime) < new Date ('1/1/1999 ' + slot.endtime)) 
                          && (slot.gatickets || slot.viptickets))
             })
+
         if(filteredslots.length) errorMessages.push(ERRORS.INVALID_SLOT)
        
         //VIP Price cannot be zero when atleast one Slot has 1 or more  VIP tickets 
@@ -157,6 +160,7 @@ class AddEvent extends Component{
              * ERROR: if error, return 500 => display 'Opps! something went wrong.....'
             */
 
+
              var data = JSON.stringify({
                 eventname: this.state.eventname, 
                 city: this.state.city.name, 
@@ -179,7 +183,7 @@ class AddEvent extends Component{
                   //Success:
                     notifications.push(NOTIFICATIONS.EVENT_SAVE_SUCCESS)
                     let emptyState = this.getEmptyState()
-                    this.setState({...emptyState, notifications, isLoading: false})
+       this.setState({...emptyState, notifications, isLoading: false})
                 } 
               })
               .catch((err) =>{
@@ -189,7 +193,9 @@ class AddEvent extends Component{
                     this.setState({
                       ...this.state,
                       errorMessages,
+
                       isLoading: false
+
                     });
                   } else {
                     //Failure
@@ -197,6 +203,7 @@ class AddEvent extends Component{
                     this.setState({
                       ...this.state,
                       errorMessages,
+
                       isLoading: false
                     });
                   }
@@ -244,7 +251,9 @@ class AddEvent extends Component{
                 currentSlot.gatickets= value
                 break;
             default: break;
+
         }
+        this.setState({...this.state, slots:[{/*...slots,*/ ...currentSlot}]})
     }
     componentDidMount(){
         let cities = CITIES.sort((a,b)=> a.name> b.name ? 1 : -1)
