@@ -27,11 +27,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       minlength: 6,
-<<<<<<< HEAD
-      maxlength: 100,
-=======
       maxlength: 12,
->>>>>>> origin/ARP
     },
     tokens : [{
       token:{
