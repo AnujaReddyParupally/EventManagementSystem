@@ -5,7 +5,6 @@ const errors = require("../config/eventErrors.json");
 
 
 const addevent = async (req, res, next) => {
-
   try {
     const err = validationResult(req);
     console.log(err)
@@ -39,7 +38,6 @@ const addevent = async (req, res, next) => {
       console.log("createEvent",createEvent);
       createEvent = await createEvent.save();
       res.status(200).json({ createEvent });
-      
     }
   } catch (err) {
     next(err);
@@ -109,14 +107,27 @@ const deleteevent = async (req, res, next) => {
             message: `Cannot delete event with id ${id}`
         })
     }
-    
   } catch (err) {
     next(err);
     console.log("err------",err);
   }
 };
 
+const fetchEventsOfCity = async (req, res, next) => {
+  try {
+    const events = await Event.find({ city: req.params.city });
+    if (!events) {
+      throw {
+        data: `unable to fetch events details for City ${req.params.city} `,
+      };
+    }
+    res.json(events);
+  } catch (err) {
+    next(err);
+  }
+};
 
 exports.addevent = addevent;
 exports.updateevent = updateevent;
 exports.deleteevent = deleteevent;
+exports.fetchEventsOfCity = fetchEventsOfCity;

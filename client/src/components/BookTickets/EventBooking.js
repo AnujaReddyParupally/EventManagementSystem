@@ -128,7 +128,7 @@ class EventBooking extends Component{
             {notifications.length ? this.displayNotification(false) :""} 
 
             { proceedToPayment 
-              ? <ConfirmPayment onCancelPayment={this.onCancelPayment}/>
+              ? <ConfirmPayment eventData={this.state.event} onCancelPayment={this.onCancelPayment}/>
               : (showbill 
                     ? <PaymentSummary date={date} time={time} 
                                         vip={viptickets} ga={gatickets} 

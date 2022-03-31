@@ -13,24 +13,26 @@ import SessionContextProvider, { SessionConsumer } from './components/SessionCoo
 import EventDetails from './components/Events/EventDetails';
 import Logout from './components/Logout/Logout';
 import Orders from './components/Orders/Orders';
+import User from "./components/UserProfile/User";
 
 function App() {
-  const [user, setUser] = useState({})
+  //const [user, setUser] = useState({})
  
   
   return (
     <SessionContextProvider>
-    {!user && 
+    {/* {!user && 
       <SessionConsumer>
         {context =>{
           setUser(context.getUser())
         }}
       </SessionConsumer>
-    }
+    } */}
         <div className="App">
         <Header />
 
         <Routes>
+          <Route path="/user" element={<User />} />
           <Route path='/admin' element={<Admin/>}/> 
           <Route path='/login' element={<Form/>}/> 
           <Route path='/orders' element={<Orders/>}/> 

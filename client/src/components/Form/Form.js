@@ -280,7 +280,7 @@ class Form extends Component{
                   })
                   .catch((err) => {
                     //Error
-                    console.log(err.response.status);
+                    //console.log(err.response.status);
                     if (err.response.status === 409) {
                       //Failure
                       errorMessages.push(ERRORS.LOGIN_FAILED);

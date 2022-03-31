@@ -53,7 +53,7 @@ router.post('/updatecreds'
                 check("password", "Password should be at least 6 to 12 characters along with an uppercase, a lowercase and a special character" )
                       .isLength({max: 12})
               ]
-            , userCtrl.updatePassword)
+            , userCtrl.forgotPassword)
 
 
 router.get('/user/info', auth, async(req,res) =>{

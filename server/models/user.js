@@ -41,6 +41,7 @@ const userSchema = new mongoose.Schema(
 
 userSchema.methods.toJSON = function () {
   const user = this.toObject();
+  user.email = user.email.toLowerCase()
   delete user.password;
   delete user.__v;
   return user;
@@ -59,7 +60,7 @@ userSchema.statics.findByCredentials = async (email, password) => {
   const user = await User.findOne({
       email: email.toUpperCase()
     });
-  if (!user || !hash.validPassword(password,user.password)){
+  if (!user || !hash.decrypt(user.password,password)){
       return null;
   }
   return user

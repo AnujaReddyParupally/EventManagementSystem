@@ -113,6 +113,8 @@ const ConfirmPayment = (props) => {
                 errorMessages.push(ERRORS.PAYMENT_FAILED)
                 setErrorMessages(errorMessages)
                 setNotifications([])
+                //API - to create an order
+                //props.eventData
                 setIsUserVerified(false)
            })
         }

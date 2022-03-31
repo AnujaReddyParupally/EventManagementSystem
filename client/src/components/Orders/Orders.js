@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import OrdersHistory from "./OrdersHistory";
 import UpcomingEvents from "./UpcomingEvents";
+import { Navigate } from "react-router-dom";
+import {  SessionContext } from "../SessionCookie/SessionCookie";
 
 const ORDERS = [
     {
@@ -47,6 +49,8 @@ class Orders extends Component{
         }
         this.onCancelOrder = this.onCancelOrder.bind(this)
     }
+    static contextType = SessionContext
+
     onTabClick(value){
         this.setState({...this.state, isOrderHistory:value})
     }
@@ -69,25 +73,31 @@ class Orders extends Component{
     }
     render(){
         let {isOrderHistory, ordersHistory, upcomingEvents} = this.state
+        let user = this.context.getUser()
         return (
-            <div className="orders">
-                <h3>My orders</h3>
-                <div className="body">
-                    <div className="form-header">
-                        <label className={isOrderHistory? 'tab-active':''}
-                               onClick={()=>this.onTabClick(true)}>ORDERS HISTORY</label>
-                        <label className={!isOrderHistory? 'tab-active':''}
-                               onClick={()=>this.onTabClick(false)}>UPCOMING / ACTIVE EVENTS</label>
-                    </div>
-                    <div>
-                        {
-                            isOrderHistory 
-                            ? <OrdersHistory orders={ordersHistory}/>
-                            : <UpcomingEvents events={upcomingEvents} onCancelOrder={this.onCancelOrder}/>
-                        }
+            <>
+            {!user 
+             ? (<Navigate to="/login" replace={true}/>)
+             : <div className="orders">
+                    <h3>My orders</h3>
+                    <div className="body">
+                        <div className="form-header">
+                            <label className={isOrderHistory? 'tab-active':''}
+                                    onClick={()=>this.onTabClick(true)}>ORDERS HISTORY</label>
+                            <label className={!isOrderHistory? 'tab-active':''}
+                                    onClick={()=>this.onTabClick(false)}>UPCOMING / ACTIVE EVENTS</label>
+                        </div>
+                        <div>
+                            {
+                                isOrderHistory 
+                                ? <OrdersHistory orders={ordersHistory}/>
+                                : <UpcomingEvents events={upcomingEvents} onCancelOrder={this.onCancelOrder}/>
+                            }
+                        </div>
                     </div>
                 </div>
-            </div>
+            }
+            </>
         )
     }
 }

@@ -1,5 +1,5 @@
 import React from 'react'
-import {BiPowerOff} from 'react-icons/bi'
+import {BiPowerOff, BiUser} from 'react-icons/bi'
 import { Link } from 'react-router-dom'
 import { SessionConsumer } from '../SessionCookie/SessionCookie'
 
@@ -23,6 +23,7 @@ const Header = () =>{
                                 userctx
                                 ? <div>
                                         <div className='navbar-user'><Link to='/logout'><BiPowerOff/></Link></div>
+                                        <div className="navbar-user"><Link to="/user"><BiUser /></Link></div>
                                         <div className='navbar-user'>{userctx.fname} {userctx.lname}</div>
                                   </div>
                                 : <div className='navbar-user' title='Login'><Link to='/login'>Login</Link></div>
