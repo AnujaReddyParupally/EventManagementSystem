@@ -6,7 +6,7 @@ const e = require("express");
 //all orders event name city image url event date amd time
 const fetchOrders = async (req, res, next) => {
     try {
-        Order.find().populate('userID eventID', 'title description city imageURL Date startTime').exec((err, orders) => {
+        Order.find({userID:req.params.id}).populate('userID eventID').exec((err, orders) => {
             res.json({ orders });
         });
 
