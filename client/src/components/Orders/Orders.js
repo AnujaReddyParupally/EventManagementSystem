@@ -1,93 +1,164 @@
+import axios from "axios";
 import React, { Component } from "react";
 import OrdersHistory from "./OrdersHistory";
 import UpcomingEvents from "./UpcomingEvents";
+import { SessionContext } from "../SessionCookie/SessionCookie";
+import Notification from '../Notifications/Notification'
 
-const ORDERS = [
-    {
-        id: 1, 
-        userid: '',
-        eventid:1,
-        eventname: 'sunt aut facere',
-        city: 'Hyderabad', 
-        date: '2022-03-19', 
-        endtime: "18:04", 
-        starttime: "17:03", 
-        viptickets: "1", 
-        gatickets: "18",
-        status:"CONFIRMED",
-        createdDate:'2022-03-16',
-        modifiedDate: '',
-        totalprice : 400
-    },
-    {
-        id: 2, 
-        userid: '',
-        eventid:2,
-        eventname: 'qui est esse',
-        city: 'Bangalore', 
-        date: '2022-03-29', 
-        endtime: "18:04", 
-        starttime: "17:03", 
-        viptickets: "4", 
-        gatickets: "10",
-        status:"CONFIRMED",
-        createdDate:'2022-03-19',
-        modifiedDate: '',
-        totalprice : 500
-    }
-]
-class Orders extends Component{
-    constructor(){
+const ERRORS = {
+    CANCELERROR: "Order is already cancelled. Please refresh the page"
+}
+
+const NOTIFICATIONS = {
+    CANCELLED: "Order cancelled successfully. Please refresh the page"
+}
+
+class Orders extends Component {
+    constructor() {
         super()
-        this.state={
-            isLoading:true,
+        this.state = {
+            isLoading: true,
             isOrderHistory: true,
             ordersHistory: [],
-            upcomingEvents: []
+            upcomingEvents: [],
+            orders: [],
+            notifications: [],
+            errorMessages: []
         }
         this.onCancelOrder = this.onCancelOrder.bind(this)
+        this.onCloseNotification = this.onCloseNotification.bind(this)
     }
-    onTabClick(value){
-        this.setState({...this.state, isOrderHistory:value})
+
+    static contextType = SessionContext
+
+    onTabClick(value) {
+        this.setState({ ...this.state, isOrderHistory: value })
     }
-    componentDidMount(){
-        //TODO: API TO FETCH ALL ORDERS
-        let ordersHistory = ORDERS.filter(order => {
-            return (new Date (order.date + ' ' + order.endtime)) < new Date()
+    splitOrders(orders) {
+        let ordersHistory = orders.filter(order => {
+            return ((new Date(order.date + ' ' + order.endtime)) < new Date() || order.status === "Cancelled")
         })
-        let upcomingEvents = ORDERS.filter(order => {
-            return (new Date (order.date + ' ' + order.endtime)) > new Date()
+        let upcomingEvents = orders.filter(order => {
+            return ((new Date(order.date + ' ' + order.endtime)) > new Date() && order.status === "Confirmed")
         })
-        this.setState({...this.state, isLoading: false, ordersHistory, upcomingEvents})
+        this.setState({ ...this.state, upcomingEvents, ordersHistory })
     }
-    onCancelOrder(orderid){
+    componentDidMount() {
+        //TODO: API TO FETCH ALL ORDER
+        let userid = this.context.getUser()._id;
+        axios.get(`api/v1/order/user/${userid}`).then(res => {
+            console.log(res.data);
+
+            let orders = res.data.orders.map(order => {
+                return {
+                    id: order._id,
+                    userid: order.userID._id,
+                    eventid: order.eventID._id,
+                    eventname: order.eventID[0].eventname,
+                    city: order.eventID[0].city[0],
+                    date: "04-01-2022", //order.eventID[0].slots[0].date,
+                    endtime: order.eventID[0].slots[0].endtime,
+                    starttime: order.eventID[0].slots[0].starttime,
+                    viptickets: order.vipticks,
+                    gatickets: order.gaticks,
+                    status: order.orderStatus,
+                    createddate: order.createdAt,
+                    modifieddate: order.updatedAt,
+                    totalprice: order.price
+                }
+            })
+
+            this.splitOrders(orders)
+            this.setState({ ...this.state, isLoading: false, orders: orders })
+
+        }).catch(err => {
+
+        });
+    }
+    onCancelOrder(orderid) {
         /**TODO - API - SEND ORDER ID 
          *            - UPDATE ORDER STATUS TO CANCELLED
          *            - UPDATE AVAILABLE TICKETS IN EVENTS SCHEMA
         */
-         
+        var { errorMessages, notifications, orders, upcomingEvents } = this.state;
+
+        axios.put(`api/v1/order/${orderid}`).then(res => {
+            console.log(res.data);
+            if (res.status === 200 && res.data) {
+                notifications.push(NOTIFICATIONS.CANCELLED)
+                const filteredorder = orders.find(o => o.id === orderid)
+                filteredorder.status = "Cancelled"
+                this.splitOrders(orders)
+                this.setState({ ...this.state, notifications, errorMessages: [], isLoading: false, orders })
+            }
+
+        }).catch(err => {
+            // console.log(err);
+            errorMessages.push(ERRORS.CANCELERROR);
+            this.setState({ ...this.state, errorMessages, notifications: [], isLoading: false })
+        });
+
     }
-    render(){
-        let {isOrderHistory, ordersHistory, upcomingEvents} = this.state
+
+    onCloseNotification(id, isError) {
+        var { errorMessages, notifications } = this.state
+        if (isError) {
+            errorMessages = errorMessages.filter((err, index) => index !== id)
+            this.setState({ ...this.state, errorMessages })
+        }
+        else {
+            notifications = notifications.filter((notification, index) => index !== id)
+            this.setState({ ...this.state, notifications })
+        }
+    }
+
+    displayNotification(isError) {
+        let { errorMessages, notifications } = this.state
+        var obj = isError ? errorMessages : notifications
         return (
-            <div className="orders">
-                <h3>My orders</h3>
-                <div className="body">
-                    <div className="form-header">
-                        <label className={isOrderHistory? 'tab-active':''}
-                               onClick={()=>this.onTabClick(true)}>ORDERS HISTORY</label>
-                        <label className={!isOrderHistory? 'tab-active':''}
-                               onClick={()=>this.onTabClick(false)}>UPCOMING / ACTIVE EVENTS</label>
-                    </div>
-                    <div>
-                        {
-                            isOrderHistory 
-                            ? <OrdersHistory orders={ordersHistory}/>
-                            : <UpcomingEvents events={upcomingEvents} onCancelOrder={this.onCancelOrder}/>
-                        }
-                    </div>
-                </div>
+            <div className='notifications'>
+                {obj.map((item, index) => {
+                    return <Notification key={index}
+                        isError={isError}
+                        id={index}
+                        message={item}
+                        onClose={this.onCloseNotification} />
+                })}
             </div>
+        )
+    }
+
+    render() {
+        let { isOrderHistory, ordersHistory, upcomingEvents, orders, errorMessages, notifications } = this.state
+        console.log(orders)
+        return (
+            <>{
+                orders.length === 0 ? '' :
+                    <>
+                        {errorMessages.length ? this.displayNotification(true) : ""}
+                        {notifications.length ? this.displayNotification(false) : ""}
+                        <div className="orders" >
+                            <h3>My orders</h3>
+                            <div className="body">
+                                <div className="form-header">
+                                    <label className={isOrderHistory ? 'tab-active' : ''}
+                                        onClick={() => this.onTabClick(true)}>ORDERS HISTORY</label>
+                                    <label className={!isOrderHistory ? 'tab-active' : ''}
+                                        onClick={() => this.onTabClick(false)}>UPCOMING / ACTIVE EVENTS</label>
+                                </div>
+                                <div>
+                                    {
+                                        isOrderHistory
+                                            ? <OrdersHistory orders={ordersHistory} />
+                                            : <UpcomingEvents events={upcomingEvents} onCancelOrder={this.onCancelOrder} />
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </>
+            }
+            </>
+
         )
     }
 }
