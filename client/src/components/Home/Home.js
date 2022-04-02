@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Events from '../Events/Events'
 import Search from './Search'
+import axios from 'axios'
 
 const DUMMY_EVENTS=[
     {   
@@ -76,19 +77,35 @@ class Home extends Component{
             searchterm:'',
             cities: []
         }
+        this.typingTimer = null;
         this.onSearchChange= this.onSearchChange.bind(this)
     }
 
     componentDidMount(){
         //get api data and assign it to events in state
+        clearTimeout(this.typingTimer);
         let cities= CITIES.sort((a,b)=>a.name > b.name ? 1 : -1)
         this.setState({...this.state, events: DUMMY_EVENTS, cities})
         console.log('all events')
     }
     
     onSearchChange(event){
-        var searchTxt = event.target.value
-        this.setState({...this.state, searchterm: searchTxt})
+        var searchTxt = event.target.value;
+        clearTimeout(this.typingTimer);
+        this.typingTimer = setTimeout(() => {
+            axios.get(`api/v1/admin/searchevent/${searchTxt}`).then(res=>{
+                // console.log(res)
+                if(res.status===200){
+                    this.setState({...this.state, searchterm: searchTxt, events : res.data});
+                    console.log(res.data);
+                }
+            })
+            .catch((err)=>{
+                this.setState({...this.state, searchterm: null})
+            })
+       }, 2000);        
+       
+        
     }
     render(){
         return (
@@ -105,7 +122,11 @@ class Home extends Component{
                 </div>  
                  <Search onSearch={this.onSearchChange}/>
             </div>
-            <h3 style={{marginLeft: "20px"}}>All events</h3>
+            {this.typingTimer
+            ?<h3 style={{marginLeft: "20px"}}>Events Found</h3>
+            :<h3 style={{marginLeft: "20px"}}>All Events</h3>
+            }
+            
             {this.state.events.length ? <Events events={this.state.events}/> : ''}
         </div>)
     }
