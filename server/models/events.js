@@ -76,6 +76,16 @@ const EventSchema = mongoose.Schema(
 )
  
 
+EventSchema.statics.findByEventName = async (eventname) => {
+    const event = await Event.findOne({
+        eventname: eventname
+      });
+    if (!event){
+        return null;
+    }
+    return event;
+  }
+
 const Event = mongoose.model('Event', EventSchema)
 
 module.exports = Event

@@ -127,7 +127,23 @@ const fetchEventsOfCity = async (req, res, next) => {
   }
 };
 
+const searchevent = async(req,res,next) => {
+  try{
+    const eventname = req.params.eventname;
+    const event = await Event.findByEventName(eventname);
+    if (!event) {
+      throw{
+        data: 'unable to find event'
+      };
+    }
+    res.json(event);
+  } catch(err){
+    next(err);
+  }
+};
+
 exports.addevent = addevent;
 exports.updateevent = updateevent;
 exports.deleteevent = deleteevent;
+exports.searchevent = searchevent;
 exports.fetchEventsOfCity = fetchEventsOfCity;
