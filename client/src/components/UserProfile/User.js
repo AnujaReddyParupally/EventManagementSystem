@@ -214,6 +214,7 @@ class User extends Component {
           .put("/api/v1/user/passwordUpdate", data1, {
             headers: {
               "Content-Type": "application/json",
+              'Authorization': 'Bearer '+ this.context.getToken()
             },
           })
           .then((res) => {

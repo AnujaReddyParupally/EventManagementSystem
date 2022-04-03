@@ -87,7 +87,11 @@ class Orders extends Component{
     componentDidMount(){
         //TODO: API TO FETCH ALL ORDERS
         let userid = this.context.getUser()._id;
-        axios.get(`api/v1/order/user/${userid}`).then(res => {
+        axios.get(`api/v1/order/user/${userid}`,{
+            headers: {
+                'Authorization': 'Bearer '+ this.context.getToken()
+            }
+        }).then(res => {
             console.log(res.data);
 
             let orders = res.data.orders.map(order => {
@@ -123,7 +127,12 @@ class Orders extends Component{
         */
          var { errorMessages, notifications, orders, upcomingEvents } = this.state;
 
-        axios.put(`api/v1/order/${orderid}`).then(res => {
+        const token = this.context.getToken()
+        axios.put(`api/v1/order/${orderid}`,{}, {
+            headers: {
+                'Authorization': 'Bearer '+ token
+            }
+        }).then(res => {
             console.log(res.data);
             if (res.status === 200 && res.data) {
                 notifications.push(NOTIFICATIONS.CANCELLED)

@@ -9,6 +9,7 @@ class OrdersHistory extends Component{
     }
     render(){
         let {orders} = this.props
+        console.log(orders)
         return (
             <div className='orders-history'>
                 <table>

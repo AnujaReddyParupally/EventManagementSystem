@@ -56,8 +56,10 @@ const createOrder = async (req, res, next) => {
                 gat = event.slots[0].gatickets;
                 availvip = event.slots[0].availVIPTick - req.body.viptickets;
                 availga = event.slots[0].availGATick - req.body.gatickets;
-            
-                if (event.MaxTickets < (req.body.viptickets+req.body.gatickets)){
+
+
+                console.log(event.MaxTickets, req.body.viptickets+ req.body.gatickets)
+                if (event.MaxTickets < (parseInt(req.body.viptickets))+ parseInt(req.body.gatickets)){
                     res.status(500).json({
                         message: `Event with id ${req.body.eventID} has a maximum limit of ${event.MaxTickets} per order. `
                     });
@@ -76,7 +78,7 @@ const createOrder = async (req, res, next) => {
                         vipticks: req.body.viptickets,
                         gaticks: req.body.gatickets,
                         price: req.body.price,
-                        orderStatus: req.body.orderStatus,
+                        orderStatus: 'Confirmed',
                     }).save()
                         .then(event => {
                             // Event.findOneAndUpdate({ _id: req.body.eventID }, { $set: { slots: { starttime: start, endtime: end, viptickets: vipt, gatickets: gat, availVIPTick: availvip, availGATick: availga, } }}).exec();
@@ -90,7 +92,7 @@ const createOrder = async (req, res, next) => {
                                     availGATick: availga,
                                 }
                             }).exec();
-                            res.json({ event });
+                            res.status(200).send(true);
                         });
                 }
             }

@@ -11,6 +11,7 @@ const fetchEvents = async (req, res) => {
 const fetchEvent = async (req, res, next) => {
     try{
         const event = await Event.findOne({ _id: req.params.id });
+        console.log(event)
         if(!event){
             throw{
                data  : `unable to fetch event details for ID ${req.params.id} `,

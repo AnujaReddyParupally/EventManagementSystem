@@ -241,7 +241,7 @@ class EventDetails extends Component{
                             }
                         </div>
                         <div className="booking-form">
-                            <EventBooking slots={slots} maxTickets={MaxTickets} vipprice={VIPprice} gaprice={GAprice}/>
+                            <EventBooking eventID={this.props.params.id} slots={slots} maxTickets={MaxTickets} vipprice={VIPprice} gaprice={GAprice}/>
                         </div>
                     </div>
                 </div>

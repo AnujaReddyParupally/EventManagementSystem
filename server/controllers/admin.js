@@ -24,6 +24,12 @@ const addevent = async (req, res, next) => {
       });
       console.log("inside if checkeventname")
     } else {
+      let slots = req.body.slots
+      slots = slots.map(slot=>{
+         slot.availVIPTick = slot.viptickets
+         slot.availGATick = slot.gatickets
+         return slot
+      })
       let createEvent = new Event({
         eventname: req.body.eventname, 
         city: req.body.city, 
@@ -33,7 +39,7 @@ const addevent = async (req, res, next) => {
         GAprice: req.body.GAprice, 
         MaxTickets: req.body.MaxTickets,
         ImageURL: req.body.ImageURL,
-        slots: req.body.slots,
+        slots: slots,
       });
       console.log("createEvent",createEvent);
       createEvent = await createEvent.save();
@@ -98,6 +104,12 @@ const editevent = async (req, res, next) => {
     }
     const id = req.params.id;
     try {
+      let slots = req.body.slots
+      slots = slots.map(slot=>{
+         slot.availVIPTick = slot.availVIPTick || slot.viptickets
+         slot.availGATick = slot.availGATick || slot.gatickets
+         return slot
+      })
         await Event.findByIdAndUpdate(id, {
           eventname: req.body.eventname, 
           city: req.body.city, 
@@ -107,7 +119,7 @@ const editevent = async (req, res, next) => {
           GAprice: req.body.GAprice, 
           MaxTickets: req.body.MaxTickets,
           ImageURL: req.body.ImageURL,
-          slots: req.body.slots,
+          slots: slots,
         })
         res.json({
             message: 'Event was updated successfully'

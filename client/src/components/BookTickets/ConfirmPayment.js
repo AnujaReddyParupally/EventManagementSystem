@@ -12,7 +12,9 @@ const ConfirmPayment = (props) => {
     const [otp, setOtp] = useState('')
     const [otpExpiry, setOtpExpiry] = useState('')
     const [email, setEmail] = useState('')
+    const [userid, setUserid] = useState('')
     const [isUserVerified, setIsUserVerified] = useState(false)
+    const [isOrderPlaced, setIsOrderPlaced] = useState(false)
     const [errorMessages, setErrorMessages] = useState([])
     const [notifications, setNotifications] = useState([])
     const context = useContext(SessionContext)
@@ -23,6 +25,7 @@ const ConfirmPayment = (props) => {
         //SEND OTP ON PAGE LOAD
         if(user){
             setEmail(user.email)
+            setUserid(user.id)
             let notifications =[], errorMessages=[]
             axios.get(`/api/otp/${user.email}`).then(res=>{
                 console.log(res)
@@ -99,6 +102,7 @@ const ConfirmPayment = (props) => {
                     setErrorMessages([])
                     setNotifications([])
                     setIsUserVerified(true)
+                    placeOrder()
                 }
                 else{
                     //Failure
@@ -113,8 +117,6 @@ const ConfirmPayment = (props) => {
                 errorMessages.push(ERRORS.PAYMENT_FAILED)
                 setErrorMessages(errorMessages)
                 setNotifications([])
-                //API - to create an order
-                //props.eventData
                 setIsUserVerified(false)
            })
         }
@@ -126,6 +128,33 @@ const ConfirmPayment = (props) => {
            setErrorMessages(errorMessages)
            setNotifications([])
         }
+    }
+    const placeOrder = () => {
+        let errorMessages=[]
+         //API to create an order
+         const {viptickets, gatickets, price, eventID} = props
+         var data = JSON.stringify({
+             "viptickets": viptickets,
+             "gatickets": gatickets,
+             "price": price,
+             "userID": userid,
+             "eventID": eventID
+         })
+         axios.post('/api/v1/order',data, {
+             headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer '+context.getToken()
+             }
+          }).then(res=>{
+             if(res.status===200 ){
+                setIsOrderPlaced(true)
+                setErrorMessages([])
+             }
+          }).catch(err=>{
+            setIsOrderPlaced(false)
+            errorMessages.push(ERRORS.GENERIC_FAILED)
+            setErrorMessages(errorMessages)
+          })
     }
     const displayNotification = (isError) => {
         var obj = isError ? errorMessages : notifications
@@ -158,9 +187,9 @@ const ConfirmPayment = (props) => {
         {notifications.length ? displayNotification(false) :""} 
        
         <div className="confirm-payment">
-            {isUserVerified 
+            {isUserVerified  && isOrderPlaced
               ? <>
-                <img src="../assets/images/success.png"/>
+                <img src={window.location.origin+"/assets/images/success.png"}/>
                 <p>Payment Successful!</p>
                 <p>Tickets will be sent to your registered email ID.</p>
                 <button type="button" className="btn-book-ticket" onClick={props.onCancelPayment}>Continue Booking</button>

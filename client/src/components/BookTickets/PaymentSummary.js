@@ -5,6 +5,10 @@ const PaymentSummary = (props) => {
     const getTotalBill = () => {
         return (vip*vipprice) + (ga*gaprice)
     }
+    const proceedToPaymentScreen = () => {
+        const billamount = getTotalBill()
+        props.onProceedToPay(billamount)
+    }
     return (
         <div className='payment-summary'>
             <h6>Payment Summary:</h6>
@@ -39,7 +43,7 @@ const PaymentSummary = (props) => {
             </div>
             </div>
             <div style={{display:"flex"}}>
-                <button type="button" className="btn-book-ticket" onClick={onProceedToPay}>Proceed to pay</button>
+                <button type="button" className="btn-book-ticket" onClick={proceedToPaymentScreen}>Proceed to pay</button>
                 <button type="button" className="btn-book-cancel" onClick={onCancelPayment}>Cancel</button>
             </div>
         </div>
