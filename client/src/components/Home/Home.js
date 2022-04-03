@@ -119,6 +119,7 @@ class Home extends Component{
             }, 2000);   
         }   
         else{
+            clearTimeout(this.typingTimer);
             axios.get('/api/v1/events').then(res=>{
                 this.setState({...this.state, events: res.data, isLoading: false})
             })
@@ -127,6 +128,7 @@ class Home extends Component{
                 this.setState({...this.state, errorMessages, isLoading: false})
             })
         }
+
     }
     render(){
         return (
@@ -144,7 +146,11 @@ class Home extends Component{
                 </div>  
                  <Search onSearch={this.onSearchChange}/>
             </div>
-            <h3 style={{marginLeft: "20px"}}>All events</h3>
+            {/* <h3 style={{marginLeft: "20px"}}>All events</h3> */}
+            {this.typingTimer
+            ?<h3 style={{marginLeft: "20px"}}>Events Found</h3>
+            :<h3 style={{marginLeft: "20px"}}>All Events</h3>
+            }
             <Events events={this.state.events}/> 
         </div>)
     }
