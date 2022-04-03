@@ -75,7 +75,17 @@ const EventSchema = mongoose.Schema(
 { timestamps: true }
 )
  
-
+EventSchema.statics.findByEventName = async (eventname) => {
+    const event = await Event.find({
+        eventname: {$regex: '.*'+eventname+'.*', $options: 'i' }
+      });
+      console.log(event)
+    if (!event){
+        return null;
+    }
+    return event;
+  }
+  
 const Event = mongoose.model('Event', EventSchema)
 
 module.exports = Event

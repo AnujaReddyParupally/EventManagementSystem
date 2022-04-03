@@ -164,7 +164,11 @@ class Form extends Component{
                     Failure: Display 'Invalid email ID' notification
                 */
                 //Assuming success:
-                axios.get(`/api/otp/${email.value}`).then(res=>{
+                axios.get(`/api/otp/${email.value}`, {
+                    headers: {
+                        'Authorization': 'Bearer '+ this.context.getToken()
+                    }
+                }).then(res=>{
                     // console.log(res)
                     if(res.status===200){
                         notifications.push(NOTIFICATIONS.OTP_SENT)

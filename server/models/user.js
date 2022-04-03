@@ -69,10 +69,16 @@ userSchema.statics.findByCredentials = async (email, password) => {
 userSchema.methods.generateAuthToken = async function(){
   const user = this;
   const maxAge = 3*60*60;
-  const token = jwt.sign({
-    _id: user._id.toString(), email: user.email, role: user.role}, 
-    process.env.JWT_SECRET,{
-    expiresIn: maxAge,
+  const token = jwt.sign(
+    {
+     _id: user._id.toString(), 
+     email: user.email, 
+     role: user.role
+    }, 
+    process.env.JWT_SECRET,
+    {
+      algorithm: 'HS512',
+      expiresIn: maxAge,
     });
   //user.tokens = user.tokens.concat({ token })
   await user.updateOne({_id: user._id},{tokens: user.tokens.concat({token})})

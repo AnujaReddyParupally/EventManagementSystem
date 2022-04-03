@@ -2,6 +2,7 @@ const router = require("express").Router();
 const { check } = require("express-validator");
 
 const userCtrl = require("../controllers/user");
+const auth = require("../middleware/auth")
 
 router.get("/:email",  userCtrl.fetchUser);
 
@@ -22,8 +23,32 @@ router.put("/",
   ],
   userCtrl.updateUser
 );
+
+router.put("/", 
+  [
+    check("email", "Email is required").notEmpty(),
+    check("email", "Invalid email").isEmail(),
+    check("password", "Password is required").notEmpty(),
+    check(
+      "password", "Password should be at least 6 to 12 characters along with an uppercase, a lowercase and a special character"
+    ).isStrongPassword({
+      minLength: 6,
+      minLowercase: 1,
+      minUppercase: 1,
+      minSymbols: 1,
+    }),
+    check(
+      "Password",
+      "Password should be at least 6 to 12 characters along with an uppercase, a lowercase and a special character"
+    ).isLength({ max: 12 }),
+  ],
+  userCtrl.forgotPassword
+)
+
+//PASSWORD CAN BE UPDATED ONLY BY AUTHENTICATED USER
 router.put(
   "/passwordUpdate",
+  auth,
   [
     check("email", "Email is required").notEmpty(),
     check("email", "Invalid email").isEmail(),

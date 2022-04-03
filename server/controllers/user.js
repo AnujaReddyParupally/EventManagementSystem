@@ -101,7 +101,6 @@ const forgotPassword = async (req,res,next) => {
   }
 }
 
-
 const fetchUser = async (req, res, next) => {
   try {
     const err = validationResult(req);
@@ -151,7 +150,6 @@ const updateUser = async (req, res, next) => {
     next(err);
   }
 };
-
 
 const updatePassword = async (req, res, next) => {
   try {

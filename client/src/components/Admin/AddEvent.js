@@ -2,6 +2,10 @@ import React, { Component } from "react";
 import axios from 'axios'
 import Notification from "../Notifications/Notification";
 import Spinner from "../Spinner/Spinner";
+import {  SessionContext } from "../SessionCookie/SessionCookie";
+import WithRouter from "../HOC/WithRouter";
+import { Navigate } from "react-router-dom";
+
 const CITIES=[
     {id: 1, name: 'Hyderabad'},
     {id: 2, name: 'Bangalore'},
@@ -23,6 +27,7 @@ const ERRORS={
 const NOTIFICATIONS={
     EVENT_SAVE_SUCCESS:"Event saved successfully!"
     ,EVENT_ALREADY_EXISTS: "Event already exists!"
+    ,EVENT_EDIT_SUCCESS: "Event update successfully!",
 }
 const SLOT_PROPS={DATE:'DATE',START:'STARTTIME',END:'ENDTIME',VIP:'VIP',GA:'GA'}
 
@@ -30,17 +35,19 @@ class AddEvent extends Component{
     constructor(){
         super()
         this.state={
-            eventname:'',
-            city:'',
-            description:'',
-            tags:[],
-            imageURL:'',
-            slots:[
-                {date: '', starttime:'', endtime:'', viptickets:0, gatickets:0}
-            ],
-            vipprice:0,
-            gaprice:0,
-            maxTickets:0,
+           event:{
+                // eventname:'',
+                // city:[],
+                // description:'',
+                // tags:[],
+                // ImageURL:'',
+                // slots:[
+                //     {date: '', starttime:'', endtime:'', viptickets:0, gatickets:0}
+                // ],
+                // VIPprice:0,
+                // GAprice:0,
+                // MaxTickets:0
+            },
             errorMessages:[],
             notifications:[],
             cities:[],
@@ -55,38 +62,36 @@ class AddEvent extends Component{
         this.displayNotification= this.displayNotification.bind(this)
         this.onCloseNotification = this.onCloseNotification.bind(this)
     }
+    static contextType = SessionContext
     onTagAdd(){
-        let {tags} = this.state
+        let {tags} = this.state.event
         let tagvalue= this.tagref.current.value
         if(tagvalue.trim().length>0)
         {
             tags= tags.concat(tagvalue)
-            this.setState({...this.state, tags})
+            this.setState({...this.state, event: {...this.state.event,tags}})
             this.tagref.current.value=""
         }
     }
     onTagDelete(deleteIndex){
-        let {tags} = this.state
+        let {tags} = this.state.event
         tags= tags.filter((tag,index)=>{
             return index !== deleteIndex
         })
-        this.setState({...this.state, tags})
+        this.setState({...this.state, event: {...this.state.event,tags}})
     }
-    onSlotAdd(event){
-        let {slots} = this.state
+    onSlotAdd(){
+        let {slots} = this.state.event
         var newslot =   {date: '', starttime:'', endtime:'', viptickets:0, gatickets:0}
         slots= slots.concat(newslot)
-        this.setState({...this.state, slots})
+        this.setState({...this.state, event: {...this.state.event, slots}})
     }
     onSlotDelete(deleteIndex){
-        let {slots} = this.state
+        let {slots} = this.state.event
         slots= slots.filter((slot,index)=>{
             return index !== deleteIndex
         })
-        this.setState({...this.state, slots})
-    }
-    onTagEnter(event){
-        console.log(event.target.value)
+        this.setState({...this.state, event: {...this.state.event, slots}})
     }
     onCloseNotification(id, isError){
         var {errorMessages, notifications} = this.state
@@ -117,14 +122,15 @@ class AddEvent extends Component{
     }
     onFormSubmit(event){
         event.preventDefault();
+        const {navigate, params} = this.props 
         this.setState({...this.state, isLoading: true})
         let errorMessages=[], notifications=[]
-        let {eventname, description, city, imageURL, slots, vipprice, gaprice, maxTickets} = this.state
+        let {_id, eventname, description, city, ImageURL, tags, slots, VIPprice, GAprice, MaxTickets} = this.state.event
 
         if(eventname.length < 3) errorMessages.push(ERRORS.INVALID_EVNET)
         if(description.length < 5) errorMessages.push(ERRORS.INVALID_DESC)
         if(city.length === 0) errorMessages.push(ERRORS.INVALID_CITY)
-        if(imageURL.length === 0) errorMessages.push(ERRORS.INVALID_IMAGEURL)
+        if(ImageURL.length === 0) errorMessages.push(ERRORS.INVALID_IMAGEURL)
 
         //Validate slots
         let filteredslots= slots.filter(slot=>{
@@ -144,10 +150,10 @@ class AddEvent extends Component{
         let filteredGAslots = slots.filter(slot=>{
             return slot.gatickets !== 0
         })
-        if((filteredVIPslots.length && vipprice <= 0) || (filteredGAslots.length && gaprice <= 0)) errorMessages.push(ERRORS.INVALID_PRICE)
+        if((filteredVIPslots.length && VIPprice <= 0) || (filteredGAslots.length && GAprice <= 0)) errorMessages.push(ERRORS.INVALID_PRICE)
         
         // if(gaprice <= 0) errorMessages.push(ERRORS.INVALID_PRICE)
-        if(maxTickets <= 0) errorMessages.push(ERRORS.INVALID_MAX_TICKETS)
+        if(MaxTickets <= 0) errorMessages.push(ERRORS.INVALID_MAX_TICKETS)
 
         if(errorMessages.length === 0)
         {
@@ -158,74 +164,113 @@ class AddEvent extends Component{
             */
 
              var data = JSON.stringify({
-                eventname: this.state.eventname, 
-                city: this.state.city.name, 
-                description: this.state.description, 
-                tags: this.state.tags, 
-                VIPprice: this.state.vipprice, 
-                GAprice: this.state.gaprice, 
-                MaxTickets: this.state.maxTickets,
-                ImageURL: this.state.imageURL,
-                slots: this.state.slots,
+                eventname: eventname, 
+                city: city[0], 
+                description: description, 
+                tags: tags, 
+                VIPprice: VIPprice, 
+                GAprice: GAprice, 
+                MaxTickets: MaxTickets,
+                ImageURL: ImageURL,
+                slots: slots,
             });
-            axios
-              .post("/api/v1/admin/addevent", data, {
-                headers: {
-                  "Content-Type": "application/json",
-                },
-              })
-              .then((res) => {
-                if (res.status === 200) {
-                  //Success:
-                    notifications.push(NOTIFICATIONS.EVENT_SAVE_SUCCESS)
-                    let emptyState = this.getEmptyState()
-                    this.setState({...emptyState, notifications, isLoading: false})
-                } 
-              })
-              .catch((err) =>{
-                if (err.response.status === 409) {
-                    //Failure
-                    errorMessages.push(NOTIFICATIONS.EVENT_ALREADY_EXISTS);
-                    this.setState({
-                      ...this.state,
-                      errorMessages,
-                      isLoading: false
-                    });
-                  } else {
-                    //Failure
-                    errorMessages.push(ERRORS.EVENT_ADDITION_FAILED);
-                    this.setState({
-                      ...this.state,
-                      errorMessages,
-                      isLoading: false
-                    });
-                  }
-              })
+
+            if(_id)
+            {
+                //EDIT EVENT
+                axios
+                .put('/api/v1/events/admin/edit/' + _id, data, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer '+ this.context.getToken()
+                    },
+                })
+                .then((res) => {
+                    if (res.status === 200) {
+                        //Success:
+                        notifications.push(NOTIFICATIONS.EVENT_EDIT_SUCCESS)
+                        let emptyState = this.getEmptyState()
+                        this.setState({...emptyState, notifications, isLoading: false})
+                        //Navigate to updated event details page
+                        navigate('/events/details/'+params.id)
+                    } 
+                })
+                .catch((err) =>{
+                        //Failure
+                        errorMessages.push(ERRORS.EVENT_EDIT_FAILED);
+                        this.setState({errorMessages});
+                })
+            }
+            else{
+                //CREATE NEW EVENT
+                axios
+                .post("/api/v1/events/admin/add", data, {
+                    headers: {
+                    "Content-Type": "application/json",
+                    'Authorization': 'Bearer '+ this.context.getToken()
+                    },
+                })
+                .then((res) => {
+                    if (res.status === 200) {
+                    //Success:
+                        notifications.push(NOTIFICATIONS.EVENT_SAVE_SUCCESS)
+                        let emptyState = this.getEmptyState()
+                        this.setState({...emptyState, notifications, isLoading: false})
+                        //RESET FORM INPUTS ON SUCCESSFUL EVENT CREATE
+                        document.getElementById("add-event-form").reset();
+                    } 
+                })
+                .catch((err) =>{
+                    console.log(err)
+                    if (err.response.status === 409) {
+                        //Failure
+                        errorMessages.push(NOTIFICATIONS.EVENT_ALREADY_EXISTS);
+                        this.setState({
+                        ...this.state,
+                        errorMessages,
+                        notifications: [],
+                        isLoading: false
+                        });
+                    } else {
+                        //Failure
+                        errorMessages.push(ERRORS.EVENT_ADDITION_FAILED);
+                        this.setState({
+                        ...this.state,
+                        errorMessages,
+                        notifications: [],
+                        isLoading: false
+                        });
+                    }
+                })
+            }
         }
         else{
-            this.setState({...this.state, errorMessages, isLoading: false})
+            this.setState({...this.state, errorMessages, notifications:[], isLoading: false})
         }
     }
     getEmptyState(){
         return {
-            eventname:'',
-            city:'',
-            description:'',
-            imageURL:'',
-            tags:[],
-            slots:[
-                {date: '', starttime:'', endtime:'', viptickets:0, gatickets:0}
-            ],
-            vipprice:0,
-            gaprice:0,
-            maxTickets:0,
+            event: {
+                _id: '',
+                eventname:'',
+                city:'',
+                description:'',
+                ImageURL:'',
+                tags:[],
+                slots:[
+                    {date: '', starttime:'', endtime:'', viptickets:0, gatickets:0}
+                ],
+                VIPprice:0,
+                GAprice:0,
+                MaxTickets:0
+            },
             errorMessages:[],
-            notification:[]
+            notifications:[]
         }
     }
     onSlotChange(event, index, slotProperty){
         let value= event.target.value
-        let {slots} = this.state
+        let {slots} = this.state.event
         let currentSlot= slots[index]
         switch(slotProperty){
             case SLOT_PROPS.DATE:
@@ -247,28 +292,53 @@ class AddEvent extends Component{
         }
     }
     componentDidMount(){
+        let id = this.props.params.id;
+        let errorMessages = [], notifications =[]
         let cities = CITIES.sort((a,b)=> a.name> b.name ? 1 : -1)
-        this.setState((prevState)=> ({...prevState, cities, isLoading: !prevState.isLoading}))
+        if(id)
+        {
+            axios.get(`/api/v1/events/${id}`, {
+                headers: {
+                    'Authorization': 'Bearer '+ this.context.getToken()
+                }
+            })
+            .then(res=>{
+                console.log(res.data)
+                this.setState({...this.state, event: {...res.data}, cities, isLoading: false})     
+            })
+            .catch(err=>{
+                errorMessages.push(ERRORS.GENERIC_FAILED)
+                this.setState({...this.state, errorMessages, notifications:[], isLoading: false})
+            })
+        }
+        else{
+            let emptyState = this.getEmptyState()
+            this.setState((prevState)=> ({...emptyState, cities, isLoading: !prevState.isLoading}))
+        }
+        
         
     }
     render(){
-        let {isLoading, cities, eventname, city, description, imageURL, maxTickets, slots, vipprice, gaprice, errorMessages, notifications} = this.state
+        let {_id, eventname, city, description, ImageURL, MaxTickets, slots, VIPprice, GAprice, tags} = this.state.event
+        city = city && city.length ? city[0] : ''
+        let {errorMessages, notifications, isLoading, cities} = this.state
         return(
             <div>
                 {errorMessages.length ? this.displayNotification(true) :""}
                 {notifications.length ? this.displayNotification(false) :""}   
                 <Spinner show={isLoading}/>
+            
                 <div className="addevent">
                     <div>
-                        <img src="assets/images/addevent.jpg" alt=""></img>
+                        {/* <img src="assets/images/addevent.jpg" alt=""></img> */}
                     </div>
-                    <form onSubmit={this.onFormSubmit}>
+                    <form onSubmit={this.onFormSubmit} id="add-event-form">
                         <div className="col-75">
                             <label htmlFor="eventname"><b>Event name</b></label>
                             <input type="text" 
                                 placeholder="Enter event name" 
                                 name="eventname" 
-                                onBlur={event => this.setState({...this.state, eventname: event.target.value})}
+                                onBlur={event => this.setState({...this.state, event:{...this.state.event,eventname: event.target.value}})}
                                 required
                                 defaultValue={eventname}
                                 minLength={3}/>
@@ -277,11 +347,11 @@ class AddEvent extends Component{
                             <label htmlFor="city"><b>City</b></label>
                             <div>
                             <select required
-                                    defaultValue={city}
-                                    onChange={event => this.setState({...this.state, city: event.target.value})}>
+                                    value={city }
+                                    onChange={event => this.setState({...this.state, event: {...this.state.event, city: [event.target.value]}})}>
                                 <option value="">Select city</option>
-                                {cities.map((city,index)=>{
-                                    return  <option key={index} value={city.name}>{city.name}</option>
+                                {cities.map((c,index)=>{
+                                    return  <option key={index} value={c.name}>{c.name}</option>
                                 })}
                             </select>
                         </div>
@@ -291,7 +361,7 @@ class AddEvent extends Component{
                             <label htmlFor="desc"><b>Description</b></label>
                             <textarea name="desc" rows="4" cols="100" style={{resize:"none"}} 
                                     maxLength={1000} 
-                                    onBlur={event => this.setState({...this.state, description: event.target.value})}
+                                    onBlur={event => this.setState({...this.state, event: { ...this.state.event, description: event.target.value}})}
                                     required
                                     defaultValue={description}
                                     minLength={5}></textarea>
@@ -301,9 +371,9 @@ class AddEvent extends Component{
                             <input type="text" 
                                 placeholder="Enter image URL" 
                                 name="imgUrl" 
-                                onBlur={event => this.setState({...this.state, imageURL: event.target.value})}
+                                onBlur={event => this.setState({...this.state, event: {...this.state.event, ImageURL: event.target.value}})}
                                 required
-                                defaultValue={imageURL}
+                                defaultValue={ImageURL}
                                 minLength={3}/>
                         </div>
                         <div  style={{marginBottom: "10px"}} className="col-75">
@@ -320,7 +390,7 @@ class AddEvent extends Component{
                                         onClick={this.onTagAdd}>Add tag</button>
                             </div>
                             <div className="event-tag">
-                                {this.state.tags.map((tag,index)=>{
+                                {tags && tags.map((tag,index)=>{
                                     return <p key={index}>{tag} 
                                             <span onClick={()=>this.onTagDelete(index)}>&times;</span>
                                         </p>
@@ -340,9 +410,11 @@ class AddEvent extends Component{
                                 </tr>
                             </thead>
                             <tbody>
-                                {slots.map((slot,index)=>{
+                                {slots && slots.map((slot,index)=>{
+                                    let {viptickets, gatickets} = slot
                                     return  <tr key={index}>
-                                    <td><input type="date" name="date" defaultValue={slot.date}
+                                    <td><input type="date" name="date" 
+                                            defaultValue={slot.date}
                                             required
                                             onBlur={(event)=>this.onSlotChange(event, index,SLOT_PROPS.DATE)}></input></td>
                                     <td><input type="time" name="starttime" 
@@ -355,20 +427,20 @@ class AddEvent extends Component{
                                             onBlur={(event)=>this.onSlotChange(event, index,SLOT_PROPS.END)}></input></td>
                                     <td><input type="number" name="vip" 
                                             className="number-input"
-                                            defaultValue={slot.viptickets} 
+                                            defaultValue={viptickets} 
                                             min={0} 
                                             onBlur={(event)=>this.onSlotChange(event, index,SLOT_PROPS.VIP)}required></input></td>
                                     <td><input type="number" name="ga"
                                             className="number-input" 
-                                            defaultValue={slot.gatickets} 
+                                            defaultValue={gatickets} 
                                             min={0} 
                                             onBlur={(event)=>this.onSlotChange(event, index,SLOT_PROPS.GA)}required></input></td>
                                     <td>
-                                    {index === this.state.slots.length - 1
+                                    {index === slots.length - 1
                                     ? <span className="add" id="add" onClick={this.onSlotAdd}>&#43;</span>
                                     : ''
                                     }
-                                    {this.state.slots.length === 1 
+                                    {slots.length === 1 
                                       ? '' 
                                       : <span className="add" id="minus" onClick={()=>this.onSlotDelete(index)}>&#8722;</span>
                                     }
@@ -382,9 +454,10 @@ class AddEvent extends Component{
 
                         <label><b>Maximum numbers of bookings allowed per person:</b></label>
                         <input type="number" name="maxtickets" 
-                            min={0} defaultValue={maxTickets} 
+                            min={0}
+                            defaultValue={MaxTickets} 
                             className="number-input"
-                            onBlur={(event)=>this.setState({...this.state, maxTickets:event.target.value})}></input>
+                            onBlur={(event)=>this.setState({...this.state, event: {...this.state.event, MaxTickets:event.target.value}})}></input>
                         <div>
                             <label><b>Price</b></label>
                             <span>(INR) </span>
@@ -392,15 +465,17 @@ class AddEvent extends Component{
                         <span>VIP: </span>
                         <input type="number" name="vipprice" 
                                step=".01"  
+                               min= {0}
                                className="number-input"
-                               defaultValue={vipprice}
-                               onBlur={(event)=>this.setState({...this.state, vipprice:event.target.value})}></input>
+                               defaultValue={VIPprice}
+                               onBlur={(event)=>this.setState({...this.state, event: {...this.state.event, VIPprice:event.target.value}})}></input>
                         <span>GA: </span>
                         <input type="number" name="gaprice" 
                                step=".01" 
+                               min= {0}
                                className="number-input"
-                               defaultValue={gaprice}
-                               onBlur={(event)=>this.setState({...this.state, gaprice:event.target.value})}></input>
+                               defaultValue={GAprice}
+                               onBlur={(event)=>this.setState({...this.state, event: {...this.state.event, GAprice:event.target.value}})}></input>
 
                         <div className="btn-group">
                             <button type="submit" className='btn-login'>Save</button>
@@ -413,4 +488,4 @@ class AddEvent extends Component{
     }
 }
 
-export default AddEvent
+export default WithRouter(AddEvent)

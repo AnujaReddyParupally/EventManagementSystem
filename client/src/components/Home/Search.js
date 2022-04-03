@@ -1,4 +1,5 @@
 import React from "react";
+import {BsSearch} from "react-icons/bs";
 
 const Search = (props) =>{
     return (<div style={{display:"flex"}}>
@@ -7,7 +8,8 @@ const Search = (props) =>{
                         name="search" 
                         required 
                         onChange={props.onSearch}/>
-                <button className="btn-search">Search</button>
+                <span className="btn-search"><BsSearch/></span>
+                {/* <button className="btn-search" >Search</button> */}
             </div>)
 }
 

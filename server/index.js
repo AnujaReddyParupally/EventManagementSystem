@@ -1,10 +1,10 @@
 require("dotenv").config();
+require("./config/db");
+
 var express = require('express')
 const bodyParser = require('body-parser')
 const cors = require('cors')
 
-
-require("./config/db");
 const logRequests = require("./middleware/log-requests");
 const {
     notFoundErrorHandler,
@@ -14,6 +14,7 @@ const authRoute = require("./routes/auth");
 const otproutes =  require('./routes/OTP')
 const eventroutes = require("./routes/event");
 const userroutes = require("./routes/user");
+const orderRoutes = require('./routes/order');
 
 const app = express()
 app.use(logRequests);
@@ -25,8 +26,9 @@ app.use(cors())
 
 app.use('/api',otproutes)
 app.use("/api/v1/auth", authRoute);
-app.use('/api/v1/admin', eventroutes);
+app.use('/api/v1/events', eventroutes);
 app.use('/api/v1/user', userroutes);
+app.use('/api/v1/order', orderRoutes);
 
 app.get('/', function (req, res) {
     console.log('route / is accessed.');

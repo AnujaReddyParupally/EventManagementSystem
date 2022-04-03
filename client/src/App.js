@@ -14,9 +14,10 @@ import EventDetails from './components/Events/EventDetails';
 import Logout from './components/Logout/Logout';
 import Orders from './components/Orders/Orders';
 import User from "./components/UserProfile/User";
+import ProtectedRoutes from './components/HOC/ProtectedRoutes';
 
 function App() {
-  //const [user, setUser] = useState({})
+  const [user, setUser] = useState({})
  
   
   return (
@@ -34,10 +35,11 @@ function App() {
         <Routes>
           <Route path="/user" element={<User />} />
           <Route path='/admin' element={<Admin/>}/> 
-          <Route path='/login' element={<Form/>}/> 
-          <Route path='/orders' element={<Orders/>}/> 
-          <Route path='/events/details'  element={<EventDetails/>}/>
+          <Route path='/admin/:id' element={<Admin/>}/> 
           <Route path='/logout' element={<Logout/>}/>
+          <Route path='/orders' element={<Orders/>}/> 
+          <Route path='/events/details/:id'  element={<EventDetails/>}/>
+          <Route path='/login' element={<Form/>}/> 
           <Route path='/events' element={<Home/>} />
           <Route path='*' element={<Navigate replace to="/events"/>}/>
         </Routes>
