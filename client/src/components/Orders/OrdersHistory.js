@@ -14,9 +14,9 @@ class OrdersHistory extends Component{
                 <table>
                     <thead>
                         <tr>
+                            <th>Order ID</th>
                             <th>Event name</th>
                             <th>City</th>
-                            <th>Order ID</th>
                             <th>Date</th>
                             <th>Starts at</th>
                             <th>Ends at</th>
@@ -39,7 +39,7 @@ class OrdersHistory extends Component{
                                     <td>{order.viptickets}</td>
                                     <td>{order.gaptickets}</td>
                                     <td>{order.totalprice}</td>
-                                    <td>{order.status === 'CONFIRMED' ? <span className='tick'><FcOk/></span> : <span className='cross'><IoIosCloseCircle/></span>}</td>
+                                    <td>{order.status !== 'Cancelled' ? <span className='tick'><FcOk/></span> : <span className='cross'><IoIosCloseCircle/></span>}</td>
                                 </tr>
                             )
                         })}

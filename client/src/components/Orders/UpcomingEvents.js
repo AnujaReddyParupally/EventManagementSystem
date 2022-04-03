@@ -11,9 +11,9 @@ class UpcomingEvents extends Component{
         <table>
             <thead>
                 <tr>
+                    <th>Order ID</th>
                     <th>Event name</th>
                     <th>City</th>
-                    <th>Order ID</th>
                     <th>Date</th>
                     <th>Starts at</th>
                     <th>Ends at</th>
