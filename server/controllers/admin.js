@@ -119,7 +119,7 @@ exports.fetchEventsOfCity = async (req, res, next) => {
         data: `unable to fetch events details for City ${req.params.city} `,
       };
     }
-    res.json(events);
+    res.status(200).json(events);
   } catch (err) {
     next(err);
   }
