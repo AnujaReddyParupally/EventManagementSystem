@@ -37,7 +37,7 @@ class OrdersHistory extends Component{
                                     <td>{order.starttime}</td>
                                     <td>{order.endtime}</td>
                                     <td>{order.viptickets}</td>
-                                    <td>{order.gaptickets}</td>
+                                    <td>{order.gatickets}</td>
                                     <td>{order.totalprice}</td>
                                     <td>{order.status === 'CONFIRMED' ? <span className='tick'><FcOk/></span> : <span className='cross'><IoIosCloseCircle/></span>}</td>
                                 </tr>

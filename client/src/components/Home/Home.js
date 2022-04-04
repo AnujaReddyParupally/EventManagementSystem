@@ -1,8 +1,9 @@
+import axios from 'axios'
 import React, { Component } from 'react'
 import Events from '../Events/Events'
 import Search from './Search'
 
-const DUMMY_EVENTS=[
+let DUMMY_EVENTS=[
     {   
         id:1, 
         title: 'sunt aut facere',
@@ -67,6 +68,7 @@ const CITIES=[
     {id: 4, name: 'Mumbai'}
 ]
 
+
 class Home extends Component{
     constructor(){
         super()
@@ -81,8 +83,16 @@ class Home extends Component{
 
     componentDidMount(){
         //get api data and assign it to events in state
-        let cities= CITIES.sort((a,b)=>a.name > b.name ? 1 : -1)
-        this.setState({...this.state, events: DUMMY_EVENTS, cities})
+        axios.get(`/api/v1/admin`).then( res => {
+            console.log(res);
+            let cities= CITIES.sort((a,b)=>a.name > b.name ? 1 : -1)
+            this.setState({...this.state, events: res.data, cities})
+        })
+        .catch(err => {
+            console.log(err);
+        });
+        //let cities= CITIES.sort((a,b)=>a.name > b.name ? 1 : -1)
+        //this.setState({...this.state, events: DUMMY_EVENTS, cities});
     }
     
     onSearchChange(event){

@@ -11,9 +11,9 @@ class UpcomingEvents extends Component{
         <table>
             <thead>
                 <tr>
+                    <th>Order ID</th>
                     <th>Event name</th>
                     <th>City</th>
-                    <th>Order ID</th>
                     <th>Date</th>
                     <th>Starts at</th>
                     <th>Ends at</th>
@@ -34,7 +34,7 @@ class UpcomingEvents extends Component{
                             <td>{event.starttime}</td>
                             <td>{event.endtime}</td>
                             <td>{event.viptickets}</td>
-                            <td>{event.gaptickets}</td>
+                            <td>{event.gatickets}</td>
                             <td>{event.totalprice}</td>
                             <td><button type="button" className="btn-cancel-ticket" onClick={()=>onCancelOrder(event.id)}>Cancel order</button></td>
                         </tr>
