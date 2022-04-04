@@ -27,7 +27,7 @@ const ConfirmPayment = (props) => {
             setEmail(user.email)
             setUserid(user.id)
             let notifications =[], errorMessages=[]
-            axios.get(`/api/otp/${user.email}`).then(res=>{
+            axios.get(`/api/v1/otp/${user.email}`).then(res=>{
                 console.log(res)
                 if(res.status===200){
                     setOtpExpiry(res.data.expireat)
@@ -50,7 +50,7 @@ const ConfirmPayment = (props) => {
 
     const sendOTP =() =>{
         let notifications =[], errorMessages=[]
-        axios.get(`/api/otp/${email}`).then(res=>{
+        axios.get(`/api/v1/otp/${email}`).then(res=>{
             console.log(res)
             if(res.status===200){
                 setOtpExpiry(res.data.expireat)
@@ -92,7 +92,7 @@ const ConfirmPayment = (props) => {
             "email": email,
             "otp": otp
           });
-           axios.post('/api/otp',data, {
+           axios.post('/api/v1/otp',data, {
                headers: {
                 'Content-Type': 'application/json'
                }
