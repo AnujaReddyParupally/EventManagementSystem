@@ -30,7 +30,11 @@ class OrdersHistory extends Component{
                     </thead>
                     <tbody>
                         {orders.length === 0 
-                          ? <p>{EMPTY_DATASET.NO_ORDERS}</p> 
+                          ? <tr>
+                              <td colspan="10">
+                                  {EMPTY_DATASET.NO_ORDERS}
+                              </td> 
+                            </tr>
                           : orders.map(order => {
                             return (
                                 <tr key={order.id}>
