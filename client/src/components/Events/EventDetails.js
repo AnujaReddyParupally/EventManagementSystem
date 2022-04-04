@@ -167,7 +167,7 @@ class EventDetails extends Component{
                                 }
                             </div>
                             <div style={{marginTop: "10px"}}>{description}</div>
-                            {this.context.getUser().role !== 0
+                            {this.context.getUser().role 
                              ? <div className="admin-event-options">
                                 <span onClick={()=>this.onEventEdit(_id)}><BsPencilFill/></span>
                                 <span onClick={()=>this.onEventDelete(_id)}><RiDeleteBin6Fill/></span>
