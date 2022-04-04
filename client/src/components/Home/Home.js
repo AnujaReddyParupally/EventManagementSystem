@@ -83,6 +83,7 @@ class Home extends Component{
         }
         this.typingTimer = null;
         this.onSearchChange= this.onSearchChange.bind(this)
+        this.onCityFilterChange = this.onCityFilterChange.bind(this);
     }
 
     componentDidMount(){
@@ -130,6 +131,41 @@ class Home extends Component{
         }
 
     }
+
+    onCityFilterChange(event) {
+        var searchTxt = event.target.value;
+        let errorMessages= []
+        this.setState({...this.state, isLoading: true})
+        if (searchTxt != null && searchTxt) {
+          console.log(searchTxt);
+          axios
+            .get(`/api/v1/events/searchbycity/${searchTxt}`)
+            .then((res) => {
+              if (res.status === 200) {
+                this.setState({
+                  ...this.state,
+                  searchterm: searchTxt,
+                  events: res.data,
+                });
+                console.log(res.data);
+              }
+            })
+            .catch((err) => {
+                errorMessages.push(ERRORS.GENERIC_FAILED)
+              this.setState({ ...this.state, errorMessages, searchterm: searchTxt});
+            });
+        }
+        else{
+            axios.get('/api/v1/events').then(res=>{
+                this.setState({...this.state, events: res.data, isLoading: false})
+            })
+            .catch(err=>{
+                errorMessages.push(ERRORS.GENERIC_FAILED)
+                this.setState({...this.state, errorMessages, isLoading: false})
+            })
+        }
+      }
+
     render(){
         return (
         <div className='home' >
@@ -137,10 +173,10 @@ class Home extends Component{
             <div className='filters'>
                 <div style={{display:"flex"}}   >
                 <p>Filter by City</p>
-                <select className='filters-select'>
-                    <option value="0">Select city</option>
+                <select className='filters-select' onChange={this.onCityFilterChange}>
+                    <option value="">Select city</option>
                     {this.state.cities.map((city)=>{
-                        return  <option key={city.id} value={city.id}>{city.name}</option>
+                        return  <option key={city.id} value={city.name}>{city.name}</option>
                     })}
                 </select>
                 </div>  

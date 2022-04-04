@@ -52,4 +52,6 @@ router.delete('/admin/delete/:id', auth,  adminctrl.deleteevent);
 //SEARCH EVENT BY NAME 
 router.get('/searchevent/:eventname', eventctrl.searchEvent);
 
+router.get("/searchbycity/:city", eventctrl.fetchEventsOfCity);
+
 module.exports = router;

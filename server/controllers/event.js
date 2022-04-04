@@ -25,18 +25,18 @@ const fetchEvent = async (req, res, next) => {
   }
 
 const fetchEventsOfCity = async (req, res, next) => {
-    try {
-      const events = await Event.find({ city: req.params.city });
-      if (!events) {
-        throw {
-          data: `unable to fetch events details for City ${req.params.city} `,
-        };
-      }
-      res.json(events);
-    } catch (err) {
-      next(err);
+  try {
+    const events = await Event.find({ city: req.params.city });
+    if (!events) {
+      throw {
+        data: `unable to fetch events details for City ${req.params.city} `,
+      };
     }
-  };
+    res.status(200).json(events);
+  } catch (err) {
+    next(err);
+  }
+};
 
 const searchEvent = async(req,res,next) => {
     try{
