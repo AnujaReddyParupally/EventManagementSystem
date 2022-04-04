@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { EMPTY_DATASET } from '../constants'
 
 class UpcomingEvents extends Component{
     constructor(){
@@ -24,7 +25,9 @@ class UpcomingEvents extends Component{
                 </tr>
             </thead>
             <tbody>
-                {events.map(event => {
+                {events.length === 0 
+                 ? <p>{EMPTY_DATASET.NO_UPCOMING_EVENTS}</p> 
+                 : events.map(event => {
                     return (
                         <tr key={event.id}>
                             <td>#{event.id}</td>

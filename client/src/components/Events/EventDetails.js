@@ -10,35 +10,7 @@ import EventBooking from "../BookTickets/EventBooking";
 import {  SessionContext } from "../SessionCookie/SessionCookie";
 import WithRouter from "../HOC/WithRouter";
 import Spinner from "../Spinner/Spinner";
-
-
-const ERRORS ={
-    EVENT_CONFLICTS: "Request conflict with the current state of the target resource.",
-    EVENT_DELETION_FAILED: "Event deletion failed!",
-    EVENT_EDIT_FAILED: "Event updation failed!",
-    GENERIC_FAILED: "Oops! Something went wrong. Please try again."
-}   
-
-const NOTIFICATIONS = {
-    EVENT_DELETE_SUCCESS: "Event deleted successfully!",
-    EVENT_EDIT_SUCCESS: "Event update successfully!",
-}
-
-const DUMMY_EVENT=  {   
-        _id:1, 
-        eventname: 'sunt aut facere',
-        city:['Hyderabad'],
-        ImageURL:'event1.jpeg', 
-        tags:['sunt','facere','optio'],
-        description: 'quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto. ',
-        slots:[
-            {date: "2022-03-19", endtime: "18:04", gatickets: "18", starttime: "17:03", viptickets: "1", availablegatickets: "10", availableviptickets: "0"},
-            {date: "2022-03-20", endtime: "19:04", gatickets: "33", starttime: "18:04", viptickets: "7", availablegatickets: "0", availableviptickets: "2"}
-        ],
-        MaxTickets: 7,
-        VIPprice:10,
-        GAprice:40
-    }
+import {EMPTY_DATASET, ERRORS, NOTIFICATIONS} from '../constants.js'
 
 class EventDetails extends Component{
     constructor(props){
@@ -53,6 +25,7 @@ class EventDetails extends Component{
     
     static contextType = SessionContext
     componentDidMount(){
+        this.setState({...this.state, isLoading: true})
         //This page is accessible only to logged in users
         const user = this.context.getUser()
         const token = this.context.getToken()
@@ -247,7 +220,7 @@ class EventDetails extends Component{
                 </div>
                 : !this.state.isLoading && <div className="body">
                     <div style={{textAlign:'center'}}>
-                        <p>Either you are unauthorized or this event does not exist in our database.</p>
+                        <p>{EMPTY_DATASET.NO_EVENT_DATA}</p>
                         <button className="btn-login" style={{width:'250px'}}><Link to='/events'>Go back to events</Link></button>
                     </div>
                 </div>
@@ -259,3 +232,32 @@ class EventDetails extends Component{
 }
 
 export default WithRouter(EventDetails)
+
+
+// const ERRORS ={
+//     EVENT_CONFLICTS: "Request conflict with the current state of the target resource.",
+//     EVENT_DELETION_FAILED: "Event deletion failed!",
+//     EVENT_EDIT_FAILED: "Event updation failed!",
+//     GENERIC_FAILED: "Oops! Something went wrong. Please try again."
+// }   
+
+// const NOTIFICATIONS = {
+//     EVENT_DELETE_SUCCESS: "Event deleted successfully!",
+//     EVENT_EDIT_SUCCESS: "Event update successfully!",
+// }
+
+// const DUMMY_EVENT=  {   
+//         _id:1, 
+//         eventname: 'sunt aut facere',
+//         city:['Hyderabad'],
+//         ImageURL:'event1.jpeg', 
+//         tags:['sunt','facere','optio'],
+//         description: 'quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto. ',
+//         slots:[
+//             {date: "2022-03-19", endtime: "18:04", gatickets: "18", starttime: "17:03", viptickets: "1", availablegatickets: "10", availableviptickets: "0"},
+//             {date: "2022-03-20", endtime: "19:04", gatickets: "33", starttime: "18:04", viptickets: "7", availablegatickets: "0", availableviptickets: "2"}
+//         ],
+//         MaxTickets: 7,
+//         VIPprice:10,
+//         GAprice:40
+//     }

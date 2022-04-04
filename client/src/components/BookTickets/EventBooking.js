@@ -3,14 +3,7 @@ import Notification from '../Notifications/Notification'
 import BookingForm from "./BookingForm";
 import ConfirmPayment from "./ConfirmPayment";
 import PaymentSummary from "./PaymentSummary";
-
-const TICKET_TYPE={VIP:'VIP', GA:'GA'}
-const ERRORS = {
-    INVALID_DATE: "Date is required!"
-    ,INVALID_TIME: "Time is required!"
-    ,INVALID_TICKETS: "Book at least 1 ticket to proceed!"
-    ,MAX_LIMIT_EXCEEDED: "Maximum booking limit exceeded!"
-}
+import {ERRORS, TICKET_TYPE} from '../constants.js'
 
 class EventBooking extends Component{
     constructor(){
@@ -159,3 +152,10 @@ class EventBooking extends Component{
 }
 
 export default EventBooking
+
+// const ERRORS = {
+//     INVALID_DATE: "Date is required!"
+//     ,INVALID_TIME: "Time is required!"
+//     ,INVALID_TICKETS: "Book at least 1 ticket to proceed!"
+//     ,MAX_LIMIT_EXCEEDED: "Maximum booking limit exceeded!"
+// }

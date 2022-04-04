@@ -4,7 +4,7 @@ import Notification from "../Notifications/Notification";
 import Spinner from "../Spinner/Spinner";
 import {  SessionContext } from "../SessionCookie/SessionCookie";
 import WithRouter from "../HOC/WithRouter";
-import { Navigate } from "react-router-dom";
+import {ERRORS, NOTIFICATIONS} from '../constants.js'
 
 const CITIES=[
     {id: 1, name: 'Hyderabad'},
@@ -12,23 +12,23 @@ const CITIES=[
     {id: 3, name: 'Delhi'},
     {id: 4, name: 'Mumbai'}
 ]
-const ERRORS={
-    INVALID_EVNET: "Event name must have a minimum of 3 characters!"
-    ,INVALID_DESC: "Event description must have a minimum of 5 characters!"
-    ,INVALID_CITY: "City is required!"
-    ,INVALID_SLOT: "A slot must have a valid date, start time, end time, and must have atleast 1 GA ticket!"
-    ,INVALID_PRICE: "Price is required!"
-    ,INVALID_VIP_PRICE: "Price for VIP slots is required!"
-    ,INVALID_MAX_TICKETS: "Maximum bookings cannot be 0!"
-    ,INVALID_IMAGEURL: "Image URL is required!"
-    ,EVENT_ADDITION_FAILED: "Oops! Something went wrong while creating event."
-}
+// const ERRORS={
+//     INVALID_EVNET: "Event name must have a minimum of 3 characters!"
+//     ,INVALID_DESC: "Event description must have a minimum of 5 characters!"
+//     ,INVALID_CITY: "City is required!"
+//     ,INVALID_SLOT: "A slot must have a valid date, start time, end time, and must have atleast 1 GA ticket!"
+//     ,INVALID_PRICE: "Price is required!"
+//     ,INVALID_VIP_PRICE: "Price for VIP slots is required!"
+//     ,INVALID_MAX_TICKETS: "Maximum bookings cannot be 0!"
+//     ,INVALID_IMAGEURL: "Image URL is required!"
+//     ,EVENT_ADDITION_FAILED: "Oops! Something went wrong while creating event."
+// }
 
-const NOTIFICATIONS={
-    EVENT_SAVE_SUCCESS:"Event saved successfully!"
-    ,EVENT_ALREADY_EXISTS: "Event already exists!"
-    ,EVENT_EDIT_SUCCESS: "Event update successfully!",
-}
+// const NOTIFICATIONS={
+//     EVENT_SAVE_SUCCESS:"Event saved successfully!"
+//     ,EVENT_ALREADY_EXISTS: "Event already exists!"
+//     ,EVENT_EDIT_SUCCESS: "Event update successfully!",
+// }
 const SLOT_PROPS={DATE:'DATE',START:'STARTTIME',END:'ENDTIME',VIP:'VIP',GA:'GA'}
 
 class AddEvent extends Component{

@@ -2,12 +2,14 @@ import React, { useContext, useEffect, useState } from "react";
 import axios from 'axios'
 import {SessionContext} from '../SessionCookie/SessionCookie'
 import Notification  from "../Notifications/Notification";
-const ERRORS={
-    EMAIL: "Invalid User!",
-    PAYMENT_FAILED: "Payment failed!",
-    OTP_EXPIRED: "OTP Expired!",
-    OTP_REQUIRED: "OTP is required!"
-}
+import {ERRORS, NOTIFICATIONS} from '../constants.js'
+
+// const ERRORS={
+//     EMAIL: "Invalid User!",
+//     PAYMENT_FAILED: "Payment failed!",
+//     OTP_EXPIRED: "OTP Expired!",
+//     OTP_REQUIRED: "OTP is required!"
+// }
 const ConfirmPayment = (props) => {
     const [otp, setOtp] = useState('')
     const [otpExpiry, setOtpExpiry] = useState('')

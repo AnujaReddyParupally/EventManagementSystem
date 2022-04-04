@@ -7,53 +7,8 @@ import { Navigate } from "react-router-dom";
 import {  SessionContext } from "../SessionCookie/SessionCookie";
 import Spinner from "../Spinner/Spinner";
 import Notification from "../Notifications/Notification";
+import {ERRORS, NOTIFICATIONS, ORDER_STATUS, EMPTY_DATASET} from '../constants.js'
 
-const ERRORS = {
-    CANCELERROR: "Order is already cancelled. Please refresh the page"
-}
-
-const NOTIFICATIONS = {
-    CANCELLED: "Order cancelled successfully."
-}
-
-const ORDER_STATUS = {
-    CANCELLED: 'Cancelled'
-}
-
-const ORDERS = [
-    {
-        id: 1, 
-        userid: '',
-        eventid:1,
-        eventname: 'sunt aut facere',
-        city: 'Hyderabad', 
-        date: '2022-03-19', 
-        endtime: "18:04", 
-        starttime: "17:03", 
-        viptickets: "1", 
-        gatickets: "18",
-        status:"CONFIRMED",
-        createdDate:'2022-03-16',
-        modifiedDate: '',
-        totalprice : 400
-    },
-    {
-        id: 2, 
-        userid: '',
-        eventid:2,
-        eventname: 'qui est esse',
-        city: 'Bangalore', 
-        date: '2022-03-29', 
-        endtime: "18:04", 
-        starttime: "17:03", 
-        viptickets: "4", 
-        gatickets: "10",
-        status:"CONFIRMED",
-        createdDate:'2022-03-19',
-        modifiedDate: '',
-        totalprice : 500
-    }
-]
 class Orders extends Component{
     constructor(){
         super()
@@ -190,7 +145,7 @@ class Orders extends Component{
                     <div className="body">
                     {
                         orders && orders.length === 0
-                         ? <p>No orders found.</p>
+                         ? <p>{EMPTY_DATASET.NO_ORDERS}</p>
                          : <>
                             <div className="form-header">
                                 <label className={isOrderHistory? 'tab-active':''}
@@ -216,3 +171,49 @@ class Orders extends Component{
 }
 
 export default Orders
+
+
+// const ERRORS = {
+//     CANCELERROR: "Order is already cancelled. Please refresh the page"
+// }
+
+// const NOTIFICATIONS = {
+//     CANCELLED: "Order cancelled successfully."
+// }
+
+
+
+// const ORDERS = [
+//     {
+//         id: 1, 
+//         userid: '',
+//         eventid:1,
+//         eventname: 'sunt aut facere',
+//         city: 'Hyderabad', 
+//         date: '2022-03-19', 
+//         endtime: "18:04", 
+//         starttime: "17:03", 
+//         viptickets: "1", 
+//         gatickets: "18",
+//         status:"CONFIRMED",
+//         createdDate:'2022-03-16',
+//         modifiedDate: '',
+//         totalprice : 400
+//     },
+//     {
+//         id: 2, 
+//         userid: '',
+//         eventid:2,
+//         eventname: 'qui est esse',
+//         city: 'Bangalore', 
+//         date: '2022-03-29', 
+//         endtime: "18:04", 
+//         starttime: "17:03", 
+//         viptickets: "4", 
+//         gatickets: "10",
+//         status:"CONFIRMED",
+//         createdDate:'2022-03-19',
+//         modifiedDate: '',
+//         totalprice : 500
+//     }
+// ]

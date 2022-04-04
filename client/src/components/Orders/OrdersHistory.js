@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { FcOk } from "react-icons/fc";
 import { IoIosCloseCircle } from "react-icons/io";
+import { EMPTY_DATASET } from '../constants';
 
 class OrdersHistory extends Component{
     constructor(){
@@ -28,7 +29,9 @@ class OrdersHistory extends Component{
                         </tr>
                     </thead>
                     <tbody>
-                        {orders.map(order => {
+                        {orders.length === 0 
+                          ? <p>{EMPTY_DATASET.NO_ORDERS}</p> 
+                          : orders.map(order => {
                             return (
                                 <tr key={order.id}>
                                     <td>#{order.id}</td>

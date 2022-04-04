@@ -1,4 +1,5 @@
 import React from "react";
+import { EMPTY_DATASET } from "../constants";
 import Event from "./Event";
 
 const Events = (props) =>{
@@ -8,7 +9,7 @@ const Events = (props) =>{
                 props.events.map(event=>{
                     return <Event key={event._id} event={event}/>
                 })
-            : <p> No records found. </p>
+            : <p> {EMPTY_DATASET.NO_DATA} </p>
         }
         </div>
     )

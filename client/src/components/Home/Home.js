@@ -3,74 +3,8 @@ import React, { Component } from 'react'
 import Events from '../Events/Events'
 import Spinner from '../Spinner/Spinner'
 import Search from './Search'
+import {ERRORS, CITIES} from '../constants.js'
 
-const DUMMY_EVENTS=[
-    {   
-        _id:1, 
-        eventname: 'sunt aut facere',
-        city:'Hyderabad',
-        ImageURL:'event1.jpeg', 
-        tags:['sunt','facere','optio'],
-        description: 'quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto. '
-    },
-    {   
-        _id:2, 
-        eventname: 'qui est esse',
-        city:'Bangalore',
-        ImageURL:'event2.jpg', 
-        tags:['est','qui','esse'],
-        description: 'est rerum tempore vitae\nsequi sint nihil reprehenderit dolor beatae ea dolores neque\nfugiat blanditiis voluptate porro vel nihil molestiae ut reiciendis\nqui aperiam non debitis possimus qui neque nisi nulla.'
-    },
-    {   
-        _id:3, 
-        eventname: 'ea qui ipsa sit aut',
-        city:'Delhi',
-        ImageURL:'event3.jpg', 
-        tags:['ea','qui','ipsa'],
-        description: 'et iusto sed quo iure\nvoluptatem occaecati omnis eligendi aut ad\nvoluptatem doloribus vel accusantium quis pariatur\nmolestiae porro eius odio et labore et velit aut.'
-    },
-    {   
-        _id:4, 
-        eventname: 'eum et est occaecati',
-        city:'Mumbai',
-        ImageURL:'event4.jpeg', 
-        tags:['et','est','eum'],
-        description: 'ullam et saepe reiciendis voluptatem adipisci\nsit amet autem assumenda provident rerum culpa\nquis hic commodi nesciunt rem tenetur doloremque ipsam iure\nquis sunt voluptatem rerum illo velit.'
-    },
-    {   
-        _id:5, 
-        eventname: 'nesciunt quas odio',
-        city:'Mumbai',
-        ImageURL:'event5.jpg', 
-        tags:['quas','odio'],
-        description: 'repudiandae veniam quaerat sunt sed\nalias aut fugiat sit autem sed est\nvoluptatem omnis possimus esse voluptatibus quis\nest aut tenetur dolor neque.'
-    },
-    {   
-        _id:6, 
-        eventname: 'magnam facilis autem',
-        city:'Hyderabad',
-        ImageURL:'event6.jpg', 
-        tags:['magnam'],
-        description: 'repudiandae veniam quaerat sunt sed\nalias aut fugiat sit autem sed est\nvoluptatem omnis possimus esse voluptatibus quis\nest aut tenetur dolor neque.'
-    },
-    {   
-        _id:7, 
-        eventname: 'magnam facilis autem2',
-        city:'Delhi',
-        ImageURL:'event6.jpg', 
-        tags:['magnam'],
-        description: 'repudiandae veniam quaerat sunt sed\nalias aut fugiat sit autem sed est\nvoluptatem omnis possimus esse voluptatibus quis\nest aut tenetur dolor neque.'
-    },
-]
-const CITIES=[
-    {id: 1, name: 'Hyderabad'},
-    {id: 2, name: 'Bangalore'},
-    {id: 3, name: 'Delhi'},
-    {id: 4, name: 'Mumbai'}
-]
-const ERRORS = {
-    GENERIC_FAILED: "Oops! Something went wrong. Please try again."
-}
 class Home extends Component{
     constructor(){
         super()
@@ -193,3 +127,66 @@ class Home extends Component{
 }
 
 export default Home
+
+// const DUMMY_EVENTS=[
+//     {   
+//         _id:1, 
+//         eventname: 'sunt aut facere',
+//         city:'Hyderabad',
+//         ImageURL:'event1.jpeg', 
+//         tags:['sunt','facere','optio'],
+//         description: 'quia et suscipit\nsuscipit recusandae consequuntur expedita et cum\nreprehenderit molestiae ut ut quas totam\nnostrum rerum est autem sunt rem eveniet architecto. '
+//     },
+//     {   
+//         _id:2, 
+//         eventname: 'qui est esse',
+//         city:'Bangalore',
+//         ImageURL:'event2.jpg', 
+//         tags:['est','qui','esse'],
+//         description: 'est rerum tempore vitae\nsequi sint nihil reprehenderit dolor beatae ea dolores neque\nfugiat blanditiis voluptate porro vel nihil molestiae ut reiciendis\nqui aperiam non debitis possimus qui neque nisi nulla.'
+//     },
+//     {   
+//         _id:3, 
+//         eventname: 'ea qui ipsa sit aut',
+//         city:'Delhi',
+//         ImageURL:'event3.jpg', 
+//         tags:['ea','qui','ipsa'],
+//         description: 'et iusto sed quo iure\nvoluptatem occaecati omnis eligendi aut ad\nvoluptatem doloribus vel accusantium quis pariatur\nmolestiae porro eius odio et labore et velit aut.'
+//     },
+//     {   
+//         _id:4, 
+//         eventname: 'eum et est occaecati',
+//         city:'Mumbai',
+//         ImageURL:'event4.jpeg', 
+//         tags:['et','est','eum'],
+//         description: 'ullam et saepe reiciendis voluptatem adipisci\nsit amet autem assumenda provident rerum culpa\nquis hic commodi nesciunt rem tenetur doloremque ipsam iure\nquis sunt voluptatem rerum illo velit.'
+//     },
+//     {   
+//         _id:5, 
+//         eventname: 'nesciunt quas odio',
+//         city:'Mumbai',
+//         ImageURL:'event5.jpg', 
+//         tags:['quas','odio'],
+//         description: 'repudiandae veniam quaerat sunt sed\nalias aut fugiat sit autem sed est\nvoluptatem omnis possimus esse voluptatibus quis\nest aut tenetur dolor neque.'
+//     },
+//     {   
+//         _id:6, 
+//         eventname: 'magnam facilis autem',
+//         city:'Hyderabad',
+//         ImageURL:'event6.jpg', 
+//         tags:['magnam'],
+//         description: 'repudiandae veniam quaerat sunt sed\nalias aut fugiat sit autem sed est\nvoluptatem omnis possimus esse voluptatibus quis\nest aut tenetur dolor neque.'
+//     },
+//     {   
+//         _id:7, 
+//         eventname: 'magnam facilis autem2',
+//         city:'Delhi',
+//         ImageURL:'event6.jpg', 
+//         tags:['magnam'],
+//         description: 'repudiandae veniam quaerat sunt sed\nalias aut fugiat sit autem sed est\nvoluptatem omnis possimus esse voluptatibus quis\nest aut tenetur dolor neque.'
+//     },
+// ]
+
+// const ERRORS = {
+//     GENERIC_FAILED: "Oops! Something went wrong. Please try again."
+// }

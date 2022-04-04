@@ -7,26 +7,8 @@ import ForgotPwd from './ForgotPwd'
 import axios from 'axios'
 import {   SessionContext } from '../SessionCookie/SessionCookie'
 import Spinner from '../Spinner/Spinner'
+import {ERRORS, NOTIFICATIONS} from '../constants.js'
 
-const ERRORS={
-    EMAIL: "Invalid Email ID."
-    ,PASSWORD:"Password should be at least 6 to 12 characters along with an uppercase, a lowercase and a special character '#?!@$%^&*-_'."
-    ,CONFIRM_PASSWORD:"Passowrd and confirm password does not match."
-    ,GENERIC_FAILED: "Oops! Something went wrong. Please try again."
-    ,LOGIN_FAILED: "Authentication failed!"
-    ,OTP_EXPIRED: "OTP Expired"
-    ,USER_VERIFY_FAILED: "User veriication failed!"
-    ,OTP_REQUIRED: "OTP is required!"
-    ,USER_ALREADY_EXISTS: "User already exists!"
-    ,USER_REGISTRATION_FAILED: "User registration failed!"
-    ,USER_NOT_FOUND: "User not found!"
-    
-}
-const NOTIFICATIONS={
-    SIGNUP_SUCCESS: "Successfully Registered!"
-    ,OTP_SENT: "OTP sent to the registered email!"
-    ,PWD_RESET_SUCCESS: "Password reset successful!"
-}
 class Form extends Component{
     constructor(){
         super()
@@ -230,7 +212,7 @@ class Form extends Component{
                 }
            }).catch(err=>{
                 //Error
-                if(err.response.status === 404)
+                if(err && err.response.status === 404)
                   errorMessages.push(ERRORS.USER_NOT_FOUND)
                 else
                   errorMessages.push(ERRORS.GENERIC_FAILED)
@@ -285,13 +267,16 @@ class Form extends Component{
                   .catch((err) => {
                     //Error
                     //console.log(err.response.status);
-                    if (err.response.status === 409) {
-                      //Failure
-                      errorMessages.push(ERRORS.LOGIN_FAILED);
-                      this.setState({...this.state,errorMessages, isLoading: false});
-                    } else {
-                      errorMessages.push(ERRORS.GENERIC_FAILED);
-                      this.setState({...this.state, errorMessages, isLoading: false});
+                    if(err && err.response){
+                        if (err.response.status === 409) {
+                            //Failure
+                            errorMessages.push(ERRORS.LOGIN_FAILED);
+                            this.setState({...this.state,errorMessages, isLoading: false});
+                        } 
+                        else {
+                            errorMessages.push(ERRORS.GENERIC_FAILED);
+                            this.setState({...this.state, errorMessages, isLoading: false});
+                        }
                     }
                   });
                 } 
@@ -408,7 +393,7 @@ class Form extends Component{
                         this.setState({...this.state,errorMessages, notifications:[], isLoading: false})
                     }
                 }).catch(err=>{
-                    if(err.response.status === 404)
+                    if(err && err.response.status === 404)
                        errorMessages.push(ERRORS.USER_NOT_FOUND)
                     else
                        errorMessages.push(ERRORS.GENERIC_FAILED)
@@ -503,3 +488,24 @@ class Form extends Component{
 }
 
 export default Form
+
+
+// const ERRORS={
+//     EMAIL: "Invalid Email ID."
+//     ,PASSWORD:"Password should be at least 6 to 12 characters along with an uppercase, a lowercase and a special character '#?!@$%^&*-_'."
+//     ,CONFIRM_PASSWORD:"Passowrd and confirm password does not match."
+//     ,GENERIC_FAILED: "Oops! Something went wrong. Please try again."
+//     ,LOGIN_FAILED: "Authentication failed!"
+//     ,OTP_EXPIRED: "OTP Expired"
+//     ,USER_VERIFY_FAILED: "User veriication failed!"
+//     ,OTP_REQUIRED: "OTP is required!"
+//     ,USER_ALREADY_EXISTS: "User already exists!"
+//     ,USER_REGISTRATION_FAILED: "User registration failed!"
+//     ,USER_NOT_FOUND: "User not found!"
+    
+// }
+// const NOTIFICATIONS={
+//     SIGNUP_SUCCESS: "Successfully Registered!"
+//     ,OTP_SENT: "OTP sent to the registered email!"
+//     ,PWD_RESET_SUCCESS: "Password reset successful!"
+// }

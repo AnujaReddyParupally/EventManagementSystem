@@ -6,18 +6,19 @@ import UpdateUserInfo from "./UpdateUserInfo";
 import UpdatePassword from "./UpdatePassword";
 import { Navigate } from "react-router-dom";
 import Spinner from "../Spinner/Spinner";
+import {ERRORS, NOTIFICATIONS} from '../constants.js'
 
-const ERRORS = {
-  PASSWORD:
-    "Password should be at least 6 to 12 characters along with an uppercase, a lowercase and a special character '#?!@$%^&*-_'.",
-  CONFIRM_PASSWORD: "Passowrd and confirm password does not match.",
-  GENERIC_FAILED: "Oops! Something went wrong. Please try again.",
-  UPDATE_FAILED: "Updation failed!",
-};
-const NOTIFICATIONS = {
-  UPDATE_SUCCESS: "Profile updated successfully!",
-  PWD_UPDATE_SUCCESS: "Password updated successfully!",
-};
+// const ERRORS = {
+//   PASSWORD:
+//     "Password should be at least 6 to 12 characters along with an uppercase, a lowercase and a special character '#?!@$%^&*-_'.",
+//   CONFIRM_PASSWORD: "Passowrd and confirm password does not match.",
+//   GENERIC_FAILED: "Oops! Something went wrong. Please try again.",
+//   UPDATE_FAILED: "Updation failed!",
+// };
+// const NOTIFICATIONS = {
+//   UPDATE_SUCCESS: "Profile updated successfully!",
+//   PWD_UPDATE_SUCCESS: "Password updated successfully!",
+// };
 class User extends Component {
   constructor() {
     super();
