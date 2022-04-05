@@ -26,7 +26,11 @@ class UpcomingEvents extends Component{
             </thead>
             <tbody>
                 {events.length === 0 
-                 ? <p>{EMPTY_DATASET.NO_UPCOMING_EVENTS}</p> 
+                   ?  <tr>
+                              <td colSpan="10">
+                                  {EMPTY_DATASET.NO_UPCOMING_EVENTS}
+                              </td> 
+                            </tr>
                  : events.map(event => {
                     return (
                         <tr key={event.id}>

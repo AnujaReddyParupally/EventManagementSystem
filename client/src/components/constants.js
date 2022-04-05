@@ -12,13 +12,8 @@ export const ERRORS = {
     OTP_REQUIRED: "OTP is required!",
 
     EMAIL: "Invalid Email ID."
-    ,PASSWORD:"Password should be at least 6 to 12 characters along with an uppercase, a lowercase and a special character '#?!@$%^&*-_'."
-    ,CONFIRM_PASSWORD:"Passowrd and confirm password does not match."
-    ,GENERIC_FAILED: "Oops! Something went wrong. Please try again."
     ,LOGIN_FAILED: "Authentication failed!"
-    ,OTP_EXPIRED: "OTP Expired"
     ,USER_VERIFY_FAILED: "User veriication failed!"
-    ,OTP_REQUIRED: "OTP is required!"
     ,USER_ALREADY_EXISTS: "User already exists!"
     ,USER_REGISTRATION_FAILED: "User registration failed!"
     ,USER_NOT_FOUND: "User not found!"
@@ -43,7 +38,6 @@ export const ERRORS = {
     ,EVENT_CONFLICTS: "Request conflict with the current state of the target resource."
     ,EVENT_DELETION_FAILED: "Event deletion failed!"
     ,EVENT_EDIT_FAILED: "Event updation failed!"
-    ,GENERIC_FAILED: "Oops! Something went wrong. Please try again."
   };
 
 export const NOTIFICATIONS = {
@@ -56,12 +50,11 @@ export const NOTIFICATIONS = {
 
     ,EVENT_SAVE_SUCCESS:"Event saved successfully!"
     ,EVENT_ALREADY_EXISTS: "Event already exists!"
-    ,EVENT_EDIT_SUCCESS: "Event update successfully!"
 
     ,CANCELLED: "Order cancelled successfully."
 
     ,EVENT_DELETE_SUCCESS: "Event deleted successfully!"
-    ,EVENT_EDIT_SUCCESS: "Event update successfully!"
+    ,EVENT_EDIT_SUCCESS: "Event updated successfully!"
   };
 
 export const ORDER_STATUS = {

@@ -168,6 +168,7 @@ class User extends Component {
         .put("/api/v1/user", data, {
           headers: {
             "Content-Type": "application/json",
+            'Authorization': 'Bearer '+ this.context.getToken()
           },
         })
         .then((res) => {
@@ -293,7 +294,9 @@ class User extends Component {
     let errorMessages = []
     if(user){
     axios
-      .get(`/api/v1/user/${user.email}`)
+      .get(`/api/v1/user/${user.email}`,{ headers:{
+        'Authorization': 'Bearer '+ this.context.getToken()
+      }})
       .then((res) => {
         if (res.status === 200) {
             const user = res.data

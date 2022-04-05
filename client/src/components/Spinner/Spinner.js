@@ -10,7 +10,7 @@ const Spinner = (props) => {
             ? ReactDOM.createPortal( 
                 <div className={styles.spinner}>
                     <div className={styles.spinner_img}>
-                            <img src={window.location.origin + '/assets/images/loader.gif'} height={50}></img>
+                            <img alt="" src={window.location.origin + '/assets/images/loader.gif'} height={50}></img>
                     </div>
                 </div>
              ,document.getElementById('spinner-root'))

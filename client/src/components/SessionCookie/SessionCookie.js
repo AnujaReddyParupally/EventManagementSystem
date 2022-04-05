@@ -14,6 +14,7 @@ class SessionContextProvider extends Component{
     }
     removeSessionCookie(){
         Cookies.remove("session")
+        Cookies.remove("auth")
         this.setState({...this.state, user: {}})
     }
     setTokenCookie(token){

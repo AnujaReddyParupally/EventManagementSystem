@@ -22,7 +22,9 @@ class BookingForm extends Component{
                             <option value="">Select time</option>
                             {slots.map((slot, index)=>{
                                 if(slot.date === date)
-                                return <option key={index} value={slot.starttime}>{slot.starttime}</option>
+                                 return <option key={index} value={slot.starttime}>{slot.starttime}</option>
+                                else
+                                 return null
                             })}
                         </select>
                     </div>

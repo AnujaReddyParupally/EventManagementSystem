@@ -1,7 +1,7 @@
 import React from 'react'
 
 const PaymentSummary = (props) => {
-    let {date, time, vip, ga, vipprice, gaprice, onProceedToPay, onCancelPayment} = props
+    let {date, time, vip, ga, vipprice, gaprice,  onCancelPayment} = props
     const getTotalBill = () => {
         return (vip*vipprice) + (ga*gaprice)
     }

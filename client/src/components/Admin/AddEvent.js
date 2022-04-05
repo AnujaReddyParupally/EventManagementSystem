@@ -293,7 +293,7 @@ class AddEvent extends Component{
     }
     componentDidMount(){
         let id = this.props.params.id;
-        let errorMessages = [], notifications =[]
+        let errorMessages = []
         let cities = CITIES.sort((a,b)=> a.name> b.name ? 1 : -1)
         if(id)
         {
@@ -319,7 +319,7 @@ class AddEvent extends Component{
         
     }
     render(){
-        let {_id, eventname, city, description, ImageURL, MaxTickets, slots, VIPprice, GAprice, tags} = this.state.event
+        let { eventname, city, description, ImageURL, MaxTickets, slots, VIPprice, GAprice, tags} = this.state.event
         city = city && city.length ? city[0] : ''
         let {errorMessages, notifications, isLoading, cities} = this.state
         return(

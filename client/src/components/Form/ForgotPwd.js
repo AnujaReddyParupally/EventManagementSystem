@@ -2,9 +2,6 @@ import React, { Component } from 'react'
 
 class ForgotPwd extends Component
 {
-    constructor(){
-        super()
-    }
     render(){
         const {displayOtp, isUserVerified} = this.props
         return(

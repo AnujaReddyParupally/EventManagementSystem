@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Link , Navigate} from "react-router-dom";
+import { Link } from "react-router-dom";
 import { SessionContext } from "../SessionCookie/SessionCookie";
 
 class UpdateUserInfo extends Component {

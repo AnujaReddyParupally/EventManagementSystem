@@ -80,7 +80,7 @@ class Orders extends Component{
          *            - UPDATE ORDER STATUS TO CANCELLED
          *            - UPDATE AVAILABLE TICKETS IN EVENTS SCHEMA
         */
-         var { errorMessages, notifications, orders, upcomingEvents } = this.state;
+         var { errorMessages, notifications, orders } = this.state;
 
         const token = this.context.getToken()
         axios.put(`api/v1/order/${orderid}`,{}, {

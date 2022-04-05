@@ -2,14 +2,8 @@ import React, { useContext, useEffect, useState } from "react";
 import axios from 'axios'
 import {SessionContext} from '../SessionCookie/SessionCookie'
 import Notification  from "../Notifications/Notification";
-import {ERRORS, NOTIFICATIONS} from '../constants.js'
+import {ERRORS} from '../constants.js'
 
-// const ERRORS={
-//     EMAIL: "Invalid User!",
-//     PAYMENT_FAILED: "Payment failed!",
-//     OTP_EXPIRED: "OTP Expired!",
-//     OTP_REQUIRED: "OTP is required!"
-// }
 const ConfirmPayment = (props) => {
     const [otp, setOtp] = useState('')
     const [otpExpiry, setOtpExpiry] = useState('')
@@ -23,12 +17,11 @@ const ConfirmPayment = (props) => {
 
     useEffect(()=>{
         let user= context.getUser()
-        console.log(user)
         //SEND OTP ON PAGE LOAD
         if(user){
             setEmail(user.email)
             setUserid(user.id)
-            let notifications =[], errorMessages=[]
+            let errorMessages=[]
             axios.get(`/api/v1/otp/${user.email}`).then(res=>{
                 console.log(res)
                 if(res.status===200){
@@ -51,7 +44,7 @@ const ConfirmPayment = (props) => {
     },[])
 
     const sendOTP =() =>{
-        let notifications =[], errorMessages=[]
+        let errorMessages=[]
         axios.get(`/api/v1/otp/${email}`).then(res=>{
             console.log(res)
             if(res.status===200){
@@ -191,7 +184,7 @@ const ConfirmPayment = (props) => {
         <div className="confirm-payment">
             {isUserVerified  && isOrderPlaced
               ? <>
-                <img src={window.location.origin+"/assets/images/success.png"}/>
+                <img alt="" src={window.location.origin+"/assets/images/success.png"}/>
                 <p>Payment Successful!</p>
                 <p>Tickets will be sent to your registered email ID.</p>
                 <button type="button" className="btn-book-ticket" onClick={props.onCancelPayment}>Continue Booking</button>
@@ -213,3 +206,11 @@ const ConfirmPayment = (props) => {
 }
 
 export default ConfirmPayment
+
+
+// const ERRORS={
+//     EMAIL: "Invalid User!",
+//     PAYMENT_FAILED: "Payment failed!",
+//     OTP_EXPIRED: "OTP Expired!",
+//     OTP_REQUIRED: "OTP is required!"
+// }

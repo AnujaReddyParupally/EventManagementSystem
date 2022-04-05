@@ -2,11 +2,11 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const Event = (props) =>{
-    const {_id, eventname, city, ImageURL, description, tags}= props.event
+    const {_id, eventname, city, ImageURL,  tags}= props.event
     return (
         <div className="event">
             <div className="event-img">
-                <img src={window.location.origin+"/assets/images/"+ImageURL} />
+                <img alt="" src={window.location.origin+"/assets/images/"+ImageURL} />
             </div>
             <div className="event-body">
                 <p className="event-loc">{city}</p>

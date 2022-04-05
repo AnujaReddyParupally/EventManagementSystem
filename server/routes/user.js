@@ -4,9 +4,9 @@ const { check } = require("express-validator");
 const userCtrl = require("../controllers/user");
 const auth = require("../middleware/auth")
 
-router.get("/:email",  userCtrl.fetchUser);
+router.get("/:email", auth, userCtrl.fetchUser);
 
-router.put("/",
+router.put("/", auth,
   [
     check("email", "Email is required").notEmpty(),
     check("email", "Invalid email").isEmail(),

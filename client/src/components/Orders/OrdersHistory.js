@@ -31,7 +31,7 @@ class OrdersHistory extends Component{
                     <tbody>
                         {orders.length === 0 
                           ? <tr>
-                              <td colspan="10">
+                              <td colSpan="10">
                                   {EMPTY_DATASET.NO_ORDERS}
                               </td> 
                             </tr>
