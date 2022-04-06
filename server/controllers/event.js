@@ -4,7 +4,7 @@ const Event = require("../models/events");
 const errors = require("../config/eventErrors.json");
 
 const fetchEvents = async (req, res) => {
-    const events = await Event.find();
+    const events = await Event.find().sort({'slots.date': 'asc'});
     res.json(events);
   }
   
