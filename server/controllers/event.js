@@ -4,7 +4,14 @@ const Event = require("../models/events");
 const errors = require("../config/eventErrors.json");
 
 const fetchEvents = async (req, res) => {
-    const events = await Event.find().sort({'slots.date': 'asc'});
+    let today = new Date()
+    var events = await Event.find().sort({'slots.date': 'asc'});
+    events= events.map(event=>{
+      let endtime = new Date(event.slots[0].date+ ' ' + event.slots[0].endtime) 
+      //console.log(new Date(), new Date(event.slots[0].date+ ' ' + event.slots[0].endtime))
+      if(endtime > today)
+      return event
+    })
     res.json(events);
   }
   
