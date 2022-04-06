@@ -50,6 +50,7 @@ const createOrder = async (req, res, next) => {
                     message: `Event with id ${req.body.eventID} is not available.  `
                 });
             } else {
+                date = event.slots[0].date
                 start = event.slots[0].starttime;
                 end = event.slots[0].endtime;
                 vipt = event.slots[0].viptickets;
@@ -84,6 +85,7 @@ const createOrder = async (req, res, next) => {
                             // Event.findOneAndUpdate({ _id: req.body.eventID }, { $set: { slots: { starttime: start, endtime: end, viptickets: vipt, gatickets: gat, availVIPTick: availvip, availGATick: availga, } }}).exec();
                             Event.findByIdAndUpdate({ _id: req.body.eventID }, {
                                 slots: {
+                                    date: date,
                                     starttime: start,
                                     endtime: end,
                                     viptickets: vipt,
@@ -132,6 +134,7 @@ const cancelOrder = async (req, res, next) => {
                     addga = order.gaticks;
                     idEvent = order.eventID.toString();
                     Event.findById({ _id: idEvent }).exec((err, event) => {
+                        date= event.slots[0].date,
                         start = event.slots[0].starttime,
                             end = event.slots[0].endtime,
                             vipt = event.slots[0].viptickets,
@@ -140,6 +143,7 @@ const cancelOrder = async (req, res, next) => {
                         availga = event.slots[0].availGATick;
                         Event.findByIdAndUpdate({ _id: idEvent }, {
                             slots: {
+                                date: date,
                                 starttime: start,
                                 endtime: end,
                                 viptickets: vipt,

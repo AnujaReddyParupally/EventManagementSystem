@@ -45,8 +45,9 @@ class EventBooking extends Component{
         return value
 
     }
-    onCancelPayment(){
+    onCancelPayment(isRefresh){
         this.setState({...this.state,proceedToPayment:false,showbill:false, errorMessages:[]})
+        isRefresh && this.props.refreshEventDetails()
     }
     onProceedToPay(billamount){
         this.setState({...this.state,price: billamount, proceedToPayment:true,showbill:false, errorMessages:[]})
@@ -118,7 +119,7 @@ class EventBooking extends Component{
         }
     }
     render(){
-        let {slots, vipprice, gaprice, eventID} = this.props
+        let {slots, vipprice, gaprice, eventID, refreshEventDetails} = this.props
         console.log(slots)
         let {date, time, errorMessages, notifications, showbill, proceedToPayment, viptickets, gatickets, price} = this.state
         let vip = date && time ? this.getAvailableTickets(TICKET_TYPE.VIP) : 0 
@@ -131,7 +132,7 @@ class EventBooking extends Component{
 
             { proceedToPayment 
               ? <ConfirmPayment viptickets={viptickets} gatickets={gatickets} eventID={eventID} price={price}
-                                onCancelPayment={this.onCancelPayment}/>
+                                onCancelPayment={this.onCancelPayment} />
               : (showbill 
                     ? <PaymentSummary date={date} time={time} 
                                         vip={viptickets} ga={gatickets} 

@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+import {useNavigate} from 'react-router-dom';
 import axios from 'axios'
 import {SessionContext} from '../SessionCookie/SessionCookie'
 import Notification  from "../Notifications/Notification";
@@ -14,6 +15,7 @@ const ConfirmPayment = (props) => {
     const [errorMessages, setErrorMessages] = useState([])
     const [notifications, setNotifications] = useState([])
     const context = useContext(SessionContext)
+    const navigate = useNavigate()
 
     useEffect(()=>{
         let user= context.getUser()
@@ -127,7 +129,7 @@ const ConfirmPayment = (props) => {
     const placeOrder = () => {
         let errorMessages=[]
          //API to create an order
-         const {viptickets, gatickets, price, eventID} = props
+         const {viptickets, gatickets, price, eventID, refreshEventDetails} = props
          var data = JSON.stringify({
              "viptickets": viptickets,
              "gatickets": gatickets,
@@ -187,7 +189,7 @@ const ConfirmPayment = (props) => {
                 <img alt="" src={window.location.origin+"/assets/images/success.png"}/>
                 <p>Payment Successful!</p>
                 <p>Tickets will be sent to your registered email ID.</p>
-                <button type="button" className="btn-book-ticket" onClick={props.onCancelPayment}>Continue Booking</button>
+                <button type="button" className="btn-book-ticket" onClick={()=>props.onCancelPayment(true)}>Continue Booking</button>
               </>
               : <>
                     <p>OTP has been shared to your registered email ID.</p>
@@ -197,7 +199,7 @@ const ConfirmPayment = (props) => {
                     <span className='resend-otp' onClick={sendOTP}>Resend OTP</span>
                     <div style={{display:"flex"}}>
                         <button type="button" className="btn-book-ticket" onClick={onConfirmPayment}>Confirm Payment</button>
-                        <button type="button" className="btn-book-cancel" onClick={props.onCancelPayment}>Cancel</button>
+                        <button type="button" className="btn-book-cancel" onClick={()=>props.onCancelPayment(false)}>Cancel</button>
                     </div>
                 </>}
         </div>

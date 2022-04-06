@@ -44,7 +44,7 @@ const PaymentSummary = (props) => {
             </div>
             <div style={{display:"flex"}}>
                 <button type="button" className="btn-book-ticket" onClick={proceedToPaymentScreen}>Proceed to pay</button>
-                <button type="button" className="btn-book-cancel" onClick={onCancelPayment}>Cancel</button>
+                <button type="button" className="btn-book-cancel" onClick={()=>onCancelPayment(false)}>Cancel</button>
             </div>
         </div>
     )

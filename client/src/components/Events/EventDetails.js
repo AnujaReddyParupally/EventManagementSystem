@@ -21,33 +21,40 @@ class EventDetails extends Component{
         };
         this.onEventDelete = this.onEventDelete.bind(this)
         this.onEventEdit = this.onEventEdit.bind(this)
+        this.refreshEventDetails = this.refreshEventDetails.bind(this)
     }
     
     static contextType = SessionContext
+    refreshEventDetails(){
+        let errorMessages = []
+        const token = this.context.getToken()
+        const id = this.props.params.id
+        axios.get(`/api/v1/events/${id}`, {
+            headers: {
+                'Authorization': 'Bearer '+ token
+            }
+        })
+        .then(res=>{
+            //console.log(res.data)
+            this.setState({...this.state, event: {...res.data}, isLoading: false})     
+        })
+        .catch(err=>{
+            console.log(err)
+            errorMessages.push(ERRORS.GENERIC_FAILED)
+            this.setState({...this.state, errorMessages, notifications:[], isLoading: false})
+        })
+    }
     componentDidMount(){
         this.setState({...this.state, isLoading: true})
         //This page is accessible only to logged in users
         const user = this.context.getUser()
-        const token = this.context.getToken()
+        //const token = this.context.getToken()
         //id comes from HOC withRouter
-        const id = this.props.params.id
+        //const id = this.props.params.id
         let errorMessages = []
-        if(user && token) {
+        if(user) {
             //API - get event based on id
-            axios.get(`/api/v1/events/${id}`, {
-                headers: {
-                    'Authorization': 'Bearer '+ token
-                }
-            })
-            .then(res=>{
-                //console.log(res.data)
-                this.setState({...this.state, event: {...res.data}, isLoading: false})     
-            })
-            .catch(err=>{
-                console.log(err)
-                errorMessages.push(ERRORS.GENERIC_FAILED)
-                this.setState({...this.state, errorMessages, notifications:[], isLoading: false})
-            })
+            this.refreshEventDetails()
         }
         else{
             this.setState({...this.state, errorMessages:[], notifications:[], isLoading: false})
@@ -214,7 +221,7 @@ class EventDetails extends Component{
                             }
                         </div>
                         <div className="booking-form">
-                            <EventBooking eventID={this.props.params.id} slots={slots} maxTickets={MaxTickets} vipprice={VIPprice} gaprice={GAprice}/>
+                            <EventBooking eventID={this.props.params.id} slots={slots} maxTickets={MaxTickets} vipprice={VIPprice} gaprice={GAprice} refreshEventDetails = {this.refreshEventDetails}/>
                         </div>
                     </div>
                 </div>

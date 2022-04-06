@@ -41,7 +41,7 @@ const EventSchema = mongoose.Schema(
     slots:[{
         date: {
             type: String,
-            default: new Date(),
+            default: '',
             required: true,
         },
         starttime: {
