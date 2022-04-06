@@ -56,18 +56,20 @@ class UpdatePassword extends Component {
           minLength={6}
           onBlur={this.props.onConfirmPwd}
         />
+        <div style={{display:'flex'}}>
         <button type="submit" className="btn-login">
           Update New Password
         </button>
-        <Link to="/user">
+        {/* <Link to="/user"> */}
           <button
             type="button"
-            className="btn-login"
+            className="btn-reset"
             onClick={() => this.onUpdatePwdClick(false)}
           >
             User Info
           </button>
-        </Link>
+        {/* </Link> */}
+        </div>
       </form>
     );
   }

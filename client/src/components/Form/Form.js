@@ -50,6 +50,7 @@ class Form extends Component{
         this.onVerifyOTPSubmit=this.onVerifyOTPSubmit.bind(this)
         this.onOTPChange=this.onOTPChange.bind(this)
         this.onForgotPwdClick=this.onForgotPwdClick.bind(this)
+        this.onCancelForgotPassword = this.onCancelForgotPassword.bind(this)
     }
     static contextType = SessionContext
 
@@ -334,7 +335,12 @@ class Form extends Component{
                 })
                 .catch((err) => {
                     //Error
-                    errorMessages.push(ERRORS.GENERIC_FAILED);
+                    if(err.response.status === 409){
+                        errorMessages.push(ERRORS.USER_ALREADY_EXISTS);
+                    }
+                    else{
+                       errorMessages.push(ERRORS.GENERIC_FAILED);
+                    }
                     this.setState({...this.state, errorMessages, notifications:[], isLoading: false });
                     //   }
                 });
@@ -357,6 +363,9 @@ class Form extends Component{
     }
     onForgotPwdClick(value){
         this.setState({isLogin:false, isForgotPwd:value, firstname:'', lastname:'',email:{value:'',isValid:false}, password:{value:'',isValid:false}, user:null})
+    }
+    onCancelForgotPassword(){
+        this.setState({isLogin:true, isForgotPwd:false, firstname:'', lastname:'',email:{value:'',isValid:false}, password:{value:'',isValid:false}, user:null})
     }
     onForgotPwdSubmit(event){
         event.preventDefault()
@@ -465,7 +474,8 @@ class Form extends Component{
                                         onSendOTPSubmit={this.onSendOTPSubmit}
                                         onVerifyOTPSubmit={this.onVerifyOTPSubmit}
                                         displayOtp = {otp.display}
-                                        isUserVerified = {isUserVerified}/> 
+                                        isUserVerified = {isUserVerified}
+                                        onCancelForgotPassword = {this.onCancelForgotPassword}/> 
                             : (isLogin
                                     ?<Login onEmailChange={this.onEmailChange}
                                             onPwdChange={this.onPwdChange}

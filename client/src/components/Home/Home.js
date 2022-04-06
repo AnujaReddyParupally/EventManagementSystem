@@ -116,11 +116,11 @@ class Home extends Component{
                 </div>  
                  <Search onSearch={this.onSearchChange}/>
             </div>
-            {/* <h3 style={{marginLeft: "20px"}}>All events</h3> */}
-            {this.typingTimer
+            <h3 style={{marginLeft: "20px"}}>Events</h3> 
+            {/* {this.typingTimer
             ?<h3 style={{marginLeft: "20px"}}>Events Found</h3>
             :<h3 style={{marginLeft: "20px"}}>All Events</h3>
-            }
+            } */}
             <Events events={this.state.events}/> 
         </div>)
     }

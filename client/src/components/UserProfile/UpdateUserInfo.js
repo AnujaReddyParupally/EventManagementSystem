@@ -36,11 +36,12 @@ class UpdateUserInfo extends Component {
         
                 <label htmlFor="email"><b>Email</b></label>
                 <input type="text" value={email} name="email" readOnly={true} disabled />
-               
-                <button type="submit" className="btn-login"> Update profile</button>
-                <Link to="/user">
-                <button type="button" className="btn-login" onClick={() => this.onUpdatePwdClick(true)}>Change Password?</button>
-                </Link>
+                <div style={{display:'flex'}}>
+                  <button type="submit" className="btn-login"> Update profile</button>
+                  {/* <Link to="/user"> */}
+                  <button type="button" className="btn-reset" onClick={() => this.onUpdatePwdClick(true)}>Change Password?</button>
+                  {/* </Link> */}
+                </div>
             </form>      
     );
   }

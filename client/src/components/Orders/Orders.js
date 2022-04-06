@@ -41,6 +41,7 @@ class Orders extends Component{
     }
     componentDidMount(){
         //TODO: API TO FETCH ALL ORDERS
+        //this.setState({...this.state, isLoading: true})
         let userid = this.context.getUser()._id;
         axios.get(`api/v1/order/user/${userid}`,{
             headers: {
@@ -135,35 +136,43 @@ class Orders extends Component{
         let user = this.context.getUser()
         return (
             <>
+            
             <Spinner isLoading={isLoading}/>
-            {errorMessages.length ? this.displayNotification(true) : ""}
-            {notifications.length ? this.displayNotification(false) : ""}
-            {!user 
-             ? (<Navigate to="/login" replace={true}/>)
-             : <div className="orders">
-                    <h3>My orders</h3>
-                    <div className="body">
-                    {
-                        orders && orders.length === 0
-                         ? <p>{EMPTY_DATASET.NO_ORDERS}</p>
-                         : <>
-                            <div className="form-header">
-                                <label className={isOrderHistory? 'tab-active':''}
-                                        onClick={()=>this.onTabClick(true)}>ORDERS HISTORY</label>
-                                <label className={!isOrderHistory? 'tab-active':''}
-                                        onClick={()=>this.onTabClick(false)}>UPCOMING / ACTIVE EVENTS</label>
-                            </div>
-                            <div>
-                                {
-                                    isOrderHistory 
-                                    ? <OrdersHistory orders={ordersHistory}/>
-                                    : <UpcomingEvents events={upcomingEvents} onCancelOrder={this.onCancelOrder}/>
-                                }
-                            </div>
+            {
+                !isLoading && <>
+                {!user 
+                ? (<Navigate to="/login" replace={true}/>)
+                : <div className="orders">
+                     {errorMessages.length ? this.displayNotification(true) : ""}
+                     {notifications.length ? this.displayNotification(false) : ""}
+                        <h3>My orders</h3>
+                        <div className="body">
+                        
+                            <>
+                            {orders && orders.length === 0
+                            ? <p>{EMPTY_DATASET.NO_ORDERS}</p>
+                            : <>
+                                <div className="form-header">
+                                    <label className={isOrderHistory? 'tab-active':''}
+                                            onClick={()=>this.onTabClick(true)}>ORDERS HISTORY</label>
+                                    <label className={!isOrderHistory? 'tab-active':''}
+                                            onClick={()=>this.onTabClick(false)}>UPCOMING / ACTIVE EVENTS</label>
+                                </div>
+                                <div>
+                                    {
+                                        isOrderHistory 
+                                        ? <OrdersHistory orders={ordersHistory}/>
+                                        : <UpcomingEvents events={upcomingEvents} onCancelOrder={this.onCancelOrder}/>
+                                    }
+                                </div>
+                                </>
+                            }
                             </>
-                    }
+                            
+                        </div>
                     </div>
-                </div>
+                }
+                </>
             }
             </>
         )
