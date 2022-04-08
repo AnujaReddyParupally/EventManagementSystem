@@ -1,3 +1,4 @@
+
 var mongoose = require('mongoose');
 const Order = require("../models/order");
 const Event = require("../models/events");
@@ -7,6 +8,7 @@ const e = require("express");
 //all orders event name city image url event date amd time
 const fetchOrders = async (req, res, next) => {
     try {
+
         Order.find().populate('userID eventID').exec((err, orders) => {
             orders= orders.map(order => {
                 const selectedslot = order.eventID[0].slots.find(slot=> slot._id.toString() === order.slotID.toString())
@@ -74,6 +76,7 @@ const createOrder = async (req, res, next) => {
                     message: `Event with id ${req.body.eventID} is not available.  `
                 });
             } else {
+
                 const selectedslot = selectedevent.slots.find(slot =>  slot._id.toString() ===  req.body.id)
                 let viptickets = parseInt(req.body.viptickets)
                 let gatickets = parseInt(req.body.gatickets)
@@ -94,6 +97,7 @@ const createOrder = async (req, res, next) => {
                 }
                 else if (availvip < 0 || availga < 0) {
                     if (selectedslot.availVIPTick >= 0 || selectedslot.availGATick >= 0) {
+          
                         res.status(500).json({
                             message: `Event with id ${req.body.eventID} is not available for the requested seats. Currently we have ${event.slots[0].availGATick} GA and ${event.slots[0].availVIPTick} VIP seats. `
                         });
@@ -103,6 +107,7 @@ const createOrder = async (req, res, next) => {
                     let order = new Order({
                         userID: req.body.userID,
                         eventID: req.body.eventID,
+
                         slotID: req.body.id,
                         vipticks: req.body.viptickets,
                         gaticks: req.body.gatickets,

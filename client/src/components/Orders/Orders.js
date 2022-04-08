@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { Component } from "react";
 import axios from 'axios'
 
@@ -11,9 +12,10 @@ import {ERRORS, NOTIFICATIONS, ORDER_STATUS, EMPTY_DATASET} from '../constants.j
 
 class Orders extends Component{
     constructor(){
+
         super()
-        this.state={
-            isLoading:true,
+        this.state = {
+            isLoading: true,
             isOrderHistory: true,
             ordersHistory: [],
             upcomingEvents: [],
@@ -21,6 +23,7 @@ class Orders extends Component{
             errorMessages: []
         }
         this.onCancelOrder = this.onCancelOrder.bind(this)
+
         this.splitOrders = this.splitOrders.bind(this)
         this.onCloseNotification = this.onCloseNotification.bind(this)
     }
@@ -32,6 +35,7 @@ class Orders extends Component{
 
     splitOrders(orders) {
         console.log('splitorders', orders)
+
         let ordersHistory = orders.filter(order => {
             return ((new Date(order.date + ' ' + order.endtime)) < new Date() || order.status === "Cancelled")
         })
@@ -39,6 +43,7 @@ class Orders extends Component{
             return ((new Date(order.date + ' ' + order.endtime)) > new Date() && order.status === "Confirmed")
         })
         this.setState({ ...this.state, upcomingEvents, ordersHistory })
+
     }
     componentDidMount(){
         //TODO: API TO FETCH ALL ORDERS
@@ -78,11 +83,44 @@ class Orders extends Component{
             console.log(err)
         });
     }
-    onCancelOrder(orderid){
+    componentDidMount() {
+        //TODO: API TO FETCH ALL ORDER
+        let userid = this.context.getUser()._id;
+        axios.get(`api/v1/order/user/${userid}`).then(res => {
+            console.log(res.data);
+
+            let orders = res.data.orders.map(order => {
+                return {
+                    id: order._id,
+                    userid: order.userID._id,
+                    eventid: order.eventID._id,
+                    eventname: order.eventID[0].eventname,
+                    city: order.eventID[0].city[0],
+                    date: "04-01-2022", //order.eventID[0].slots[0].date,
+                    endtime: order.eventID[0].slots[0].endtime,
+                    starttime: order.eventID[0].slots[0].starttime,
+                    viptickets: order.vipticks,
+                    gatickets: order.gaticks,
+                    status: order.orderStatus,
+                    createddate: order.createdAt,
+                    modifieddate: order.updatedAt,
+                    totalprice: order.price
+                }
+            })
+
+            this.splitOrders(orders)
+            this.setState({ ...this.state, isLoading: false, orders: orders })
+
+        }).catch(err => {
+
+        });
+    }
+    onCancelOrder(orderid) {
         /**TODO - API - SEND ORDER ID 
          *            - UPDATE ORDER STATUS TO CANCELLED
          *            - UPDATE AVAILABLE TICKETS IN EVENTS SCHEMA
         */
+
          var { errorMessages, notifications, orders } = this.state;
 
         const token = this.context.getToken()
@@ -91,10 +129,12 @@ class Orders extends Component{
                 'Authorization': 'Bearer '+ token
             }
         }).then(res => {
+
             console.log(res.data);
             if (res.status === 200 && res.data) {
                 notifications.push(NOTIFICATIONS.CANCELLED)
                 const filteredorder = orders.find(o => o.id === orderid)
+
                 filteredorder.status = ORDER_STATUS.CANCELLED
                 this.splitOrders(orders)
                 this.setState({ ...this.state, notifications, errorMessages: [], isLoading: false, orders })
@@ -105,6 +145,7 @@ class Orders extends Component{
             errorMessages.push(ERRORS.CANCELERROR);
             this.setState({ ...this.state, errorMessages, notifications: [], isLoading: false })
         });
+
     }
     onCloseNotification(id, isError) {
         var { errorMessages, notifications } = this.state
@@ -116,6 +157,7 @@ class Orders extends Component{
             notifications = notifications.filter((notification, index) => index !== id)
             this.setState({ ...this.state, notifications })
         }
+
     }
 
     displayNotification(isError) {
@@ -177,6 +219,41 @@ class Orders extends Component{
                 </>
             }
             </>
+
+        )
+    }
+
+    render() {
+        let { isOrderHistory, ordersHistory, upcomingEvents, orders, errorMessages, notifications } = this.state
+        console.log(orders)
+        return (
+            <>{
+                orders.length === 0 ? '' :
+                    <>
+                        {errorMessages.length ? this.displayNotification(true) : ""}
+                        {notifications.length ? this.displayNotification(false) : ""}
+                        <div className="orders" >
+                            <h3>My orders</h3>
+                            <div className="body">
+                                <div className="form-header">
+                                    <label className={isOrderHistory ? 'tab-active' : ''}
+                                        onClick={() => this.onTabClick(true)}>ORDERS HISTORY</label>
+                                    <label className={!isOrderHistory ? 'tab-active' : ''}
+                                        onClick={() => this.onTabClick(false)}>UPCOMING / ACTIVE EVENTS</label>
+                                </div>
+                                <div>
+                                    {
+                                        isOrderHistory
+                                            ? <OrdersHistory orders={ordersHistory} />
+                                            : <UpcomingEvents events={upcomingEvents} onCancelOrder={this.onCancelOrder} />
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </>
+            }
+            </>
+
         )
     }
 }

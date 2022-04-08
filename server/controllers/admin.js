@@ -1,7 +1,28 @@
 const { validationResult } = require("express-validator");
 
 const Event = require("../models/events");
-const errors = require("../config/eventErrors.json");
+
+const errors = require("../config/eventError.json");
+
+exports.fetchEvents = async (req, res) => {
+  const events = await Event.find();
+  res.json(events);
+}
+
+exports.fetchEvent = async (req, res, next) => {
+  try{
+      const event = await Event.findOne({ _id: req.params.id });
+      if(!event){
+          throw{
+             data  : `unable to fetch event details for ID ${req.params.id} `,
+          };
+      }
+      res.json(event);
+
+  }catch(err){
+      next(err);
+  }
+}
 
 
 const addevent = async (req, res, next) => {
@@ -140,5 +161,7 @@ const editevent = async (req, res, next) => {
 
 
 exports.addevent = addevent;
+
 exports.editevent = editevent;
+
 exports.deleteevent = deleteevent;

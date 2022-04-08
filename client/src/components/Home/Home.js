@@ -1,10 +1,14 @@
 import axios from 'axios'
+
 import Spinner from '../Spinner/Spinner'
+
 import React, { Component } from 'react'
 import Events from '../Events/Events'
 
 import Search from './Search'
 import {ERRORS, CITIES} from '../constants.js'
+
+
 
 class Home extends Component{
     constructor(){
@@ -22,6 +26,7 @@ class Home extends Component{
     }
 
     componentDidMount(){
+
         let cities= CITIES.sort((a,b)=>a.name > b.name ? 1 : -1)
         let errorMessages = []
         //get api data and assign it to events in state
@@ -32,6 +37,7 @@ class Home extends Component{
             errorMessages.push(ERRORS.GENERIC_FAILED)
             this.setState({...this.state, errorMessages, cities, isLoading: false})
         })
+
     }
     
     onSearchChange(event){

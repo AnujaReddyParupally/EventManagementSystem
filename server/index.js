@@ -11,6 +11,7 @@ const {
     genericErrorHandler,
   } = require("./middleware/http-error-handlers");
 const authRoute = require("./routes/auth");
+
 const otproutes =  require('./routes/OTP')
 const eventroutes = require("./routes/event");
 const userroutes = require("./routes/user");
@@ -29,6 +30,8 @@ app.use("/api/v1/auth", authRoute);
 app.use('/api/v1/events', eventroutes);
 app.use('/api/v1/user', userroutes);
 app.use('/api/v1/order', orderRoutes);
+
+app.use('/api/v1/order',orderRoutes);
 
 app.get('/', function (req, res) {
     console.log('route / is accessed.');

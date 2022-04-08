@@ -6,6 +6,7 @@ import {  SessionContext } from "../SessionCookie/SessionCookie";
 import WithRouter from "../HOC/WithRouter";
 import {ERRORS, NOTIFICATIONS} from '../constants.js'
 
+
 const CITIES=[
     {id: 1, name: 'Hyderabad'},
     {id: 2, name: 'Bangalore'},
@@ -140,6 +141,7 @@ class AddEvent extends Component{
                          && (new Date ('1/1/1999 ' + slot.starttime) < new Date ('1/1/1999 ' + slot.endtime)) 
                          && (slot.gatickets || slot.viptickets))
             })
+
         if(filteredslots.length) errorMessages.push(ERRORS.INVALID_SLOT)
        
         //VIP Price cannot be zero when atleast one Slot has 1 or more  VIP tickets 
@@ -163,6 +165,7 @@ class AddEvent extends Component{
              * ERROR: if error, return 500 => display 'Opps! something went wrong.....'
             */
 
+
              var data = JSON.stringify({
                 eventname: eventname, 
                 city: city[0], 
@@ -174,7 +177,6 @@ class AddEvent extends Component{
                 ImageURL: ImageURL,
                 slots: slots,
             });
-
             if(_id)
             {
                 //EDIT EVENT
@@ -289,7 +291,9 @@ class AddEvent extends Component{
                 currentSlot.gatickets= value
                 break;
             default: break;
+
         }
+        this.setState({...this.state, slots:[{/*...slots,*/ ...currentSlot}]})
     }
     componentDidMount(){
         let id = this.props.params.id;

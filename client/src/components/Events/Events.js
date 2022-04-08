@@ -4,8 +4,11 @@ import { EMPTY_DATASET } from "../constants";
 import Event from "./Event";
 
 const Events = (props) =>{
+    console.log(props.events)
     return (
+       
         <div className="events">
+
             
             {props.events && props.events.length ? 
                 props.events.map(event=>{

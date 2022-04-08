@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const Event = (props) =>{
+
     const {_id, eventname, city, ImageURL,  tags}= props.event
     return (
         <div className="event">

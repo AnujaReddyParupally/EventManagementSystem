@@ -45,7 +45,7 @@ class OrdersHistory extends Component{
                                     <td>{order.starttime}</td>
                                     <td>{order.endtime}</td>
                                     <td>{order.viptickets}</td>
-                                    <td>{order.gaptickets}</td>
+                                    <td>{order.gatickets}</td>
                                     <td>{order.totalprice}</td>
                                     <td title={order.status.toUpperCase()}>{order.status !== 'Cancelled' ? <span className='tick'><FcOk/></span> : <span className='cross'><IoIosCloseCircle/></span>}</td>
                                 </tr>

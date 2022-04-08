@@ -2,6 +2,7 @@ const router = require('express').Router();
 
 const { check } = require('express-validator');
 const orderCtrl = require('../controllers/order');
+
 const auth = require('../middleware/auth')
 
 //ORDERS CAN BE PLACED, SEEN, OR CANCELLED ONLY BY AUTHENTICATED USERS
