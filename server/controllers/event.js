@@ -45,6 +45,24 @@ const fetchEventsOfCity = async (req, res, next) => {
   }
 };
 
+const fetchEventsByCityAndName = async (req, res, next) => {
+  try {
+    const {city, text} = req.query
+    
+    const events = await Event.find({
+      eventname: {$regex: '.*'+text+'.*', $options: 'i' },
+      city: {$regex: '.*'+city+'.*', $options: 'i' }
+    });
+    console.log(events)
+    if (!events){
+        return null;
+    }
+    res.status(200).json(events);
+  } catch (err) {
+    next(err);
+  }
+};
+
 const searchEvent = async(req,res,next) => {
     try{
       const eventname = req.params.eventname;
@@ -65,3 +83,4 @@ exports.fetchEvent = fetchEvent
 exports.searchEvent = searchEvent
 exports.fetchEvents = fetchEvents
 exports.fetchEventsOfCity = fetchEventsOfCity;
+exports.fetchEventsByCityAndName = fetchEventsByCityAndName;

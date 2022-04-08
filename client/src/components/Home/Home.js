@@ -1,7 +1,8 @@
 import axios from 'axios'
+import Spinner from '../Spinner/Spinner'
 import React, { Component } from 'react'
 import Events from '../Events/Events'
-import Spinner from '../Spinner/Spinner'
+
 import Search from './Search'
 import {ERRORS, CITIES} from '../constants.js'
 
@@ -34,15 +35,17 @@ class Home extends Component{
     }
     
     onSearchChange(event){
-        var searchTxt = event.target.value;
+        var searchTxt = event ? event.target.value : '';
         let errorMessages = []
 
-        this.setState({...this.state, isLoading: true})
+        this.setState({...this.state, searchterm: searchTxt, isLoading: true})
         //SEARCH WITH ATLEAST 3 CHARACTERS
-        if(searchTxt.trim().length > 2){
+        if(searchTxt.trim().length > 2 || this.state.selectedCity){
             clearTimeout(this.typingTimer);
             this.typingTimer = setTimeout(() => {
-                axios.get(`api/v1/events/searchevent/${searchTxt}`).then(res=>{
+                axios.get(`api/v1/events/search?city=${this.state.selectedCity}&text=${searchTxt}`)
+                // axios.get(`api/v1/events/searchevent/${searchTxt}`)
+                .then(res=>{
                     if(res.status===200){
                         this.setState({...this.state, searchterm: searchTxt, events : res.data, isLoading: false});
                         console.log(res.data);
@@ -67,18 +70,19 @@ class Home extends Component{
     }
 
     onCityFilterChange(event) {
-        var searchTxt = event.target.value;
+        var selectedCity = event.target.value;
         let errorMessages= []
-        this.setState({...this.state, isLoading: true})
-        if (searchTxt != null && searchTxt) {
-          console.log(searchTxt);
+        this.setState({...this.state, selectedCity, searchterm: '', isLoading: true})
+        
+        if (selectedCity != null && selectedCity) {
+          //console.log(selectedCity);
           axios
-            .get(`/api/v1/events/searchbycity/${searchTxt}`)
+            .get(`/api/v1/events/searchbycity/${selectedCity}`)
             .then((res) => {
               if (res.status === 200) {
                 this.setState({
                   ...this.state,
-                  searchterm: searchTxt,
+                  selectedCity: selectedCity,
                   events: res.data,
                 });
                 console.log(res.data);
@@ -86,7 +90,7 @@ class Home extends Component{
             })
             .catch((err) => {
                 errorMessages.push(ERRORS.GENERIC_FAILED)
-              this.setState({ ...this.state, errorMessages, searchterm: searchTxt});
+              this.setState({ ...this.state, errorMessages, selectedCity: selectedCity});
             });
         }
         else{
@@ -102,27 +106,28 @@ class Home extends Component{
 
     render(){
         return (
-        <div className='home' >
+            <>
             <Spinner isLoading={this.state.isLoading}/>
-            <div className='filters'>
-                <div style={{display:"flex"}}   >
-                <p>Filter by City</p>
-                <select className='filters-select' onChange={this.onCityFilterChange}>
-                    <option value="">Select city</option>
-                    {this.state.cities.map((city)=>{
-                        return  <option key={city.id} value={city.name}>{city.name}</option>
-                    })}
-                </select>
-                </div>  
-                 <Search onSearch={this.onSearchChange}/>
+            <div className='home' >
+            
+                <div className='filters'>
+                    <div style={{display:"flex"}}   >
+                    <p>Filter by City</p>
+                    <select className='filters-select' onChange={this.onCityFilterChange}>
+                        <option value="">Select city</option>
+                        {this.state.cities.map((city)=>{
+                            return  <option key={city.id} value={city.name}>{city.name}</option>
+                        })}
+                    </select>
+                    </div>  
+                    <Search onSearch={this.onSearchChange} searchterm={this.state.searchterm}/>
+                </div>
+                <h3 style={{marginLeft: "20px"}}>Events</h3> 
+            
+                <Events events={this.state.events}/> 
             </div>
-            <h3 style={{marginLeft: "20px"}}>Events</h3> 
-            {/* {this.typingTimer
-            ?<h3 style={{marginLeft: "20px"}}>Events Found</h3>
-            :<h3 style={{marginLeft: "20px"}}>All Events</h3>
-            } */}
-            <Events events={this.state.events}/> 
-        </div>)
+            </>
+        )
     }
 }
 

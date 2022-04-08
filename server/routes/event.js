@@ -40,6 +40,8 @@ const validateFields = [
 
 router.get('/', eventctrl.fetchEvents);
 
+router.get("/search", eventctrl.fetchEventsByCityAndName);
+
 //VIEW EVENT DETAILS, CREATE EVENT, UPDATE EVENT ARE AVAILABLE ONLY FOR AUTHENTICATED USERS
 router.get('/:id', auth, eventctrl.fetchEvent);
 
@@ -53,5 +55,8 @@ router.delete('/admin/delete/:id', auth,  adminctrl.deleteevent);
 router.get('/searchevent/:eventname', eventctrl.searchEvent);
 
 router.get("/searchbycity/:city", eventctrl.fetchEventsOfCity);
+
+
+
 
 module.exports = router;
