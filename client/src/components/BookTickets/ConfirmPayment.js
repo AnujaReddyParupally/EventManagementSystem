@@ -129,13 +129,14 @@ const ConfirmPayment = (props) => {
     const placeOrder = () => {
         let errorMessages=[]
          //API to create an order
-         const {viptickets, gatickets, price, eventID, refreshEventDetails} = props
+         const {viptickets, gatickets, price, eventID, slotID} = props
          var data = JSON.stringify({
              "viptickets": viptickets,
              "gatickets": gatickets,
              "price": price,
              "userID": userid,
-             "eventID": eventID
+             "eventID": eventID,
+             "id":slotID
          })
          axios.post('/api/v1/order',data, {
              headers: {

@@ -36,6 +36,13 @@ class EventDetails extends Component{
         })
         .then(res=>{
             //console.log(res.data)
+            let event = res.data
+            event.slots = res.data.slots.sort((x,y) =>{
+                if(x.date === y.date)
+                  return  x.starttime > y.starttime ? 1 : -1
+                else
+                return x.date > y.date ? 1 : -1
+            } )
             this.setState({...this.state, event: {...res.data}, isLoading: false})     
         })
         .catch(err=>{
@@ -214,7 +221,7 @@ class EventDetails extends Component{
                                         </div>
                                         <div>
                                             <h2><strong>{slot.gatickets}</strong></h2>
-                                            <span>General slots</span>
+                                            <span>General Admission slots</span>
                                         </div>
                                         </div>
                                 })

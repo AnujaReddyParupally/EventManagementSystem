@@ -31,6 +31,7 @@ class Orders extends Component{
     }
 
     splitOrders(orders) {
+        console.log('splitorders', orders)
         let ordersHistory = orders.filter(order => {
             return ((new Date(order.date + ' ' + order.endtime)) < new Date() || order.status === "Cancelled")
         })
@@ -49,25 +50,26 @@ class Orders extends Component{
             }
         }).then(res => {
             console.log(res.data);
-
-            let orders = res.data.orders.map(order => {
-                return {
-                    id: order._id,
-                    userid: order.userID._id,
-                    eventid: order.eventID._id,
-                    eventname: order.eventID[0].eventname,
-                    city: order.eventID[0].city[0],
-                    date: order.eventID[0].slots[0].date, //TODO: GET ONLY DATE
-                    endtime: order.eventID[0].slots[0].endtime,
-                    starttime: order.eventID[0].slots[0].starttime,
-                    viptickets: order.vipticks,
-                    gatickets: order.gaticks,
-                    status: order.orderStatus,
-                    createddate: order.createdAt,
-                    modifieddate: order.updatedAt,
-                    totalprice: order.price
-                }
-            })
+            let orders= res.data.orders
+            // let orders = res.data.orders.map(order => {
+            //     console.log(order.slotID,order.eventID[0].slots)
+            //     return {
+            //         id: order._id,
+            //         userid: order.userID._id,
+            //         eventid: order.eventID._id,
+            //         eventname: order.eventID[0].eventname,
+            //         city: order.eventID[0].city[0],
+            //         date: order.eventID[0].slots[0].date, //TODO: GET ONLY DATE
+            //         endtime: order.eventID[0].slots[0].endtime,
+            //         starttime: order.eventID[0].slots[0].starttime,
+            //         viptickets: order.vipticks,
+            //         gatickets: order.gaticks,
+            //         status: order.orderStatus,
+            //         createddate: order.createdAt,
+            //         modifieddate: order.updatedAt,
+            //         totalprice: order.price
+            //     }
+            // })
 
             this.splitOrders(orders)
             this.setState({ ...this.state, isLoading: false, orders: orders })

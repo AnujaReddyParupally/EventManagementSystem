@@ -4,15 +4,24 @@ class BookingForm extends Component{
 
     render(){
         let {date, slots, vip, ga, onFormSubmit, onEventDateChange, onStartsAtChange, onGaTicketsChange, onVipTicketsChange} = this.props
+        const slot_dates = [], slot_times =[]
         return(
             <form onSubmit={onFormSubmit}>
                 <div className="ddbooking">
                     <div>
                         <label><b>Event day:</b></label>
-                        <select required onChange={ onEventDateChange }>
+                        <select required onChange={onEventDateChange}>
                         <option value="">Select day</option>
-                            {slots.map((slot, index)=>{
-                                return <option key={index} value={slot.date}>{slot.date}</option>
+                            {slots.map((slot)=>{
+                                if(slot_dates.indexOf(slot.date) === -1)
+                                {
+                                    //UNIQUE DATES
+                                    slot_dates.push(slot.date)
+                                    return <option key={slot._id} value={slot.date}>{slot.date}</option>
+                                }
+                                else{
+                                    return null
+                                }
                             })}
                         </select>
                     </div>                     
@@ -20,9 +29,14 @@ class BookingForm extends Component{
                         <label><b>Starts at:</b></label>
                         <select required onChange={onStartsAtChange }>
                             <option value="">Select time</option>
-                            {slots.map((slot, index)=>{
-                                if(slot.date === date)
-                                 return <option key={index} value={slot.starttime}>{slot.starttime}</option>
+                            {slots.map((slot)=>{
+                                if(slot_times.indexOf(slot.time) === -1)
+                                {
+                                    //UNIQUE DATES
+                                    slot_dates.push(slot.date)
+                                    if(slot.date === date)
+                                    return <option key={slot._id} value={slot.starttime}>{slot.starttime}</option>
+                                }
                                 else
                                  return null
                             })}
@@ -44,7 +58,7 @@ class BookingForm extends Component{
                     </div>
                     <div>
                         <label>
-                            <b>General tickets: </b> 
+                            <b>General Admission: </b> 
                             <span>({ga} tickets left)</span>
                         </label>  
                         <div>   

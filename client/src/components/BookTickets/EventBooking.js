@@ -9,6 +9,7 @@ class EventBooking extends Component{
     constructor(){
         super()
         this.state={
+                _id:'',
                 date: '',
                 time:'',
                 viptickets:0,
@@ -84,7 +85,11 @@ class EventBooking extends Component{
         }
         if(errorMessages.length === 0){
             //SHOW TOTAL BILL
-            this.setState({...this.state, showbill: true, proceedToPayment: false, errorMessages:[]})
+            const id = this.props.slots.find(slot=>{
+                return slot.date === date && slot.starttime === time
+            })._id
+            console.log(id)
+            this.setState({...this.state, _id: id, showbill: true, proceedToPayment: false, errorMessages:[]})
         }
         else{
             //STAY IN THE SAME PAGE
@@ -119,7 +124,7 @@ class EventBooking extends Component{
         }
     }
     render(){
-        let {slots, vipprice, gaprice, eventID, refreshEventDetails} = this.props
+        let { slots, vipprice, gaprice, eventID} = this.props
         console.log(slots)
         let {date, time, errorMessages, notifications, showbill, proceedToPayment, viptickets, gatickets, price} = this.state
         let vip = date && time ? this.getAvailableTickets(TICKET_TYPE.VIP) : 0 
@@ -131,7 +136,7 @@ class EventBooking extends Component{
             {notifications.length ? this.displayNotification(false) :""} 
 
             { proceedToPayment 
-              ? <ConfirmPayment viptickets={viptickets} gatickets={gatickets} eventID={eventID} price={price}
+              ? <ConfirmPayment viptickets={viptickets} gatickets={gatickets} eventID={eventID} price={price} slotID={this.state._id}
                                 onCancelPayment={this.onCancelPayment} />
               : (showbill 
                     ? <PaymentSummary date={date} time={time} 
