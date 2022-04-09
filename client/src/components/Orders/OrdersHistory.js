@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { FcOk } from "react-icons/fc";
 import { IoIosCloseCircle } from "react-icons/io";
-import { EMPTY_DATASET } from '../constants';
 
 class OrdersHistory extends Component{
     constructor(){
@@ -10,15 +9,14 @@ class OrdersHistory extends Component{
     }
     render(){
         let {orders} = this.props
-        console.log(orders)
         return (
             <div className='orders-history'>
                 <table>
                     <thead>
                         <tr>
-                            <th>Order ID</th>
                             <th>Event name</th>
                             <th>City</th>
+                            <th>Order ID</th>
                             <th>Date</th>
                             <th>Starts at</th>
                             <th>Ends at</th>
@@ -29,13 +27,7 @@ class OrdersHistory extends Component{
                         </tr>
                     </thead>
                     <tbody>
-                        {orders.length === 0 
-                          ? <tr>
-                              <td colSpan="10">
-                                  {EMPTY_DATASET.NO_ORDERS}
-                              </td> 
-                            </tr>
-                          : orders.map(order => {
+                        {orders.map(order => {
                             return (
                                 <tr key={order.id}>
                                     <td>#{order.id}</td>
@@ -47,7 +39,7 @@ class OrdersHistory extends Component{
                                     <td>{order.viptickets}</td>
                                     <td>{order.gatickets}</td>
                                     <td>{order.totalprice}</td>
-                                    <td title={order.status.toUpperCase()}>{order.status !== 'Cancelled' ? <span className='tick'><FcOk/></span> : <span className='cross'><IoIosCloseCircle/></span>}</td>
+                                    <td>{order.status === 'CONFIRMED' ? <span className='tick'><FcOk/></span> : <span className='cross'><IoIosCloseCircle/></span>}</td>
                                 </tr>
                             )
                         })}

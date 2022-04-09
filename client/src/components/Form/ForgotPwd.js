@@ -2,6 +2,9 @@ import React, { Component } from 'react'
 
 class ForgotPwd extends Component
 {
+    constructor(){
+        super()
+    }
     render(){
         const {displayOtp, isUserVerified} = this.props
         return(
@@ -43,10 +46,7 @@ class ForgotPwd extends Component
                     ? <button type="submit" className='btn-login'>Reset pasword</button>
                     : (displayOtp
                       ? <button type="button" onClick={this.props.onVerifyOTPSubmit} className='btn-login'>Verify</button>
-                      : <div style={{display: 'flex'}}>
-                          <button type="button" onClick={this.props.onSendOTPSubmit} className='btn-login col-50'>Send OTP</button>
-                          <button type="button" onClick={this.props.onCancelForgotPassword} className='btn-reset'>Cancel</button>
-                        </div>)
+                      : <button type="button" onClick={this.props.onSendOTPSubmit} className='btn-login'>Send OTP</button>)
                     }
             </form>
         )
