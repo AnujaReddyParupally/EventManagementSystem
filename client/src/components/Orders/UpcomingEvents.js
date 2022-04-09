@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { EMPTY_DATASET } from '../constants'
 
 class UpcomingEvents extends Component{
     constructor(){
@@ -7,6 +8,7 @@ class UpcomingEvents extends Component{
     }
     render(){
         let {events, onCancelOrder} = this.props
+        console.log(events)
         return (<div className='upcoming-events'>
         <table>
             <thead>
@@ -24,7 +26,13 @@ class UpcomingEvents extends Component{
                 </tr>
             </thead>
             <tbody>
-                {events.map(event => {
+                {events.length === 0 
+                   ?  <tr>
+                              <td colSpan="10">
+                                  {EMPTY_DATASET.NO_UPCOMING_EVENTS}
+                              </td> 
+                            </tr>
+                 : events.map(event => {
                     return (
                         <tr key={event.id}>
                             <td>#{event.id}</td>

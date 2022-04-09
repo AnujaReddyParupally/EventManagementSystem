@@ -3,23 +3,18 @@ import Notification from '../Notifications/Notification'
 import BookingForm from "./BookingForm";
 import ConfirmPayment from "./ConfirmPayment";
 import PaymentSummary from "./PaymentSummary";
-
-const TICKET_TYPE={VIP:'VIP', GA:'GA'}
-const ERRORS = {
-    INVALID_DATE: "Date is required!"
-    ,INVALID_TIME: "Time is required!"
-    ,INVALID_TICKETS: "Book at least 1 ticket to proceed!"
-    ,MAX_LIMIT_EXCEEDED: "Maximum booking limit exceeded!"
-}
+import {ERRORS, TICKET_TYPE} from '../constants.js'
 
 class EventBooking extends Component{
     constructor(){
         super()
         this.state={
+                _id:'',
                 date: '',
                 time:'',
                 viptickets:0,
                 gatickets: 0,
+                price: 0,
                 errorMessages:[],
                 notifications:[],
                 showbill: false,
@@ -39,21 +34,29 @@ class EventBooking extends Component{
     getAvailableTickets(type){
         let value=0
         let {date, time} = this.state
-        let selectedslot = this.props.slots.find(s=> s.date === date && s.starttime === time)
-        if(type === TICKET_TYPE.VIP)
-            value= selectedslot.availableviptickets
-        else if(type === TICKET_TYPE.GA)
-            value= selectedslot.availablegatickets
-        else
-            value = 0
+        if(date && time){
+            let selectedslot = this.props.slots.find(s=> s.date === date && s.starttime === time)
+            if(type === TICKET_TYPE.VIP)
+                value= selectedslot.availVIPTick
+            else if(type === TICKET_TYPE.GA)
+                value= selectedslot.availGATick
+            else
+                value = 0
+        }
         return value
 
     }
-    onCancelPayment(){
+    onCancelPayment(isRefresh){
         this.setState({...this.state,proceedToPayment:false,showbill:false, errorMessages:[]})
+        isRefresh && this.props.refreshEventDetails()
     }
-    onProceedToPay(){
-        this.setState({...this.state,proceedToPayment:true,showbill:false, errorMessages:[]})
+    onProceedToPay(billamount){
+        this.setState({...this.state,price: billamount, proceedToPayment:true,showbill:false, errorMessages:[]})
+    }
+    onPlaceOrder(){
+        return {
+
+        }
     }
     onEventDateChange(event){
         this.setState({date: event.target.value, time:'', viptickets: 0, gatickets: 0, errorMessages:[]})
@@ -82,7 +85,11 @@ class EventBooking extends Component{
         }
         if(errorMessages.length === 0){
             //SHOW TOTAL BILL
-            this.setState({...this.state, showbill: true, proceedToPayment: false, errorMessages:[]})
+            const id = this.props.slots.find(slot=>{
+                return slot.date === date && slot.starttime === time
+            })._id
+            console.log(id)
+            this.setState({...this.state, _id: id, showbill: true, proceedToPayment: false, errorMessages:[]})
         }
         else{
             //STAY IN THE SAME PAGE
@@ -117,8 +124,9 @@ class EventBooking extends Component{
         }
     }
     render(){
-        let {slots, vipprice, gaprice} = this.props
-        let {date, time, errorMessages, notifications, showbill, proceedToPayment, viptickets, gatickets} = this.state
+        let { slots, vipprice, gaprice, eventID} = this.props
+        console.log(slots)
+        let {date, time, errorMessages, notifications, showbill, proceedToPayment, viptickets, gatickets, price} = this.state
         let vip = date && time ? this.getAvailableTickets(TICKET_TYPE.VIP) : 0 
         let ga = date && time ? this.getAvailableTickets(TICKET_TYPE.GA) : 0 
         console.log(slots)
@@ -128,7 +136,8 @@ class EventBooking extends Component{
             {notifications.length ? this.displayNotification(false) :""} 
 
             { proceedToPayment 
-              ? <ConfirmPayment onCancelPayment={this.onCancelPayment}/>
+              ? <ConfirmPayment viptickets={viptickets} gatickets={gatickets} eventID={eventID} price={price} slotID={this.state._id}
+                                onCancelPayment={this.onCancelPayment} />
               : (showbill 
                     ? <PaymentSummary date={date} time={time} 
                                         vip={viptickets} ga={gatickets} 
@@ -142,7 +151,6 @@ class EventBooking extends Component{
                                     onVipTicketsChange={this.onVipTicketsChange}
                                     onGaTicketsChange={this.onGaTicketsChange}
                                     onCancelPayment={this.onCancelPayment}/>)
-              
             } 
             </>
         )
@@ -150,3 +158,10 @@ class EventBooking extends Component{
 }
 
 export default EventBooking
+
+// const ERRORS = {
+//     INVALID_DATE: "Date is required!"
+//     ,INVALID_TIME: "Time is required!"
+//     ,INVALID_TICKETS: "Book at least 1 ticket to proceed!"
+//     ,MAX_LIMIT_EXCEEDED: "Maximum booking limit exceeded!"
+// }

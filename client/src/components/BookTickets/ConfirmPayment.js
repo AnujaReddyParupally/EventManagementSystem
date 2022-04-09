@@ -1,30 +1,30 @@
 import React, { useContext, useEffect, useState } from "react";
+import {useNavigate} from 'react-router-dom';
 import axios from 'axios'
 import {SessionContext} from '../SessionCookie/SessionCookie'
 import Notification  from "../Notifications/Notification";
-const ERRORS={
-    EMAIL: "Invalid User!",
-    PAYMENT_FAILED: "Payment failed!",
-    OTP_EXPIRED: "OTP Expired!",
-    OTP_REQUIRED: "OTP is required!"
-}
+import {ERRORS} from '../constants.js'
+
 const ConfirmPayment = (props) => {
     const [otp, setOtp] = useState('')
     const [otpExpiry, setOtpExpiry] = useState('')
     const [email, setEmail] = useState('')
+    const [userid, setUserid] = useState('')
     const [isUserVerified, setIsUserVerified] = useState(false)
+    const [isOrderPlaced, setIsOrderPlaced] = useState(false)
     const [errorMessages, setErrorMessages] = useState([])
     const [notifications, setNotifications] = useState([])
     const context = useContext(SessionContext)
+    const navigate = useNavigate()
 
     useEffect(()=>{
         let user= context.getUser()
-        console.log(user)
         //SEND OTP ON PAGE LOAD
         if(user){
             setEmail(user.email)
-            let notifications =[], errorMessages=[]
-            axios.get(`/api/otp/${user.email}`).then(res=>{
+            setUserid(user.id)
+            let errorMessages=[]
+            axios.get(`/api/v1/otp/${user.email}`).then(res=>{
                 console.log(res)
                 if(res.status===200){
                     setOtpExpiry(res.data.expireat)
@@ -46,8 +46,8 @@ const ConfirmPayment = (props) => {
     },[])
 
     const sendOTP =() =>{
-        let notifications =[], errorMessages=[]
-        axios.get(`/api/otp/${email}`).then(res=>{
+        let errorMessages=[]
+        axios.get(`/api/v1/otp/${email}`).then(res=>{
             console.log(res)
             if(res.status===200){
                 setOtpExpiry(res.data.expireat)
@@ -89,7 +89,7 @@ const ConfirmPayment = (props) => {
             "email": email,
             "otp": otp
           });
-           axios.post('/api/otp',data, {
+           axios.post('/api/v1/otp',data, {
                headers: {
                 'Content-Type': 'application/json'
                }
@@ -99,6 +99,7 @@ const ConfirmPayment = (props) => {
                     setErrorMessages([])
                     setNotifications([])
                     setIsUserVerified(true)
+                    placeOrder()
                 }
                 else{
                     //Failure
@@ -124,6 +125,34 @@ const ConfirmPayment = (props) => {
            setErrorMessages(errorMessages)
            setNotifications([])
         }
+    }
+    const placeOrder = () => {
+        let errorMessages=[]
+         //API to create an order
+         const {viptickets, gatickets, price, eventID, slotID} = props
+         var data = JSON.stringify({
+             "viptickets": viptickets,
+             "gatickets": gatickets,
+             "price": price,
+             "userID": userid,
+             "eventID": eventID,
+             "id":slotID
+         })
+         axios.post('/api/v1/order',data, {
+             headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer '+context.getToken()
+             }
+          }).then(res=>{
+             if(res.status===200 ){
+                setIsOrderPlaced(true)
+                setErrorMessages([])
+             }
+          }).catch(err=>{
+            setIsOrderPlaced(false)
+            errorMessages.push(ERRORS.GENERIC_FAILED)
+            setErrorMessages(errorMessages)
+          })
     }
     const displayNotification = (isError) => {
         var obj = isError ? errorMessages : notifications
@@ -156,12 +185,12 @@ const ConfirmPayment = (props) => {
         {notifications.length ? displayNotification(false) :""} 
        
         <div className="confirm-payment">
-            {isUserVerified 
+            {isUserVerified  && isOrderPlaced
               ? <>
-                <img src="../assets/images/success.png"/>
+                <img alt="" src={window.location.origin+"/assets/images/success.png"}/>
                 <p>Payment Successful!</p>
                 <p>Tickets will be sent to your registered email ID.</p>
-                <button type="button" className="btn-book-ticket" onClick={props.onCancelPayment}>Continue Booking</button>
+                <button type="button" className="btn-book-ticket" onClick={()=>props.onCancelPayment(true)}>Continue Booking</button>
               </>
               : <>
                     <p>OTP has been shared to your registered email ID.</p>
@@ -171,7 +200,7 @@ const ConfirmPayment = (props) => {
                     <span className='resend-otp' onClick={sendOTP}>Resend OTP</span>
                     <div style={{display:"flex"}}>
                         <button type="button" className="btn-book-ticket" onClick={onConfirmPayment}>Confirm Payment</button>
-                        <button type="button" className="btn-book-cancel" onClick={props.onCancelPayment}>Cancel</button>
+                        <button type="button" className="btn-book-cancel" onClick={()=>props.onCancelPayment(false)}>Cancel</button>
                     </div>
                 </>}
         </div>
@@ -180,3 +209,11 @@ const ConfirmPayment = (props) => {
 }
 
 export default ConfirmPayment
+
+
+// const ERRORS={
+//     EMAIL: "Invalid User!",
+//     PAYMENT_FAILED: "Payment failed!",
+//     OTP_EXPIRED: "OTP Expired!",
+//     OTP_REQUIRED: "OTP is required!"
+// }

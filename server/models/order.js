@@ -11,6 +11,11 @@ const OrderSchema = mongoose.Schema({
             required: true, 
             ref: 'Event'
         }],
+
+        slotID:{
+            type : mongoose.Types.ObjectId,
+            required: true, 
+        },
         vipticks : {
             type: Number,
             required: false,

@@ -14,12 +14,13 @@ class SessionContextProvider extends Component{
     }
     removeSessionCookie(){
         Cookies.remove("session")
+        Cookies.remove("auth")
         this.setState({...this.state, user: {}})
     }
     setTokenCookie(token){
         //TOKEN NEEDS TO BE REFRESHED AFTER EXPIRY - CALL TOKEN API - FUTURE ENHANCEMENT
         Cookies.remove("auth")
-        Cookies.set("auth",btoa(token),{expires:0.5})
+        Cookies.set("auth",btoa(token.value),{expires:token.expiresAt / (24*60*60)})
         this.setState({...this.state, token})
         console.log(token)
     }
@@ -29,7 +30,7 @@ class SessionContextProvider extends Component{
         if (tokenCookie === undefined) {
           return null;
         } else {
-          return tokenCookie
+          return atob(tokenCookie)
         }
     }
 

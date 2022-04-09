@@ -1,9 +1,13 @@
 import React from 'react'
 
 const PaymentSummary = (props) => {
-    let {date, time, vip, ga, vipprice, gaprice, onProceedToPay, onCancelPayment} = props
+    let {date, time, vip, ga, vipprice, gaprice,  onCancelPayment} = props
     const getTotalBill = () => {
         return (vip*vipprice) + (ga*gaprice)
+    }
+    const proceedToPaymentScreen = () => {
+        const billamount = getTotalBill()
+        props.onProceedToPay(billamount)
     }
     return (
         <div className='payment-summary'>
@@ -39,8 +43,8 @@ const PaymentSummary = (props) => {
             </div>
             </div>
             <div style={{display:"flex"}}>
-                <button type="button" className="btn-book-ticket" onClick={onProceedToPay}>Proceed to pay</button>
-                <button type="button" className="btn-book-cancel" onClick={onCancelPayment}>Cancel</button>
+                <button type="button" className="btn-book-ticket" onClick={proceedToPaymentScreen}>Proceed to pay</button>
+                <button type="button" className="btn-book-cancel" onClick={()=>onCancelPayment(false)}>Cancel</button>
             </div>
         </div>
     )

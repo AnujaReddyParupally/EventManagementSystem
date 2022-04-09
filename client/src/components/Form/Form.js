@@ -7,26 +7,8 @@ import ForgotPwd from './ForgotPwd'
 import axios from 'axios'
 import {   SessionContext } from '../SessionCookie/SessionCookie'
 import Spinner from '../Spinner/Spinner'
+import {ERRORS, NOTIFICATIONS} from '../constants.js'
 
-const ERRORS={
-    EMAIL: "Invalid Email ID."
-    ,PASSWORD:"Password should be at least 6 to 12 characters along with an uppercase, a lowercase and a special character '#?!@$%^&*-_'."
-    ,CONFIRM_PASSWORD:"Passowrd and confirm password does not match."
-    ,GENERIC_FAILED: "Oops! Something went wrong. Please try again."
-    ,LOGIN_FAILED: "Authentication failed!"
-    ,OTP_EXPIRED: "OTP Expired"
-    ,USER_VERIFY_FAILED: "User veriication failed!"
-    ,OTP_REQUIRED: "OTP is required!"
-    ,USER_ALREADY_EXISTS: "User already exists!"
-    ,USER_REGISTRATION_FAILED: "User registration failed!"
-    ,USER_NOT_FOUND: "User not found!"
-    
-}
-const NOTIFICATIONS={
-    SIGNUP_SUCCESS: "Successfully Registered!"
-    ,OTP_SENT: "OTP sent to the registered email!"
-    ,PWD_RESET_SUCCESS: "Password reset successful!"
-}
 class Form extends Component{
     constructor(){
         super()
@@ -68,6 +50,7 @@ class Form extends Component{
         this.onVerifyOTPSubmit=this.onVerifyOTPSubmit.bind(this)
         this.onOTPChange=this.onOTPChange.bind(this)
         this.onForgotPwdClick=this.onForgotPwdClick.bind(this)
+        this.onCancelForgotPassword = this.onCancelForgotPassword.bind(this)
     }
     static contextType = SessionContext
 
@@ -164,7 +147,11 @@ class Form extends Component{
                     Failure: Display 'Invalid email ID' notification
                 */
                 //Assuming success:
-                axios.get(`/api/otp/${email.value}`).then(res=>{
+                axios.get(`/api/v1/otp/${email.value}`, {
+                    headers: {
+                        'Authorization': 'Bearer '+ this.context.getToken()
+                    }
+                }).then(res=>{
                     // console.log(res)
                     if(res.status===200){
                         notifications.push(NOTIFICATIONS.OTP_SENT)
@@ -210,7 +197,7 @@ class Form extends Component{
             "email": email.value,
             "otp": otp.value
           });
-           axios.post('/api/otp',data, {
+           axios.post('/api/v1/otp',data, {
                headers: {
                 'Content-Type': 'application/json'
                }
@@ -226,7 +213,7 @@ class Form extends Component{
                 }
            }).catch(err=>{
                 //Error
-                if(err.response.status === 404)
+                if(err && err.response.status === 404)
                   errorMessages.push(ERRORS.USER_NOT_FOUND)
                 else
                   errorMessages.push(ERRORS.GENERIC_FAILED)
@@ -273,20 +260,24 @@ class Form extends Component{
                       //Success:
                       console.log(res.data);
                       this.setState({ ...this.state, errorMessages:[], user: res.data.user, isLoading: false});
-                      let {setUser} = this.context
+                      let {setUser, setToken} = this.context
                       setUser(res.data.user)
+                      setToken(res.data.token)
                     }
                   })
                   .catch((err) => {
                     //Error
-                    console.log(err.response.status);
-                    if (err.response.status === 409) {
-                      //Failure
-                      errorMessages.push(ERRORS.LOGIN_FAILED);
-                      this.setState({...this.state,errorMessages, isLoading: false});
-                    } else {
-                      errorMessages.push(ERRORS.GENERIC_FAILED);
-                      this.setState({...this.state, errorMessages, isLoading: false});
+                    //console.log(err.response.status);
+                    if(err && err.response){
+                        if (err.response.status === 409) {
+                            //Failure
+                            errorMessages.push(ERRORS.LOGIN_FAILED);
+                            this.setState({...this.state,errorMessages, isLoading: false});
+                        } 
+                        else {
+                            errorMessages.push(ERRORS.GENERIC_FAILED);
+                            this.setState({...this.state, errorMessages, isLoading: false});
+                        }
                     }
                   });
                 } 
@@ -344,7 +335,12 @@ class Form extends Component{
                 })
                 .catch((err) => {
                     //Error
-                    errorMessages.push(ERRORS.GENERIC_FAILED);
+                    if(err.response.status === 409){
+                        errorMessages.push(ERRORS.USER_ALREADY_EXISTS);
+                    }
+                    else{
+                       errorMessages.push(ERRORS.GENERIC_FAILED);
+                    }
                     this.setState({...this.state, errorMessages, notifications:[], isLoading: false });
                     //   }
                 });
@@ -367,6 +363,9 @@ class Form extends Component{
     }
     onForgotPwdClick(value){
         this.setState({isLogin:false, isForgotPwd:value, firstname:'', lastname:'',email:{value:'',isValid:false}, password:{value:'',isValid:false}, user:null})
+    }
+    onCancelForgotPassword(){
+        this.setState({isLogin:true, isForgotPwd:false, firstname:'', lastname:'',email:{value:'',isValid:false}, password:{value:'',isValid:false}, user:null})
     }
     onForgotPwdSubmit(event){
         event.preventDefault()
@@ -403,7 +402,7 @@ class Form extends Component{
                         this.setState({...this.state,errorMessages, notifications:[], isLoading: false})
                     }
                 }).catch(err=>{
-                    if(err.response.status === 404)
+                    if(err && err.response.status === 404)
                        errorMessages.push(ERRORS.USER_NOT_FOUND)
                     else
                        errorMessages.push(ERRORS.GENERIC_FAILED)
@@ -475,7 +474,8 @@ class Form extends Component{
                                         onSendOTPSubmit={this.onSendOTPSubmit}
                                         onVerifyOTPSubmit={this.onVerifyOTPSubmit}
                                         displayOtp = {otp.display}
-                                        isUserVerified = {isUserVerified}/> 
+                                        isUserVerified = {isUserVerified}
+                                        onCancelForgotPassword = {this.onCancelForgotPassword}/> 
                             : (isLogin
                                     ?<Login onEmailChange={this.onEmailChange}
                                             onPwdChange={this.onPwdChange}
@@ -498,3 +498,24 @@ class Form extends Component{
 }
 
 export default Form
+
+
+// const ERRORS={
+//     EMAIL: "Invalid Email ID."
+//     ,PASSWORD:"Password should be at least 6 to 12 characters along with an uppercase, a lowercase and a special character '#?!@$%^&*-_'."
+//     ,CONFIRM_PASSWORD:"Passowrd and confirm password does not match."
+//     ,GENERIC_FAILED: "Oops! Something went wrong. Please try again."
+//     ,LOGIN_FAILED: "Authentication failed!"
+//     ,OTP_EXPIRED: "OTP Expired"
+//     ,USER_VERIFY_FAILED: "User veriication failed!"
+//     ,OTP_REQUIRED: "OTP is required!"
+//     ,USER_ALREADY_EXISTS: "User already exists!"
+//     ,USER_REGISTRATION_FAILED: "User registration failed!"
+//     ,USER_NOT_FOUND: "User not found!"
+    
+// }
+// const NOTIFICATIONS={
+//     SIGNUP_SUCCESS: "Successfully Registered!"
+//     ,OTP_SENT: "OTP sent to the registered email!"
+//     ,PWD_RESET_SUCCESS: "Password reset successful!"
+// }

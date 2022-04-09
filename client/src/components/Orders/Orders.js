@@ -1,40 +1,41 @@
 import axios from "axios";
 import React, { Component } from "react";
+import axios from 'axios'
+
 import OrdersHistory from "./OrdersHistory";
 import UpcomingEvents from "./UpcomingEvents";
-import { SessionContext } from "../SessionCookie/SessionCookie";
-import Notification from '../Notifications/Notification'
+import { Navigate } from "react-router-dom";
+import {  SessionContext } from "../SessionCookie/SessionCookie";
+import Spinner from "../Spinner/Spinner";
+import Notification from "../Notifications/Notification";
+import {ERRORS, NOTIFICATIONS, ORDER_STATUS, EMPTY_DATASET} from '../constants.js'
 
-const ERRORS = {
-    CANCELERROR: "Order is already cancelled. Please refresh the page"
-}
+class Orders extends Component{
+    constructor(){
 
-const NOTIFICATIONS = {
-    CANCELLED: "Order cancelled successfully. Please refresh the page"
-}
-
-class Orders extends Component {
-    constructor() {
         super()
         this.state = {
             isLoading: true,
             isOrderHistory: true,
             ordersHistory: [],
             upcomingEvents: [],
-            orders: [],
             notifications: [],
             errorMessages: []
         }
         this.onCancelOrder = this.onCancelOrder.bind(this)
+
+        this.splitOrders = this.splitOrders.bind(this)
         this.onCloseNotification = this.onCloseNotification.bind(this)
     }
-
     static contextType = SessionContext
 
-    onTabClick(value) {
-        this.setState({ ...this.state, isOrderHistory: value })
+    onTabClick(value){
+        this.setState({...this.state, isOrderHistory:value})
     }
+
     splitOrders(orders) {
+        console.log('splitorders', orders)
+
         let ordersHistory = orders.filter(order => {
             return ((new Date(order.date + ' ' + order.endtime)) < new Date() || order.status === "Cancelled")
         })
@@ -42,6 +43,45 @@ class Orders extends Component {
             return ((new Date(order.date + ' ' + order.endtime)) > new Date() && order.status === "Confirmed")
         })
         this.setState({ ...this.state, upcomingEvents, ordersHistory })
+
+    }
+    componentDidMount(){
+        //TODO: API TO FETCH ALL ORDERS
+        //this.setState({...this.state, isLoading: true})
+        let userid = this.context.getUser()._id;
+        axios.get(`api/v1/order/user/${userid}`,{
+            headers: {
+                'Authorization': 'Bearer '+ this.context.getToken()
+            }
+        }).then(res => {
+            console.log(res.data);
+            let orders= res.data.orders
+            // let orders = res.data.orders.map(order => {
+            //     console.log(order.slotID,order.eventID[0].slots)
+            //     return {
+            //         id: order._id,
+            //         userid: order.userID._id,
+            //         eventid: order.eventID._id,
+            //         eventname: order.eventID[0].eventname,
+            //         city: order.eventID[0].city[0],
+            //         date: order.eventID[0].slots[0].date, //TODO: GET ONLY DATE
+            //         endtime: order.eventID[0].slots[0].endtime,
+            //         starttime: order.eventID[0].slots[0].starttime,
+            //         viptickets: order.vipticks,
+            //         gatickets: order.gaticks,
+            //         status: order.orderStatus,
+            //         createddate: order.createdAt,
+            //         modifieddate: order.updatedAt,
+            //         totalprice: order.price
+            //     }
+            // })
+
+            this.splitOrders(orders)
+            this.setState({ ...this.state, isLoading: false, orders: orders })
+
+        }).catch(err => {
+            console.log(err)
+        });
     }
     componentDidMount() {
         //TODO: API TO FETCH ALL ORDER
@@ -80,14 +120,22 @@ class Orders extends Component {
          *            - UPDATE ORDER STATUS TO CANCELLED
          *            - UPDATE AVAILABLE TICKETS IN EVENTS SCHEMA
         */
-        var { errorMessages, notifications, orders, upcomingEvents } = this.state;
 
-        axios.put(`api/v1/order/${orderid}`).then(res => {
+         var { errorMessages, notifications, orders } = this.state;
+
+        const token = this.context.getToken()
+        axios.put(`api/v1/order/${orderid}`,{}, {
+            headers: {
+                'Authorization': 'Bearer '+ token
+            }
+        }).then(res => {
+
             console.log(res.data);
             if (res.status === 200 && res.data) {
                 notifications.push(NOTIFICATIONS.CANCELLED)
                 const filteredorder = orders.find(o => o.id === orderid)
-                filteredorder.status = "Cancelled"
+
+                filteredorder.status = ORDER_STATUS.CANCELLED
                 this.splitOrders(orders)
                 this.setState({ ...this.state, notifications, errorMessages: [], isLoading: false, orders })
             }
@@ -99,7 +147,6 @@ class Orders extends Component {
         });
 
     }
-
     onCloseNotification(id, isError) {
         var { errorMessages, notifications } = this.state
         if (isError) {
@@ -110,6 +157,7 @@ class Orders extends Component {
             notifications = notifications.filter((notification, index) => index !== id)
             this.setState({ ...this.state, notifications })
         }
+
     }
 
     displayNotification(isError) {
@@ -125,6 +173,53 @@ class Orders extends Component {
                         onClose={this.onCloseNotification} />
                 })}
             </div>
+        )
+    }
+    render(){
+        let {isOrderHistory, ordersHistory, upcomingEvents, orders, errorMessages, notifications, isLoading} = this.state
+        let user = this.context.getUser()
+        return (
+            <>
+            
+            <Spinner isLoading={isLoading}/>
+            {
+                !isLoading && <>
+                {!user 
+                ? (<Navigate to="/login" replace={true}/>)
+                : <div className="orders">
+                     {errorMessages.length ? this.displayNotification(true) : ""}
+                     {notifications.length ? this.displayNotification(false) : ""}
+                        <h3>My orders</h3>
+                        <div className="body">
+                        
+                            <>
+                            {orders && orders.length === 0
+                            ? <p>{EMPTY_DATASET.NO_ORDERS}</p>
+                            : <>
+                                <div className="form-header">
+                                    <label className={isOrderHistory? 'tab-active':''}
+                                            onClick={()=>this.onTabClick(true)}>ORDERS HISTORY</label>
+                                    <label className={!isOrderHistory? 'tab-active':''}
+                                            onClick={()=>this.onTabClick(false)}>UPCOMING / ACTIVE EVENTS</label>
+                                </div>
+                                <div>
+                                    {
+                                        isOrderHistory 
+                                        ? <OrdersHistory orders={ordersHistory}/>
+                                        : <UpcomingEvents events={upcomingEvents} onCancelOrder={this.onCancelOrder}/>
+                                    }
+                                </div>
+                                </>
+                            }
+                            </>
+                            
+                        </div>
+                    </div>
+                }
+                </>
+            }
+            </>
+
         )
     }
 
@@ -164,3 +259,49 @@ class Orders extends Component {
 }
 
 export default Orders
+
+
+// const ERRORS = {
+//     CANCELERROR: "Order is already cancelled. Please refresh the page"
+// }
+
+// const NOTIFICATIONS = {
+//     CANCELLED: "Order cancelled successfully."
+// }
+
+
+
+// const ORDERS = [
+//     {
+//         id: 1, 
+//         userid: '',
+//         eventid:1,
+//         eventname: 'sunt aut facere',
+//         city: 'Hyderabad', 
+//         date: '2022-03-19', 
+//         endtime: "18:04", 
+//         starttime: "17:03", 
+//         viptickets: "1", 
+//         gatickets: "18",
+//         status:"CONFIRMED",
+//         createdDate:'2022-03-16',
+//         modifiedDate: '',
+//         totalprice : 400
+//     },
+//     {
+//         id: 2, 
+//         userid: '',
+//         eventid:2,
+//         eventname: 'qui est esse',
+//         city: 'Bangalore', 
+//         date: '2022-03-29', 
+//         endtime: "18:04", 
+//         starttime: "17:03", 
+//         viptickets: "4", 
+//         gatickets: "10",
+//         status:"CONFIRMED",
+//         createdDate:'2022-03-19',
+//         modifiedDate: '',
+//         totalprice : 500
+//     }
+// ]

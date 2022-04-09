@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const User = require("./user");
 
 const EventSchema = mongoose.Schema(
     {
@@ -40,7 +41,7 @@ const EventSchema = mongoose.Schema(
     slots:[{
         date: {
             type: String,
-            default: new Date(),
+            default: '',
             required: true,
         },
         starttime: {
@@ -75,7 +76,26 @@ const EventSchema = mongoose.Schema(
 { timestamps: true }
 )
  
+//STORE ONLY DATE NOT TIME IN SLOT DATE
+EventSchema.pre("save", function(next){
+    const event=this;
+    if(event.isModified('slots.date')){
+        console.log('date')
+    }
+    next();
+})
 
+EventSchema.statics.findByEventName = async (eventname) => {
+    const event = await Event.find({
+        eventname: {$regex: '.*'+eventname+'.*', $options: 'i' }
+      });
+      console.log(event)
+    if (!event){
+        return null;
+    }
+    return event;
+  }
+  
 const Event = mongoose.model('Event', EventSchema)
 
 module.exports = Event
