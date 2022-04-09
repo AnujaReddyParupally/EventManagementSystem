@@ -1,8 +1,7 @@
 const routes = require('express').Router()
 const {getotp, verifyotp} = require('../controllers/OTP')
 
-
-routes.post('/',verifyotp)
-routes.get('/:email', getotp);
+routes.get('/otp/:email', getotp);
+routes.post('/otp',verifyotp)
 
 module.exports = routes

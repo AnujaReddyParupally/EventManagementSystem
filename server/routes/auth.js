@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const { check } = require("express-validator");
+
 const userCtrl = require("../controllers/user");
-const auth = require('../middleware/auth')
 
 router.post("/signup",
   [
@@ -53,10 +53,7 @@ router.post('/updatecreds'
                 check("password", "Password should be at least 6 to 12 characters along with an uppercase, a lowercase and a special character" )
                       .isLength({max: 12})
               ]
-            , userCtrl.forgotPassword)
+            , userCtrl.updatePassword)
 
 
-router.get('/user/info', auth, async(req,res) =>{
-  res.send(req.user)
-})
 module.exports = router;

@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const hash = require("../utils/hash");
-const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema(
   {
@@ -28,20 +27,13 @@ const userSchema = new mongoose.Schema(
       required: true,
       minlength: 6,
       maxlength: 12,
-    },
-    tokens : [{
-      token:{
-        type:String,
-        required: true
-      }
-    }]
+    }
   },
   { timestamps: true }
 );
 
 userSchema.methods.toJSON = function () {
   const user = this.toObject();
-  user.email = user.email.toLowerCase()
   delete user.password;
   delete user.__v;
   return user;
@@ -60,30 +52,10 @@ userSchema.statics.findByCredentials = async (email, password) => {
   const user = await User.findOne({
       email: email.toUpperCase()
     });
-  if (!user || !hash.decrypt(user.password,password)){
+  if (!user || !hash.validPassword(password,user.password)){
       return null;
   }
-  return user
-}
-
-userSchema.methods.generateAuthToken = async function(){
-  const user = this;
-  const maxAge = 3*60*60;
-  const token = jwt.sign(
-    {
-     _id: user._id.toString(), 
-     email: user.email, 
-     role: user.role
-    }, 
-    process.env.JWT_SECRET,
-    {
-      algorithm: 'HS512',
-      expiresIn: maxAge,
-    });
-  //user.tokens = user.tokens.concat({ token })
-  await user.updateOne({_id: user._id},{tokens: user.tokens.concat({token})})
-  console.log('done')
-  return token;
+  return user;
 }
 
 var User = mongoose.model('User', userSchema);
