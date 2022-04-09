@@ -1,22 +1,18 @@
 const crypto = require("crypto");
-const salt =  crypto.randomBytes(16).toString("hex");
+const salt =  "e6d9bf952dc51e7320c6ae7e3f7d98e2";
 
 const encrypt = (password) => {
   var hash = crypto
     .createHmac("sha512", salt)
     .update(password)
     .digest("base64");
-  return `${salt}$${hash}`;
+  return hash;
 };
 
-const decrypt = (encryptedPassword, actualPassword) => {
-  const [salt, hash] = encryptedPassword.split("$");
-  const actualHash = crypto
-    .createHmac("sha512", salt)
-    .update(actualPassword)
-    .digest("base64");
-  return hash === actualHash;
-};
+const validPassword = (password,dbpassword) => {
+  var hashpassword = encrypt(password);
+  return hashpassword === dbpassword;
+}
 
 exports.encrypt = encrypt;
-exports.decrypt = decrypt;
+exports.validPassword = validPassword;

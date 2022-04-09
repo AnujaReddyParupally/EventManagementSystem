@@ -8,11 +8,6 @@ body {
   font-family: Open Sans;
   background: #e5e5e5;
 }
-
-a {
-  text-decoration: none;
-  color: white;
-}
 .navbar {
   font-style: normal;
   padding: 16px 16px;
@@ -121,14 +116,15 @@ textarea {
   width: 100%;
 }
 .btn-search {
-  background-color: #989e97;
+  background-color: #26890d;
   color: #fff;
+  cursor: pointer;
   font: 400 14px/20px "Open Sans", sans-serif;
   border: none;
   border-radius: 0;
-  width: 40px;
+  width: 96px;
   margin: 8px 0px;
-  padding: 12px 10px;
+  padding: 12px 20px;
 }
 .add-user {
   margin: 24px;
@@ -498,7 +494,6 @@ textarea {
 }
 .event-details .details-data {
   padding: 16px;
-  width: 100%;
 }
 
 .price {
@@ -563,7 +558,6 @@ textarea {
   border: none;
   /* float: right; */
   width: 100%;
-  cursor: pointer;
 }
 .btn-cancel-ticket {
   background-color: rgb(165, 46, 16);
